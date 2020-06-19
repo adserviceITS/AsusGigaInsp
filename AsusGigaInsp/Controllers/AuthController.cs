@@ -45,7 +45,7 @@ namespace AsusGigaInsp.Controllers
             {
                 // ユーザー認証 成功
                 this.SetUserInfo(model);
-                return RedirectToAction("MainMenu", "MainMenu");
+                return RedirectToAction("Login", "Auth");
             } else {
                 // ユーザー認証 失敗
                 this.ModelState.AddModelError(string.Empty, "指定されたユーザー名またはパスワードが正しくありません。");
