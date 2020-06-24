@@ -19,7 +19,7 @@
             <ul class="links">
                 <li><a href="#">ホワイトボード</a></li>
                 <li><a href="#">オーダーリスト</a></li>
-                <li><a href="#">シリアルリスト</a></li>
+                <li>@Html.ActionLink("シリアルリスト", "Index", "SerialList")</li>
                 <li class="dropdown">
                     <a href="#" class="trigger-drop" style="margin-right:80px;">マスタメンテ<i class="arrow"></i></a>
                     <ul class="drop">
@@ -27,7 +27,10 @@
                         <li><a href="#">ASUS様指示マスタ</a></li>
                     </ul>
                 </li>
-                <li><a href="#">@Session["UserName"].ToString()</a></li>
+                @if (Session["UserName"] != null)
+                {
+                    <li><a href="#">@Session["UserName"].ToString()</a></li>
+                }
                 <li>@Html.ActionLink("ログアウト", "Logout", "Auth")</li>
             </ul>
         }

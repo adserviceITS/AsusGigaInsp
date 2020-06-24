@@ -120,6 +120,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\SerialListController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SOListController.cs" />
@@ -128,7 +129,9 @@
     </Compile>
     <Compile Include="Models\SOListModels.cs" />
     <Compile Include="Models\LoginModels.cs" />
+    <Compile Include="Models\SerialListModels.cs" />
     <Compile Include="Modules\ConstDef.cs" />
+    <Compile Include="Modules\DropDownList.cs" />
     <Compile Include="Modules\DSNLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -141,6 +144,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\Login.css" />
+    <Content Include="Content\SerialList.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -281,6 +285,7 @@
     <Content Include="Views\SOList\SOListSearch.cshtml" />
     <Content Include="Views\SOList\modeSearch.cshtml" />
     <Content Include="Views\SOList\SOListUpdate.cshtml" />
+    <Content Include="Views\SerialList\SerialList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

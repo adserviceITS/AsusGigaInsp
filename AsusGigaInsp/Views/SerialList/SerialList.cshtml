@@ -1,0 +1,101 @@
+﻿@model AsusGigaInsp.Models.SerialListModels
+
+@{
+    ViewBag.Title = "シリアルリスト";
+}
+
+<link href="~/Content/SerialList.css" rel="stylesheet" />
+
+@Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+@using (Html.BeginForm())
+{
+    <div class="form-row">
+        <label for="text6c" class="col-form-label-sm">マスターカートンQR</label>
+        @Html.TextBoxFor(model => model.CondMasterCartonSerial, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "QR読込み、検索も可" })
+        <label for="text6c" class="col-form-label-sm">ライン</label>
+        @Html.DropDownListFor(
+            model => model.CondLineID, // プロパティ
+            new SelectList(Model.DropDownListLine, "LineID", "LineName"),
+            new { @class= "form-control form-control-sm", style="max-width:50px;" }
+        )
+        <input type="submit" class="btn btn-danger" formaction="/SerialList/WorkStart" name="WorkStartBtn" id="WorkStartBtn" value="新品検品作業中">
+        <input type="submit" class="btn btn-danger" style="margin-left:5px;" formaction="/SerialList/WorkEnd" name="WorkEndBtn" id="WorkEndBtn" value="新品検品作業完了">
+    </div>
+    <hr>
+    <div class="form-row">
+        <label for="CondSONo" class="col-form-label-sm">SO#</label>
+        @Html.TextBoxFor(model => model.CondSONo, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+        <label for="CondSerialNumber" class="col-form-label-sm">シリアル</label>
+        @Html.TextBoxFor(model => model.CondSerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+        <label for="Cond90N" class="col-form-label-sm">90N</label>
+        @Html.TextBoxFor(model => model.Cond90N, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+        <label for="CondModelName" class="col-form-label-sm">Model Name</label>
+        @Html.TextBoxFor(model => model.CondModelName, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+    </div>
+    <div class="form-row">
+        <label for="CondWorkDayFrom" class="col-form-label-sm">作業日</label>
+        @Html.TextBoxFor(model => model.CondWorkDayFrom, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "From" })
+        <label for="CondWorkDayTo" class="col-form-label-sm">～</label>
+        @Html.TextBoxFor(model => model.CondWorkDayTo, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "To" })
+        <label for="CondInstruction" class="col-form-label-sm">ASUS様指示</label>
+        @Html.DropDownListFor(
+            model => model.CondInstruction, // プロパティ
+            new SelectList(Model.DropDownListInstruction, "InstructionID", "Instruction"),
+            "",
+            new { @class= "form-control form-control-sm", style="max-width:120px;" }
+        )
+        <div class="form-check">
+            <label for="CondNGFlg" class="form-check-label col-form-label-sm">NGフラグ</label>
+            @Html.CheckBoxFor(
+                model => model.CondNGFlg,  // プロパティ
+                new { @class="form-check-input", style="margin-left:10px;" }      // その他の属性
+            )
+        </div>
+    </div>
+
+    <input type="submit" class="btn btn-danger btn" formaction="/SerialList/Search" name="SearchBtn" id="SearchBtn" value="検索">
+    <input type="submit" class="btn btn-danger btn" formaction="/SerialList/SerialDataUpload" name="SerialDataUploadBtn" id="SerialDataUploadBtn" value="シリアル情報取込">
+    <input type="submit" class="btn btn-danger btn" formaction="/SerialList/SerialDataCsv" name="SerialDataCsvBtn" id="SerialDataCsvBtn" value="CSV出力">
+    <table class="table table-striped table-bordered table-sm table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th></th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().SONo)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().n90N)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().ModelName)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().SerialNumber)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().NGFlg)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().NGReason)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().WorkDay)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().Instruction)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().ShippingAddress)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().DescriptionAds)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().StatusName)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().StatusUpdateDate)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.RstSerialList)
+            {
+            <tr>
+                <td>
+                    <input type="submit" class="btn btn-danger btn-sm" formaction="/SerialList/Edit" name="EditBtn" id="EditBtn" value="編集">
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.SONo)</td>
+                <td>@Html.DisplayFor(modelItem => item.n90N)</td>
+                <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
+                <td>@Html.DisplayFor(modelItem => item.SerialNumber)</td>
+                <td>@Html.DisplayFor(modelItem => item.NGFlg)</td>
+                <td>@Html.DisplayFor(modelItem => item.NGReason)</td>
+                <td>@Html.DisplayFor(modelItem => item.WorkDay)</td>
+                <td>@Html.DisplayFor(modelItem => item.Instruction)</td>
+                <td>@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
+                <td>@Html.DisplayFor(modelItem => item.DescriptionAds)</td>
+                <td>@Html.DisplayFor(modelItem => item.StatusName)</td>
+                <td>@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
