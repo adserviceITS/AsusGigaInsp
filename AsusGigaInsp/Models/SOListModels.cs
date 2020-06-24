@@ -154,7 +154,7 @@ namespace AsusGigaInsp.Models
 
             if (!string.IsNullOrEmpty(SrchSONO))
             {
-                stbWhere.Append("AND T_ORDER.SO_NO = N'" + SrchSONO + "' ");
+                stbWhere.Append("AND T_SO_STATUS.SO_NO = N'" + SrchSONO + "' ");
             }
             else
             {
@@ -329,7 +329,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("FROM ");
             stbSql.Append("    T_SO_STATUS ");
             stbSql.Append("WHERE ");
-            stbSql.Append("    SO_NO = '" + EntSONO + "' ");
+            stbSql.Append("    SO_NO = N'" + EntSONO + "' ");
 
             Debug.WriteLine(stbSql.ToString());
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
@@ -366,7 +366,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("FROM ");
             stbSql.Append("    T_SO_STATUS ");
             stbSql.Append("WHERE ");
-            stbSql.Append("    N01_NO = '" + EntN01 + "' ");
+            stbSql.Append("    N01_NO = N'" + EntN01 + "' ");
 
             Debug.WriteLine(stbSql.ToString());
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
@@ -401,14 +401,35 @@ namespace AsusGigaInsp.Models
             strSql.Append("    SO_NO = N'" + EntSONO + "', ");
             strSql.Append("    n90N = '" + Ent90N + "', ");
             strSql.Append("    MODEL_NAME = N'" + EntModelName + "', ");
-            strSql.Append("    SHIPPING_QUANTITY = N'" + EntShippingQuantity + "', ");
-            strSql.Append("    EST_ARRIVAL_DATE = '" + EntEstArrivalDate + "', ");
-            strSql.Append("    PREF_REPORTING_DATE = N'" + EntPrefReportingDate + "', ");
-            strSql.Append("    SI_TEK_EST_ARRIVAL_DATE = '" + EntSiTekEstArrivalDate + "', ");
+            strSql.Append("    SHIPPING_QUANTITY = " + EntShippingQuantity + ", ");
+            if (!string.IsNullOrEmpty(EntEstArrivalDate.ToString()))
+            {
+                strSql.Append("    EST_ARRIVAL_DATE = '" + EntEstArrivalDate + "', ");
+            }
+            else
+            {
+                strSql.Append("    EST_ARRIVAL_DATE = " + null + ", ");
+            }
+            if (!string.IsNullOrEmpty(EntPrefReportingDate.ToString()))
+            {
+                strSql.Append("    PREF_REPORTING_DATE = '" + EntPrefReportingDate + "', ");
+            }
+            else
+            {
+                strSql.Append("    PREF_REPORTING_DATE = " + null + ", ");
+            }
+            if (!string.IsNullOrEmpty(EntSiTekEstArrivalDate.ToString()))
+            {
+                strSql.Append("    SI_TEK_EST_ARRIVAL_DATE = '" + EntSiTekEstArrivalDate + "', ");
+            }
+            else
+            {
+                strSql.Append("    SI_TEK_EST_ARRIVAL_DATE = " + null + ", ");
+            }
             strSql.Append("    DELIVERY_LOCATION = N'" + EntDeliveryLocation + "', ");
             strSql.Append("    N01_NO = N'" + EntN01 + "', ");
             strSql.Append("    UPDATE_DATE = GETDATE(), ");
-            strSql.Append("    UPDATE_UID = '" + strUpdUID + "' ");
+            strSql.Append("    UPDATE_UID = N'" + strUpdUID + "' ");
             strSql.Append("WHERE ");
             strSql.Append("    SO_ID = '" + EntSOID + "' ");
 
@@ -428,7 +449,7 @@ namespace AsusGigaInsp.Models
             strSql.Append("    UPDATE_DATE = GETDATE(), ");
             strSql.Append("    UPDATE_ID = '" + strUpdUID + "' ");
             strSql.Append("WHERE ");
-            strSql.Append("    SO_NO = '" + CompSONO + "' ");
+            strSql.Append("    SO_NO = N'" + CompSONO + "' ");
 
             dsnLib.ExecSQLUpdate(strSql.ToString());
             dsnLib.DB_Close();
@@ -446,7 +467,7 @@ namespace AsusGigaInsp.Models
             strSql.Append("    UPDATE_DATE = GETDATE(), ");
             strSql.Append("    UPDATE_ID = '" + strUpdUID + "' ");
             strSql.Append("WHERE ");
-            strSql.Append("    SO = '" + CompN01 + "' ");
+            strSql.Append("    SO = N'" + CompN01 + "' ");
 
             dsnLib.ExecSQLUpdate(strSql.ToString());
             dsnLib.DB_Close();
