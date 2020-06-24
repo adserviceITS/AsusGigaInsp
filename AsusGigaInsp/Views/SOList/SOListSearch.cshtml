@@ -1,0 +1,70 @@
+﻿@model AsusGigaInsp.Models.SOListModels
+@{
+    ViewBag.Title = "オーダー検索";
+}
+<!DOCTYPE html>
+@Html.ValidationSummary()
+@using (Html.BeginForm())
+{
+    <div>
+        <table class="table-srch_crt" style="margin-top:15px;width:1125px;">
+            <tr>
+                <th>SO#：</th>
+                <td>@Html.TextBoxFor(model => model.SrchSONO)</td>
+                <th>90N：</th>
+                <td>@Html.TextBoxFor(model => model.Srch90N)</td>
+                <th>ModelName：</th>
+                <td>@Html.TextBoxFor(model => model.SrchModelName)</td>
+                <th>N01#：</th>
+                <td>@Html.TextBoxFor(model => model.SrchN01NO)</td>
+            </tr>
+            <tr>
+                <th>ADS到着予定日：</th>
+                <td>@Html.TextBoxFor(model => model.SrchEstArrivalDate_S)</td>
+                <th>～</th>
+                <td>@Html.TextBoxFor(model => model.SrchEstArrivalDate_E)</td>
+                <th>レポート提出希望日：</th>
+                <td>@Html.TextBoxFor(model => model.SrchPrefReportingDate_S)</td>
+                <th>～</th>
+                <td>@Html.TextBoxFor(model => model.SrchPrefReportingDate_E)</td>
+            </tr>
+            <tr>
+                <th>ADS到着予定日：</th>
+                <td>@Html.TextBoxFor(model => model.SrchSiTekEstArrivalDate_S)</td>
+                <th>～</th>
+                <td>@Html.TextBoxFor(model => model.SrchSiTekEstArrivalDate_E)</td>
+                <th>ステータス：</th>
+                <td colspan="2">
+                    @Html.DropDownListFor(
+                        model => model.SrchStatusID, // プロパティ
+                        new SelectList(Model.DropDownListStatusName, "SOStatusID", "SOStatusName"),
+                        ""
+                    )
+                </td>
+            </tr>
+            <tr>
+                <td colspan="7" style="width:1125px; text-align:right;">
+                    <input type="submit" class="btn-normal" formaction="/SOList/SOListSearchResult" name="Search" value="検索">
+                    <input type="button" class="btn-normal" name="Clear" id="ClearBtn" value="クリア">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ここから検索結果 ------------------------------------------------------------------>
+    <div style="padding-top:10px;">
+        @switch (Model.SrchMode)
+        {
+            case "Search":
+                @Html.Partial("modeSearch");
+                break;
+            default:
+                <text>！！検索結果の取得に失敗しました！！</text>
+                break;
+        }
+    </div>
+}
+<script type="text/javascript">// クリアボタンクリック処理
+    $("#ClearBtn").on("click", function () {
+        clearForm(this.form);
+    });</script>

@@ -123,9 +123,11 @@
     <Compile Include="Controllers\SerialListController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SOListController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\SOListModels.cs" />
     <Compile Include="Models\LoginModels.cs" />
     <Compile Include="Models\SerialListModels.cs" />
     <Compile Include="Modules\ConstDef.cs" />
@@ -280,6 +282,9 @@
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Auth\Login.cshtml" />
+    <Content Include="Views\SOList\SOListSearch.cshtml" />
+    <Content Include="Views\SOList\modeSearch.cshtml" />
+    <Content Include="Views\SOList\SOListUpdate.cshtml" />
     <Content Include="Views\SerialList\SerialList.cshtml" />
   </ItemGroup>
   <ItemGroup>
