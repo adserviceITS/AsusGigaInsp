@@ -1,0 +1,87 @@
+﻿@model AsusGigaInsp.Models.SOListUpdateModels
+@{
+    ViewBag.Title = "オーダー情報編集";
+}
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary()
+
+    <head>
+        <style type="text/css">
+            .auto-style1 {
+                height: 30px;
+                width: 130px;
+            }
+
+            .auto-style2 {
+                height: 30px;
+                width: 400px;
+            }
+
+            .no-border-style {
+                border: solid 0px;
+            }
+        </style>
+    </head>
+    <input type="hidden" name="EntSOID" value="@Model.EntSOID" />
+    <input type="hidden" name="CompSONO" value="@Model.CompSONO" />
+    <input type="hidden" name="CompN01" value="@Model.CompN01" />
+    <div>
+        <table border="0" style="margin-top:15px;width:900px;">
+            <tr>
+                <td width="20px"></td>
+                <th class="auto-style1">SO#：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntSONO, new { @size = 45 })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <th class="auto-style1">90N：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.Ent90N, new { @size = 45 })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <th class="auto-style1">ModelName：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntModelName, new { @size = 45 })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <th class="auto-style1">出荷予定数：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntShippingQuantity, new { @size = 45 })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <th class="auto-style1">ADS到着予定日：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntEstArrivalDate, new { @size = 45 })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <th class="auto-style1">レポート提出希望日：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntPrefReportingDate, new { @size = 45 })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <th class="auto-style1">SI/TEK到着予定日：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntSiTekEstArrivalDate, new { @size = 45 })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <th class="auto-style1">納品地：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntDeliveryLocation, new { @size = 45 })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <th class="auto-style1">N01#：</th>
+                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntN01, new { @size = 45 })</td>
+            </tr>
+            <tr style="height:50px;vertical-align:bottom;">
+                <td colspan="4" style="text-align:right;">
+                    <input type="submit" class="btn-normal" formaction="/SOList/SOListUpdateResult" name="SOListUpdateResult" value="登録">
+                    <input type="button" class="btn-normal" onclick="history.back()" name="Back" value="戻る">
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
