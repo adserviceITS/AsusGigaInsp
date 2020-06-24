@@ -1,0 +1,30 @@
+USE [C:\PROJECTS\ASUSGIGAINSP\LOCALDB\ASUSGIGAINSP.MDF]
+GO
+
+/****** Object:  Table [dbo].[M_USER]    Script Date: 2020/06/23 9:51:29 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[M_USER](
+	[ID] [nvarchar](10) NOT NULL,
+	[USER_NAME] [nvarchar](max) NULL,
+	[EMPLOYEE_NUMBER] [nvarchar](10) NULL,
+	[BLOCK_ID] [nvarchar](max) NULL,
+	[PASS] [nvarchar](max) NOT NULL,
+	[MAIL] [nvarchar](max) NULL,
+	[AUTHORITY_KBN] [nvarchar](1) NULL,
+	[DEL_FLG] [nchar](1) NULL,
+	[INSERT_DATE] [datetime] NULL,
+	[INSERT_ID] [nvarchar](max) NULL,
+	[UPDATE_DATE] [datetime] NULL,
+	[UPDATE_ID] [nvarchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
