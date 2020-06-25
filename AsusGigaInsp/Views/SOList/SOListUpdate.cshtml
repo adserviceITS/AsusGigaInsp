@@ -23,64 +23,138 @@
             }
         </style>
     </head>
-    <input type="hidden" name="EntSOID" value="@Model.EntSOID" />
-    <input type="hidden" name="CompSONO" value="@Model.CompSONO" />
-    <input type="hidden" name="CompN01" value="@Model.CompN01" />
-    <div>
-        <table border="0" style="margin-top:15px;width:900px;">
-            <tr>
-                <td width="20px"></td>
-                <th class="auto-style1">SO#：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntSONO, new { @size = 45 })</td>
-            </tr>
-            <tr>
-                <td></td>
-                <th class="auto-style1">90N：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.Ent90N, new { @size = 45 })</td>
-            </tr>
-            <tr>
-                <td></td>
-                <th class="auto-style1">ModelName：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntModelName, new { @size = 45 })</td>
-            </tr>
-            <tr>
-                <td></td>
-                <th class="auto-style1">出荷予定数：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntShippingQuantity, new { @size = 45 })</td>
-            </tr>
-            <tr>
-                <td></td>
-                <th class="auto-style1">ADS到着予定日：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntEstArrivalDate, new { @size = 45 })</td>
-            </tr>
-            <tr>
-                <td></td>
-                <th class="auto-style1">レポート提出希望日：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntPrefReportingDate, new { @size = 45 })</td>
-            </tr>
-            <tr>
-                <td></td>
-                <th class="auto-style1">SI/TEK到着予定日：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntSiTekEstArrivalDate, new { @size = 45 })</td>
-            </tr>
-            <tr>
-                <td></td>
-                <th class="auto-style1">納品地：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntDeliveryLocation, new { @size = 45 })</td>
-            </tr>
-            <tr>
-                <td></td>
-                <th class="auto-style1">N01#：</th>
-                <td class="auto-style2">@Html.TextBoxFor(model => Model.EntN01, new { @size = 45 })</td>
-            </tr>
-            <tr style="height:50px;vertical-align:bottom;">
-                <td colspan="4" style="text-align:right;">
-                    <input type="submit" class="btn-normal" formaction="/SOList/SOListUpdateResult" name="SOListUpdateResult" value="登録">
-                    <input type="button" class="btn-normal" onclick="history.back()" name="Back" value="戻る">
-                </td>
-            </tr>
-        </table>
-    </div>
+    <form>
+        <input type="hidden" name="EntSOID" value="@Model.EntSOID" />
+        <input type="hidden" name="CompSONO" value="@Model.CompSONO" />
+        <input type="hidden" name="CompN01" value="@Model.CompN01" />
+
+        <div class="container-fluid">
+            <div>
+                <table style="margin-top:15px;width:100%;">
+                    <tr>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">SO#</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.EntSONO, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                        <td rowspan="3" style="vertical-align:top;">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td>
+                                        <label for="AddDate" class="col-form-label-sm">登録日　</label>
+                                        @Html.TextBoxFor(model => Model.AddDate, new { @readonly = "readonly", @class = "no-border-style", style = "width:180px" })
+                                    </td>
+                                    <td>
+                                        <label for="AddUser" class="col-form-label-sm">登録者　</label>
+                                        @Html.TextBoxFor(model => Model.AddUser, new { @readonly = "readonly", @class = "no-border-style", style = "width:130px" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="UpdateDate" class="col-form-label-sm">更新日　</label>
+                                        @Html.TextBoxFor(model => Model.UpdateDate, new { @readonly = "readonly", @class = "no-border-style", style = "width:180px" })
+                                    </td>
+                                    <td>
+                                        <label for="UpdateUser" class="col-form-label-sm">更新者　</label>
+                                        @Html.TextBoxFor(model => Model.UpdateUser, new { @readonly = "readonly", @class = "no-border-style", style = "width:130px" })
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">90N</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.Ent90N, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">ModelName</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.EntModelName, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">出荷予定数</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.EntShippingQuantity, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">SI/TEK到着予定日</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.EntSiTekEstArrivalDate, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">ADS到着予定日</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.EntEstArrivalDate, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">納品地</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.EntDeliveryLocation, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">レポート提出希望日</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.EntPrefReportingDate, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">N01#</label>
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.EntN01, new { @class = "form-control", placeholder = "" })
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <div style="float: right">
+                                <input type="submit" class="btn btn-primary btn btn-lg" formaction="/SOList/SOListSearch" name="Back" value="戻る">
+                                <input type="submit" class="btn btn-danger btn btn-lg" formaction="/SOList/SOListDeleteResult" name="Delete" value="削除">
+                                <input type="submit" class="btn btn-danger btn btn-lg" formaction="/SOList/SOListUpdateResult" name="Update" value="登録">
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+    </form>
+
 }
 
 <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>

@@ -39,13 +39,13 @@ namespace AsusGigaInsp.Controllers
             {
                 return View(model);
             }
-            
+
             // 認証
             if (model.Auth())
             {
                 // ユーザー認証 成功
                 this.SetUserInfo(model);
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction("WhiteBord", "WhiteBord");
             } else {
                 // ユーザー認証 失敗
                 this.ModelState.AddModelError(string.Empty, "指定されたユーザー名またはパスワードが正しくありません。");

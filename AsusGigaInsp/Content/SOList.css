@@ -1,0 +1,21 @@
+﻿table {
+    font-size: 13px;
+}
+
+.table-hover tbody tr:hover {
+    color: #212529;
+    background-color: #FFFF99;
+}
+
+.table .thead-light th {
+    color: #000000;
+    background-color: #6cf5d1;
+    vertical-align:middle;
+}
+
+.form-control-sm {
+    margin-top: 3px;
+    margin-right: 20px;
+    margin-bottom: 3px;
+    margin-left: 5px;
+}

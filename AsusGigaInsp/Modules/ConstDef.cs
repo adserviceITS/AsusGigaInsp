@@ -10,22 +10,24 @@ namespace AsusGigaInsp.Modules
     {
         /* DB定義変数 */
         /* ローカル開発用 */
-        public const string DB_CONNECTION_STRING = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\AsusGigaInsp\LocalDB\AsusGigaInsp.mdf;Integrated Security=True;Connect Timeout=30";
+        // public const string DB_CONNECTION_STRING = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\AsusGigaInsp\LocalDB\AsusGigaInsp.mdf;Integrated Security=True;Connect Timeout=30";
 
         /* 開発機用 */
-        //public const string DB_DATA_SOURCE = "192.168.0.9";
-        //public const string DB_USER_ID = "sa";
-        //public const string DB_PASSWORD = "takota";
+        public const string DB_DATA_SOURCE = "192.168.144.203";
+        public const string DB_DATA_BASE = "AsusGigaInsp";
+        public const string DB_USER_ID = "sa";
+        public const string DB_PASSWORD = "takota";
 
         /* 本番機用 */
         //public const string DB_DATA_SOURCE = "192.168.0.1";
         //public const string DB_USER_ID = "sa";
         //public const string DB_PASSWORD = "takota";
 
-        //public const string DB_CONNECTION_STRING = @"Data Source=" + DB_DATA_SOURCE + ";"
-        //                                         + @"Integrated Security=False;"
-        //                                         + @"User ID=" + DB_USER_ID + ";"
-        //                                         + @"Password=" + DB_PASSWORD;
+        public const string DB_CONNECTION_STRING = @"Data Source=" + DB_DATA_SOURCE + ";"
+                                                 + @"Database=" + DB_DATA_BASE + ";"
+                                                 + @"Integrated Security=False;"
+                                                 + @"User ID=" + DB_USER_ID + ";"
+                                                 + @"Password=" + DB_PASSWORD;
 
     }
 }

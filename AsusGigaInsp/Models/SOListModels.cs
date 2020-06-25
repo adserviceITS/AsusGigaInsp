@@ -6,6 +6,7 @@ using System.Text;
 using System;
 using System.Diagnostics;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace AsusGigaInsp.Models
 {
@@ -246,7 +247,7 @@ namespace AsusGigaInsp.Models
         [DisplayName("ステータス")]
         public string SOStatusName { get; set; }
         [DisplayName("ステータス変更日")]
-        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm:ss}")]
         public DateTime? STChangeDate { get; set; }
     }
 
@@ -272,7 +273,9 @@ namespace AsusGigaInsp.Models
         [RegularExpression(@"[0-9]+", ErrorMessage = "出荷予定数は半角数字で入力してください。")]
         public int EntShippingQuantity{ get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime? EntEstArrivalDate { get; set; }
+
         public DateTime? EntPrefReportingDate { get; set; }
         public DateTime? EntSiTekEstArrivalDate { get; set; }
 
@@ -281,7 +284,12 @@ namespace AsusGigaInsp.Models
         public string EntN01 { get; set; }
         public string CompN01 { get; set; }
 
-        //取引先検索時の検索結果セット
+        public string AddUser { get; set; }
+        public DateTime? AddDate { get; set; }
+        public string UpdateUser { get; set; }
+        public DateTime? UpdateDate { get; set; }
+
+        // オーダーの検索結果セット
         public void SetSOListDetails(string strSOID)
         {
             DSNLibrary dsnLib = new DSNLibrary();
@@ -290,11 +298,17 @@ namespace AsusGigaInsp.Models
             long lngSOID = long.Parse(strSOID);
 
             stbSql.Append("SELECT ");
-            stbSql.Append("    * ");
+            stbSql.Append("    T_SO_STATUS.*, ");
+            stbSql.Append("    M_USER1.USER_NAME AS USER_NAME1, ");
+            stbSql.Append("    M_USER2.USER_NAME AS USER_NAME2 ");
             stbSql.Append("FROM ");
             stbSql.Append("    T_SO_STATUS ");
+            stbSql.Append("    LEFT JOIN M_USER M_USER1 ");
+            stbSql.Append("        ON T_SO_STATUS.INSERT_UID = M_USER1.ID ");
+            stbSql.Append("    LEFT JOIN M_USER M_USER2 ");
+            stbSql.Append("        ON T_SO_STATUS.UPDATE_UID = M_USER2.ID ");
             stbSql.Append("WHERE ");
-            stbSql.Append("   SO_ID = " + lngSOID);
+            stbSql.Append("   T_SO_STATUS.SO_ID = " + lngSOID);
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
@@ -312,6 +326,10 @@ namespace AsusGigaInsp.Models
                 EntDeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString();
                 EntN01 = sqlRdr["N01_NO"].ToString();
                 CompN01 = sqlRdr["N01_NO"].ToString();
+                AddUser = sqlRdr["USER_NAME1"].ToString();
+                AddDate = string.IsNullOrEmpty(sqlRdr["INSERT_DATE"].ToString()) ? (DateTime?)null : DateTime.Parse(sqlRdr["INSERT_DATE"].ToString());
+                UpdateUser = sqlRdr["USER_NAME2"].ToString();
+                UpdateDate = string.IsNullOrEmpty(sqlRdr["UPDATE_DATE"].ToString()) ? (DateTime?)null : DateTime.Parse(sqlRdr["UPDATE_DATE"].ToString());
             }
             dsnLib.DB_Close();
         }
@@ -408,7 +426,7 @@ namespace AsusGigaInsp.Models
             }
             else
             {
-                strSql.Append("    EST_ARRIVAL_DATE = " + null + ", ");
+                strSql.Append("    EST_ARRIVAL_DATE = null, ");
             }
             if (!string.IsNullOrEmpty(EntPrefReportingDate.ToString()))
             {
@@ -416,7 +434,7 @@ namespace AsusGigaInsp.Models
             }
             else
             {
-                strSql.Append("    PREF_REPORTING_DATE = " + null + ", ");
+                strSql.Append("    PREF_REPORTING_DATE = null, ");
             }
             if (!string.IsNullOrEmpty(EntSiTekEstArrivalDate.ToString()))
             {
@@ -424,7 +442,7 @@ namespace AsusGigaInsp.Models
             }
             else
             {
-                strSql.Append("    SI_TEK_EST_ARRIVAL_DATE = " + null + ", ");
+                strSql.Append("    SI_TEK_EST_ARRIVAL_DATE = null, ");
             }
             strSql.Append("    DELIVERY_LOCATION = N'" + EntDeliveryLocation + "', ");
             strSql.Append("    N01_NO = N'" + EntN01 + "', ");

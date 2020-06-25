@@ -6,16 +6,16 @@ namespace AsusGigaInsp.Controllers
     public class SOListController : Controller
     {
         // GET: SOList
+        [HttpGet]
         public ActionResult SOListSearch()
         {
             // 検索条件をセット
             SOListModels models = new SOListModels();
 
+            //models.SetSrchRstOrderList();
+
             // ステータスコンボBOXをセット
             models.SetDropDownListStatusName();
-
-            // 検索結果表示モードをセット
-            models.SrchMode = "Search";
 
             return View(models);
         }
