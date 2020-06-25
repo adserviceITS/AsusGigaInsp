@@ -96,7 +96,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("        FROM ");
             stbSql.Append("            T_SERIAL_STATUS ");
             stbSql.Append("        WHERE ");
-            stbSql.Append("            T_SERIAL_STATUS.STATUS = '4010' ");
+            stbSql.Append("            T_SERIAL_STATUS.SERIAL_STATUS_ID = '4010' ");
             stbSql.Append("        GROUP BY ");
             stbSql.Append("            T_SERIAL_STATUS.SO_NO ");
             stbSql.Append("    ) TBL1 ");

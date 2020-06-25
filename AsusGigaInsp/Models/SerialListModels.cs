@@ -27,6 +27,8 @@ namespace AsusGigaInsp.Models
         private string SearchWhere = "";
         public IEnumerable<SerialList> RstSerialList { get; set; }
 
+        public string SelectEditSerialID;
+
         public void SetDropDownListInstruction()
         {
             // メーカードロップダウンリストを取得

@@ -53,5 +53,16 @@ namespace AsusGigaInsp.Controllers
 
             return View("SerialList", models);
         }
+
+        // POST: SerialList/Edit
+        [HttpPost]
+        public ActionResult Edit()
+        {
+            SerialEditModels models = new SerialEditModels();
+            models.SelectEditSerialID = Request.QueryString["SerialID"];
+            models.SetRstSerialInfo();
+
+            return View("SerialEdit", models);
+        }
     }
 }
