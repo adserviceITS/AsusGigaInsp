@@ -13,7 +13,7 @@ namespace AsusGigaInsp.Modules
         // public const string DB_CONNECTION_STRING = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\AsusGigaInsp\LocalDB\AsusGigaInsp.mdf;Integrated Security=True;Connect Timeout=30";
 
         /* 開発機用 */
-        public const string DB_DATA_SOURCE = "192.168.144.203";
+        public const string DB_DATA_SOURCE = "192.168.113.20";
         public const string DB_DATA_BASE = "AsusGigaInsp";
         public const string DB_USER_ID = "sa";
         public const string DB_PASSWORD = "takota";
