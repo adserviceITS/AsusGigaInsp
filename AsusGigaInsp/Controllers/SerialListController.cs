@@ -32,6 +32,14 @@ namespace AsusGigaInsp.Controllers
         [HttpPost]
         public ActionResult WorkStart(SerialListModels models)
         {
+            // バリデーション
+            if (string.IsNullOrWhiteSpace(models.CondMasterCartonStartSerial))
+                ModelState.AddModelError("CondMasterCartonStartSerial", "マスターカートンのQRコードを入力して下さい。");
+
+            if (!ModelState.IsValid)
+                return Index();
+
+            models.MasterCartonSerials = models.CondMasterCartonStartSerial;
             models.UpdateStatus("3010");
             models.SetSearchWhere();
             models.SetRstSerialList();
@@ -45,6 +53,14 @@ namespace AsusGigaInsp.Controllers
         [HttpPost]
         public ActionResult WorkEnd(SerialListModels models)
         {
+            // バリデーション
+            if (string.IsNullOrWhiteSpace(models.CondMasterCartonEndSerial))
+                ModelState.AddModelError("CondMasterCartonEndSerial", "マスターカートンのQRコードを入力して下さい。");
+
+            if (!ModelState.IsValid)
+                return Index();
+
+            models.MasterCartonSerials = models.CondMasterCartonEndSerial;
             models.UpdateStatus("4010");
             models.SetSearchWhere();
             models.SetRstSerialList();

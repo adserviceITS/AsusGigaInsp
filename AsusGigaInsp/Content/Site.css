@@ -163,15 +163,50 @@ nav {
                 -webkit-animation: fadeInRight .3s ease;
             }
 
-@keyframes fadeInRight {
-    0% {
-        opacity: 0;
-        transform: translate3d(100%, 0, 0);
-    }
-
-    100% {
-        opacity: 1;
-        transform: none;
-    }
+.field-validation-error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
 }
 
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.validation-summary-errors {
+    font-weight: bold;
+    color: #ff0000;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.TitleNameLogo {
+    position: relative;
+    color: #0033FF;
+    font-size: 20px;
+    padding: 10px 0;
+    text-align: center;
+    margin: 1.5em 0;
+    font-weight: bold;
+}
+    .TitleNameLogo:before {
+        content: "";
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        width: 150px;
+        height: 58px;
+        border-radius: 50%;
+        border: 5px solid #0033FF;
+        border-left-color: transparent;
+        border-right-color: transparent;
+        -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
+    }

@@ -14,7 +14,8 @@ namespace AsusGigaInsp.Models
         public IEnumerable<CombLine> DropDownListLine { get; set; }
 
         public string CondSONo { get; set; }
-        public string CondMasterCartonSerial { get; set; }
+        public string CondMasterCartonStartSerial { get; set; }
+        public string CondMasterCartonEndSerial { get; set; }
         public string CondLineID { get; set; }
         public string CondSerialNumber { get; set; }
         public string Cond90N { get; set; }
@@ -24,6 +25,7 @@ namespace AsusGigaInsp.Models
         public string CondInstruction { get; set; }
         public bool CondNGFlg { get; set; }
 
+        public string MasterCartonSerials = "";
         private string SearchWhere = "";
         public IEnumerable<SerialList> RstSerialList { get; set; }
 
@@ -54,8 +56,8 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSO.n90N, ");
             stbSql.Append("    TSE.MODEL_NAME, ");
             stbSql.Append("    TSE.SERIAL_NUMBER, ");
-            stbSql.Append("    '' AS NG_FLG, ");
-            stbSql.Append("    '' AS NG_REASON, ");
+            stbSql.Append("    TSE.NG_FLG, ");
+            stbSql.Append("    TSE.NG_REASON, ");
             stbSql.Append("    TSE.WORKDAY, ");
             stbSql.Append("    TSE.INSTRUCTION, ");
             stbSql.Append("    TSO.DELIVERY_LOCATION, ");
@@ -109,9 +111,9 @@ namespace AsusGigaInsp.Models
             stbWhere.Append("WHERE TSE.DEL_FLG = '0' ");
 
             // マスターカートンQR
-            if (!string.IsNullOrEmpty(CondMasterCartonSerial))
+            if (!string.IsNullOrEmpty(MasterCartonSerials))
             {
-                string[] SerialNOs = CondMasterCartonSerial.Split(',');
+                string[] SerialNOs = MasterCartonSerials.Split(',');
                 stbWhere.Append(" AND TSE.SERIAL_NUMBER IN ( ");
                 for (int i = 0; i < SerialNOs.Length; i++)
                 {
@@ -133,7 +135,7 @@ namespace AsusGigaInsp.Models
         // マスターカートンシリアルのステータス更新処理
         public void UpdateStatus(string UpdateStatusID)
         {
-            string[] SerialNOs = CondMasterCartonSerial.Split(',');
+            string[] SerialNOs = MasterCartonSerials.Split(',');
 
             StringBuilder stbWhere = new StringBuilder();
             stbWhere.Append("T_SERIAL_STATUS.SERIAL_NUMBER IN ( ");
@@ -159,6 +161,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("UPDATE T_SERIAL_STATUS ");
             stbSql.Append("SET ");
             stbSql.Append("    T_SERIAL_STATUS.SERIAL_STATUS_ID = '" + UpdateStatusID + "', ");
+            stbSql.Append("    T_SERIAL_STATUS.STATUS_UPDATE_DATE = GETDATE(), ");
             stbSql.Append("    T_SERIAL_STATUS.UPDATE_DATE = GETDATE(), ");
             stbSql.Append("    T_SERIAL_STATUS.UPDATE_ID = '" + strID + "' ");
             stbSql.Append("WHERE ");
@@ -171,6 +174,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("UPDATE T_SO_STATUS ");
             stbSql.Append("SET ");
             stbSql.Append("    T_SO_STATUS.SO_STATUS_ID = '" + UpdateStatusID + "', ");
+            stbSql.Append("    T_SO_STATUS.ST_CHANGE_DATE = GETDATE(), ");
             stbSql.Append("    T_SO_STATUS.UPDATE_DATE = GETDATE(), ");
             stbSql.Append("    T_SO_STATUS.UPDATE_UID = '" + strID + "' ");
             stbSql.Append("WHERE EXISTS ( ");
