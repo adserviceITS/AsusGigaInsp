@@ -176,7 +176,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    T_SO_STATUS.SO_STATUS_ID = '" + UpdateStatusID + "', ");
             stbSql.Append("    T_SO_STATUS.ST_CHANGE_DATE = GETDATE(), ");
             stbSql.Append("    T_SO_STATUS.UPDATE_DATE = GETDATE(), ");
-            stbSql.Append("    T_SO_STATUS.UPDATE_UID = '" + strID + "' ");
+            stbSql.Append("    T_SO_STATUS.UPDATE_ID = '" + strID + "' ");
             stbSql.Append("WHERE EXISTS ( ");
             stbSql.Append("    SELECT * FROM T_SERIAL_STATUS ");
             stbSql.Append("    WHERE T_SO_STATUS.SO_NO = T_SERIAL_STATUS.SO_NO AND ");

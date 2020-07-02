@@ -28,9 +28,9 @@ namespace AsusGigaInsp.Controllers
             return View("SerialList", models);
         }
 
-        // POST: SerialList/WorkStart
+        // POST: SerialList/InspStart
         [HttpPost]
-        public ActionResult WorkStart(SerialListModels models)
+        public ActionResult InspStart(SerialListModels models)
         {
             // バリデーション
             if (string.IsNullOrWhiteSpace(models.CondMasterCartonStartSerial))
@@ -45,6 +45,9 @@ namespace AsusGigaInsp.Controllers
             models.SetRstSerialList();
             models.SetDropDownListLine();
             models.SetDropDownListInstruction();
+
+            // 続けてバーコード入力出来るように画面表示を継続させる。
+            ViewBag.ControllAction = "InspStart";
 
             return View("SerialList", models);
         }
@@ -66,6 +69,9 @@ namespace AsusGigaInsp.Controllers
             models.SetRstSerialList();
             models.SetDropDownListLine();
             models.SetDropDownListInstruction();
+
+            // 続けてバーコード入力出来るように画面表示を継続させる。
+            ViewBag.ControllAction = "InspEnd";
 
             return View("SerialList", models);
         }

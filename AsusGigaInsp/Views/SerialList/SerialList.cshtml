@@ -8,23 +8,28 @@
 
 @using (Html.BeginForm())
 {
-    <div class="form-row">
-        <label for="text6c" class="col-form-label-sm">ライン</label>
-        @Html.DropDownListFor(
-             model => model.CondLineID, // プロパティ
-             new SelectList(Model.DropDownListLine, "LineID", "LineName"),
-             new { @class = "form-control form-control-sm", style = "max-width:50px;" }
-         )
-    </div>
-    <div class="form-row border border-primary bg-primary">
-        <label for="text6c" class="col-form-label-sm d-flex align-items-center"><mark class="h6">検品作業開始</mark></label>
-        @Html.TextBoxFor(model => model.CondMasterCartonStartSerial, null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", placeholder = "マスターカートンQR" })
-        <input type="submit" class="btn btn-danger" formaction="/SerialList/WorkStart" name="WorkStartBtn" id="WorkStartBtn" value="検品作業開始">
-    </div>
+<div class="form-row" style="margin-bottom: 10px;">
+    <label for="text6c" class="col-form-label-sm">ライン</label>
+    @Html.DropDownListFor(
+         model => model.CondLineID, // プロパティ
+         new SelectList(Model.DropDownListLine, "LineID", "LineName"),
+         "",
+         new { @class = "form-control form-control-sm", style = "max-width:50px;" }
+     )
+    <div id="CondLineIDErr"></div>
+    <button class="btn btn-primary" name="InspStartBtn" id="InspStartBtn">検品投入作業</button>
+    <button class="btn btn-success" name="InspEndBtn" id="InspEndBtn" style="margin-left:15px;">検品完了作業</button>
+</div>
+<div class="form-row border border-primary bg-primary" id="InspStartForm">
+    <label for="text6c" class="col-form-label-sm d-flex align-items-center"><mark class="h6">検品投入対象</mark></label>
+    @Html.TextBoxFor(model => model.CondMasterCartonStartSerial, null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", placeholder = "マスターカートンQR" })
+    <button class="btn btn-danger btn" style="margin-left:20px;" name="InspEntryBtn" id="InspEntryBtn">登録</button>
+</div>
+    <div id="CondMasterCartonStartSerialErr"></div>
     @Html.ValidationMessageFor(model => model.CondMasterCartonStartSerial)
-    <div class="border border-primary bg-success" style="margin-top:5px;">
+    <div class="border border-primary bg-success" id="InspEndForm">
         <div class="form-row">
-            <label for="text6c" class="col-form-label-sm d-flex align-items-center"><mark class="h6">検品作業完了</mark></label>
+            <label for="text6c" class="col-form-label-sm d-flex align-items-center"><mark class="h6">検品完了対象</mark></label>
             @Html.TextBoxFor(model => model.CondMasterCartonEndSerial, null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", placeholder = "マスターカートンQR" })
         </div>
         <div class="form-row">
@@ -33,133 +38,237 @@
             @Html.TextBox("SerialNo3", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:155px;", placeholder = "シリアル３" })
             @Html.TextBox("SerialNo4", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:155px;", placeholder = "シリアル４" })
             @Html.TextBox("SerialNo5", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:155px;", placeholder = "シリアル５" })
-            <!-- <input type="submit" class="btn btn-danger" formaction="/SerialList/WorkEnd" name="WorkEndBtn" id="WorkEndBtn" value="検品作業完了"> -->
+            <button class="btn btn-danger btn" name="InspCompleteBtn" id="InspCompleteBtn">登録</button>
         </div>
     </div>
     @Html.ValidationMessageFor(model => model.CondMasterCartonEndSerial)
 
-        <hr>
-        <div class="form-row">
-            <label for="CondSONo" class="col-form-label-sm">SO#</label>
-            @Html.TextBoxFor(model => model.CondSONo, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-            <label for="CondSerialNumber" class="col-form-label-sm">シリアル</label>
-            @Html.TextBoxFor(model => model.CondSerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-            <label for="Cond90N" class="col-form-label-sm">90N</label>
-            @Html.TextBoxFor(model => model.Cond90N, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-            <label for="CondModelName" class="col-form-label-sm">Model Name</label>
-            @Html.TextBoxFor(model => model.CondModelName, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-        </div>
-        <div class="form-row">
-            <label for="CondWorkDayFrom" class="col-form-label-sm">作業日</label>
-            @Html.TextBoxFor(model => model.CondWorkDayFrom, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "From" })
-            <label for="CondWorkDayTo" class="col-form-label-sm">～</label>
-            @Html.TextBoxFor(model => model.CondWorkDayTo, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "To" })
-            <label for="CondInstruction" class="col-form-label-sm">ASUS様指示</label>
-            @Html.DropDownListFor(
-                model => model.CondInstruction, // プロパティ
-                new SelectList(Model.DropDownListInstruction, "InstructionID", "Instruction"),
-                "",
-                new { @class= "form-control form-control-sm", style="max-width:120px;" }
+    <hr>
+    <div class="form-row">
+        <label for="CondSONo" class="col-form-label-sm">SO#</label>
+        @Html.TextBoxFor(model => model.CondSONo, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+        <label for="CondSerialNumber" class="col-form-label-sm">シリアル</label>
+        @Html.TextBoxFor(model => model.CondSerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+        <label for="Cond90N" class="col-form-label-sm">90N</label>
+        @Html.TextBoxFor(model => model.Cond90N, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+        <label for="CondModelName" class="col-form-label-sm">Model Name</label>
+        @Html.TextBoxFor(model => model.CondModelName, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+    </div>
+    <div class="form-row">
+        <label for="CondWorkDayFrom" class="col-form-label-sm">作業日</label>
+        @Html.TextBoxFor(model => model.CondWorkDayFrom, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "From" })
+        <label for="CondWorkDayTo" class="col-form-label-sm">～</label>
+        @Html.TextBoxFor(model => model.CondWorkDayTo, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "To" })
+        <label for="CondInstruction" class="col-form-label-sm">ASUS様指示</label>
+        @Html.DropDownListFor(
+            model => model.CondInstruction, // プロパティ
+            new SelectList(Model.DropDownListInstruction, "InstructionID", "Instruction"),
+            "",
+            new { @class= "form-control form-control-sm", style="max-width:120px;" }
+        )
+        <div class="form-check">
+            <label for="CondNGFlg" class="form-check-label col-form-label-sm">NGフラグ</label>
+            @Html.CheckBoxFor(
+                model => model.CondNGFlg,  // プロパティ
+                new { @class="form-check-input", style="margin-left:10px;" }      // その他の属性
             )
-            <div class="form-check">
-                <label for="CondNGFlg" class="form-check-label col-form-label-sm">NGフラグ</label>
-                @Html.CheckBoxFor(
-                    model => model.CondNGFlg,  // プロパティ
-                    new { @class="form-check-input", style="margin-left:10px;" }      // その他の属性
-                )
-            </div>
         </div>
+    </div>
 
-        <div class="float-right">
-            <input type="submit" class="btn btn-danger btn" style="margin-left:auto;" formaction="/SerialList/Search" name="SearchBtn" id="SearchBtn" value="検索">
-            <input type="submit" class="btn btn-danger btn" formaction="/SerialList/SerialDataUpload" name="SerialDataUploadBtn" id="SerialDataUploadBtn" value="シリアル情報取込">
-            <input type="submit" class="btn btn-danger btn" formaction="/SerialList/SerialDataCsv" name="SerialDataCsvBtn" id="SerialDataCsvBtn" value="CSV出力">
-        </div>
+    <div class="float-right">
+        <input type="submit" class="btn btn-danger btn" style="margin-left:auto;" formaction="/SerialList/Search" name="SearchBtn" id="SearchBtn" value="検索">
+        <input type="submit" class="btn btn-danger btn" formaction="/SerialList/SerialDataUpload" name="SerialDataUploadBtn" id="SerialDataUploadBtn" value="シリアル情報取込">
+        <input type="submit" class="btn btn-danger btn" formaction="/SerialList/SerialDataCsv" name="SerialDataCsvBtn" id="SerialDataCsvBtn" value="CSV出力">
+    </div>
 
-        <table class="table table-striped table-bordered table-sm table-hover">
-            <thead class="thead-light">
+    <table class="table table-striped table-bordered table-sm table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th></th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().SONo)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().n90N)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().ModelName)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().SerialNumber)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().NGFlg)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().NGReason)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().WorkDay)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().Instruction)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().ShippingAddress)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().DescriptionAds)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().StatusName)</th>
+                <th>@Html.DisplayNameFor(model => model.RstSerialList.First().StatusUpdateDate)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.RstSerialList)
+            {
                 <tr>
-                    <th></th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().SONo)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().n90N)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().ModelName)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().SerialNumber)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().NGFlg)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().NGReason)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().WorkDay)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().Instruction)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().ShippingAddress)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().DescriptionAds)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().StatusName)</th>
-                    <th>@Html.DisplayNameFor(model => model.RstSerialList.First().StatusUpdateDate)</th>
+                    <td>
+                        <input type="submit" class="btn btn-danger btn-sm EditBtn" formaction='/SerialList/Edit?SerialID=@(item.SerialID)' name="EditBtn" id="EditBtn" value="編集">
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.SONo)</td>
+                    <td>@Html.DisplayFor(modelItem => item.n90N)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.SerialNumber)</td>
+                    <td>@Html.DisplayFor(modelItem => item.NGFlg)</td>
+                    <td>@Html.DisplayFor(modelItem => item.NGReason)</td>
+                    <td>@Html.DisplayFor(modelItem => item.WorkDay)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Instruction)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
+                    <td>@Html.DisplayFor(modelItem => item.DescriptionAds)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StatusName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.RstSerialList)
-                {
-                    <tr>
-                        <td>
-                            <input type="submit" class="btn btn-danger btn-sm EditBtn" formaction='/SerialList/Edit?SerialID=@(item.SerialID)' name="EditBtn" id="EditBtn" value="編集">
-                        </td>
-                        <td>@Html.DisplayFor(modelItem => item.SONo)</td>
-                        <td>@Html.DisplayFor(modelItem => item.n90N)</td>
-                        <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
-                        <td>@Html.DisplayFor(modelItem => item.SerialNumber)</td>
-                        <td>@Html.DisplayFor(modelItem => item.NGFlg)</td>
-                        <td>@Html.DisplayFor(modelItem => item.NGReason)</td>
-                        <td>@Html.DisplayFor(modelItem => item.WorkDay)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Instruction)</td>
-                        <td>@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
-                        <td>@Html.DisplayFor(modelItem => item.DescriptionAds)</td>
-                        <td>@Html.DisplayFor(modelItem => item.StatusName)</td>
-                        <td>@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            }
+        </tbody>
+    </table>
+}
+
+<script type="text/javascript">
+    $(function () {
+
+        // 初期画面表示時、実行した処理によって画面表示内容を変える。
+        var ControllAction = "@ViewBag.ControllAction"
+        switch (ControllAction) {
+            case "InspStart":
+                $('#InspStartForm').show();
+                $('#InspEndForm').hide();
+                $('#CondMasterCartonStartSerial').val("");
+                $('#CondMasterCartonStartSerial').focus();
+                break;
+            case "InspEnd":
+                $('#InspStartForm').hide();
+                $('#InspEndForm').show();
+                $('#CondMasterCartonEndSerial').val("");
+                $('#SerialNo1').val("");
+                $('#SerialNo2').val("");
+                $('#SerialNo3').val("");
+                $('#SerialNo4').val("");
+                $('#SerialNo5').val("");
+                $('#CondMasterCartonEndSerial').focus();
+                break;
+            default:
+                $('#InspStartForm').hide();
+                $('#InspEndForm').hide();
+                break;
         }
 
-        <script type="text/javascript">
-            $(function () {
+        // 検品投入作業ボタン押下時
+        $('#InspStartBtn').on('click', () => {
+            // ラインの必須選択チェック
+            if (isEmpty($("#CondLineID").val())) {
+                alert("空です。");
+                return false;
 
-                // 検品作業開始テキストボックスエンター時
-                $('#CondMasterCartonStartSerial').keypress(function (e) {
-                    if (e.which == 13) {
-                        // 次のinput要素へ移動
-                        $('input')[$('input').index(this) + 1].focus();
+            }
 
-                        $(this).parents('form').attr('action', '/SerialList/WorkStart');
-                        $('form')[0].submit();
-                        return false;
+            $('#InspEndForm').slideUp();
+            $('#InspStartForm').slideDown();
+            return false;
+        });
+
+        // 新ステータス貸出中変更チェック
+        $.validator.addMethod("CMCSSreq", function (value, element) {
+            alert("111");
+            if (this.optional(element)) {
+                return false;
+            }
+
+            var MasterCartonStartSerial = $("#CondMasterCartonStartSerial")
+
+            if (isEmpty(MasterCartonStartSerial)) {
+                alert("aaa");
+                return false;
+            }
+            alert("bbb");
+            return true;
+
+        }, "");
+
+        // 検品開始ボタン押下時に作業開始フォーム表示
+        $('#InspStartBtn').on('click', () => {
+            $('#InspEndForm').slideUp();
+            $('#InspStartForm').slideDown();
+            return false;
+        });
+
+        // 検品完了ボタン押下時に作業完了フォーム表示
+        $('#InspEndBtn').on('click', () => {
+            $('#InspStartForm').slideUp();
+            $('#InspEndForm').slideDown();
+            return false;
+        });
+
+        // 検品開始対象テキストボックスエンター時
+        $('#CondMasterCartonStartSerial').keypress(function (e) {
+            if (e.which == 13) {
+                $(this).parents('form').attr('action', '/SerialList/InspStart');
+                $('form')[0].submit();
+                this.val("");
+                this.focus();
+                return false;
+            }
+        });
+
+        // 検品開始対象登録ボタンを押下時
+        $('#InspEntryBtn').on('click', function () {
+            alert("kkkk");
+            // 先にバリデーションチェック
+            if (!$('form').validate().form()) {
+                alert("eee");
+                return false;
+            }
+
+            alert("ddd");
+            $(this).parents('form').attr('action', '/SerialList/InspStart');
+            $('form').submit();
+            $('#CondMasterCartonStartSerial').val("");
+            this.focus();
+            return false;
+        });
+
+        // 検品作業終了マスターカートンQRテキストボックスでのエンター時
+        $('#CondMasterCartonEndSerial').keypress(function (e) {
+            if (e.which == 13) {
+                // シリアル１テキストボックスにフォーカス
+                $("#SerialNo1").focus();
+                return false;
+            }
+        });
+
+        // 検品作業終了シリアルテキストボックスエンター時
+        $('#SerialNo1,#SerialNo2,#SerialNo3,#SerialNo4,#SerialNo5').keypress(function (e) {
+            if (e.which == 13) {
+
+                // マスタカートンQRに入力したシリアルが入っているか
+                var MasterCartonEndSerials = $('#CondMasterCartonEndSerial').val().split(",");
+                var SerialNo = $(this).val();
+                var SerialExist = false;
+
+                for (var i = 0; i < MasterCartonEndSerials.length; i++) {
+                    if (MasterCartonEndSerials(i) == SerialNo) {
+                        SerialExist = true;
                     }
-                });
+                }
 
-                // 検品作業終了テキストボックスエンター時
-                $('#CondMasterCartonEndSerial,#SerialNo1,#SerialNo2,#SerialNo3,#SerialNo4,#SerialNo5').keypress(function (e) {
-                    if (e.which == 13) {
+                // マスターカートンのシリアル番号にない。
+                if (!SerialExist) {
 
-                        if ($(this).attr("id") != "CondMasterCartonEndSerial") {
-                            // マスタカートンQRに入力したシリアルが入っているか
-                            var MasterCartonEndSerials = $('#CondMasterCartonEndSerial').val().split(",");
-                            var SerialNo = $(this).val();
+                }
 
-                            for (var i = 0 ; i < MasterCartonEndSerials.length ; i++) {
+                // マスターカートンのシリアル数と入力されたシリアル数が一致しているか
 
-                            }
+            }
 
-                            // マスターカートンのシリアル数と入力されたシリアル数が一致しているか
-                        }
-
-                        // 次のinput要素へ移動
-                        $('input')[$('input').index(this) + 1].focus();
+            // 次のinput要素へ移動
+            $('input')[$('input').index(this) + 1].focus();
 
 
 
-                       // チェックOKならOKマークを出してステータス更新
-                       // $(this).parents('form').attr('action', '/SerialList/WorkEnd');
-                       // $('form')[0].submit();
-                        return false;
-                    }
-                });
-            });
-        </script>
+            // チェックOKならOKマークを出してステータス更新
+            // $(this).parents('form').attr('action', '/SerialList/WorkEnd');
+            // $('form')[0].submit();
+            return false;
+        });
+    });                                                               
+</script>
