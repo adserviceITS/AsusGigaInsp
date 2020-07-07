@@ -33,7 +33,8 @@ namespace AsusGigaInsp
                       "~/Content/site.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/cmnlib").Include(
-                        "~/Scripts/common.js"));
+                        "~/Scripts/common.js",
+                        "~/Scripts/pace.min.js"));
         }
     }
 }
