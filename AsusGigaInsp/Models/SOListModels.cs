@@ -71,7 +71,6 @@ namespace AsusGigaInsp.Models
             StringBuilder stbSql = new StringBuilder();
 
             stbSql.Append("SELECT ");
-            stbSql.Append("    T_SO_STATUS.SO_ID, ");
             stbSql.Append("    T_SO_STATUS.SO_NO, ");
             stbSql.Append("    T_SO_STATUS.n90N, ");
             stbSql.Append("    T_SO_STATUS.MODEL_NAME, ");
@@ -125,7 +124,6 @@ namespace AsusGigaInsp.Models
             {
                 lstSrchRstOrder.Add(new SrchRstOrder
                 {
-                    SOID = long.Parse(sqlRdr["SO_ID"].ToString()),
                     SONO = sqlRdr["SO_NO"].ToString(),
                     n90N = sqlRdr["n90N"].ToString(),
                     ModelName = sqlRdr["MODEL_NAME"].ToString(),
@@ -308,13 +306,12 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    LEFT JOIN M_USER M_USER2 ");
             stbSql.Append("        ON T_SO_STATUS.UPDATE_UID = M_USER2.ID ");
             stbSql.Append("WHERE ");
-            stbSql.Append("   T_SO_STATUS.SO_ID = " + lngSOID);
+            stbSql.Append("   T_SO_STATUS.SO_NO = " + lngSOID);
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
         while (sqlRdr.Read())
             {
-                EntSOID = long.Parse(sqlRdr["SO_ID"].ToString());
                 EntSONO = sqlRdr["SO_NO"].ToString();
                 CompSONO = sqlRdr["SO_NO"].ToString();
                 Ent90N = sqlRdr["n90N"].ToString();

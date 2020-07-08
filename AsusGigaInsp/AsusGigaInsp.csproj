@@ -120,6 +120,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\InspStartController.cs" />
     <Compile Include="Controllers\SerialListController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\InspStartModels.cs" />
     <Compile Include="Models\SerialEditModels.cs" />
     <Compile Include="Models\SOListModels.cs" />
     <Compile Include="Models\LoginModels.cs" />
@@ -144,6 +146,7 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\InspStart.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\Login.css" />
     <Content Include="Content\SOList.css" />
@@ -192,6 +195,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\pace.min.js" />
     <Content Include="Scripts\popper-utils.js" />
     <Content Include="Scripts\popper-utils.min.js" />
     <Content Include="Scripts\popper.js" />
@@ -295,6 +299,7 @@
     <Content Include="Views\SOList\test.cshtml" />
     <Content Include="Views\WhiteBord\WhiteBord.cshtml" />
     <Content Include="Views\SerialList\SerialEdit.cshtml" />
+    <Content Include="Views\InspStart\InspStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

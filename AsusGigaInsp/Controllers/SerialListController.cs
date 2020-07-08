@@ -32,13 +32,6 @@ namespace AsusGigaInsp.Controllers
         [HttpPost]
         public ActionResult InspStart(SerialListModels models)
         {
-            // バリデーション
-            if (string.IsNullOrWhiteSpace(models.CondMasterCartonStartSerial))
-                ModelState.AddModelError("CondMasterCartonStartSerial", "マスターカートンのQRコードを入力して下さい。");
-
-            if (!ModelState.IsValid)
-                return Index();
-
             models.MasterCartonSerials = models.CondMasterCartonStartSerial;
             models.UpdateStatus("3010");
             models.SetSearchWhere();

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Data.SqlClient;
 using AsusGigaInsp.Modules;
+using System.Collections.Generic;
 
 namespace AsusGigaInsp.Models
 
@@ -10,6 +11,9 @@ namespace AsusGigaInsp.Models
     {
         public string Id { get; set; }
         public string Password { get; set; }
+        public string AuthorityKbn = "";
+        public IEnumerable<CombLine> DropDownListLine { get; set; }
+        public string CondLineID { get; set; }
 
         public Boolean Auth()
         {
@@ -18,7 +22,8 @@ namespace AsusGigaInsp.Models
             StringBuilder strSql = new StringBuilder();
             Boolean blExist = false;
 
-            strSql.Append("SELECT ID ");
+            strSql.Append("SELECT ");
+            strSql.Append("   ID ");
             strSql.Append("FROM dbo.M_USER ");
             strSql.Append("WHERE ID = '" + Id + "' ");
             strSql.Append("AND PASS = '" + Password + "' ");
@@ -66,6 +71,32 @@ namespace AsusGigaInsp.Models
 
             return strUserName;
 
+        }
+
+        public void SetUserAuthority()
+        {
+            StringBuilder strSql = new StringBuilder();
+
+            strSql.Append("SELECT AUTHORITY_KBN ");
+            strSql.Append("FROM dbo.M_USER ");
+            strSql.Append("WHERE ID = '" + Id + "' ");
+
+            DSNLibrary dsnLib = new DSNLibrary();
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
+
+            while (sqlRdr.Read())
+            {
+                AuthorityKbn = sqlRdr["AUTHORITY_KBN"].ToString();
+            }
+
+            dsnLib.DB_Close();
+        }
+
+        public void SetDropDownListLine()
+        {
+            // ラインドロップダウンリストを取得
+            DropDownList ddList = new DropDownList();
+            DropDownListLine = ddList.GetDropDownListLine();
         }
     }
 }

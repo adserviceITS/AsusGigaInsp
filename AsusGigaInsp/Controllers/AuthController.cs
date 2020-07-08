@@ -11,7 +11,9 @@ namespace AsusGigaInsp.Controllers
         [HttpGet]
         public ActionResult Login()
         {
-            return View();
+            LoginModels model = new LoginModels();
+            model.SetDropDownListLine();
+            return View(model);
         }
 
         // POST: Auth/Login
@@ -45,8 +47,28 @@ namespace AsusGigaInsp.Controllers
             {
                 // ユーザー認証 成功
                 this.SetUserInfo(model);
-                return RedirectToAction("WhiteBord", "WhiteBord");
-            } else {
+
+                
+                model.SetUserAuthority();
+                model.SetDropDownListLine();
+
+                //// 管理者はホワイトボード、管理者以外はライン選択
+                //if (int.Parse(model.AuthorityKbn) >= 4)
+                //{
+                //    return RedirectToAction("WhiteBord", "WhiteBord");
+                //} else
+                //{
+                //    // ライン選択モードをオンに設定
+                //    ViewBag.ControllAction = "LineSelect";
+                //    return View(model);
+                //}
+
+                // ライン選択モードをオンに設定
+                ViewBag.ControllAction = "LineSelect";
+                return View(model);
+
+            }
+            else {
                 // ユーザー認証 失敗
                 this.ModelState.AddModelError(string.Empty, "指定されたユーザー名またはパスワードが正しくありません。");
                 return this.View(model);
@@ -75,6 +97,15 @@ namespace AsusGigaInsp.Controllers
             // ユーザーID、ユーザー名をセッションにセット
             Session["ID"] = model.Id;
             Session["UserName"] = strUserName;
+        }
+
+        [HttpPost]
+        public ActionResult SelectLine(LoginModels model)
+        {
+            // セッションにラインをセット
+            Session["LineID"] = model.CondLineID;
+
+            return RedirectToAction("WhiteBord", "WhiteBord");
         }
 
     }

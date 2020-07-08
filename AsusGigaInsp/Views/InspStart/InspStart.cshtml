@@ -1,0 +1,81 @@
+﻿@model AsusGigaInsp.Models.InspStartModels
+@{
+    ViewBag.Title = "検査開始";
+}
+<link href="~/Content/InspStart.css" rel="stylesheet" />
+@using (Html.BeginForm())
+{
+    <!-- TOPエリア ------------------------------------------------------------------------------------------->
+    <h4 style="margin-top:10px;">検査開始</h4>
+    <hr>
+    <h5>選択ライン：@Session["LineID"].ToString()</h5>
+    <div class="form-row" style="margin-top:15px;">
+        @Html.TextBoxFor(model => model.MasterCartonSerial, null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", placeholder = "マスターカートンQR" })
+        <button type="button" class="btn btn-danger btn" style="margin-left:20px;" name="InspEntryBtn" id="InspEntryBtn">登録</button>
+    </div>
+    <div id="MasterCartonSerialErr"></div>
+    @Html.ValidationMessageFor(model => model.MasterCartonSerial)
+
+    <!-- 結果エリア ------------------------------------------------------------------------------------------>
+    <table class="table table-striped table-bordered table-sm table-hover" style="margin-top:20px;">
+        <thead class="thead-light">
+            <tr>
+                <th></th>
+                <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().SONo)</th>
+                <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().n90N)</th>
+                <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().ModelName)</th>
+                <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().SerialNumber)</th>
+                <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().LineID)</th>
+                <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().StatusName)</th>
+                <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().StatusUpdateDate)</th>
+                <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().UserName)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.InspStartSerialLists)
+            {
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm EditBtn" formaction='/InspStart/Edit?SerialID=@(item.SerialID)' name="EditBtn" id="EditBtn">編集</button>
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.SONo)</td>
+                    <td>@Html.DisplayFor(modelItem => item.n90N)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.SerialNumber)</td>
+                    <td>@Html.DisplayFor(modelItem => item.LineID)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StatusName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
+                    <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script type="text/javascript">
+    $(function () {
+
+        // マスターカートンQRエンター時
+        $('#MasterCartonSerial').keypress(function (e) {
+            if (e.which == 13) {
+                if (!isEmpty($('#MasterCartonSerial').val())) {
+                    $('form').attr('action', '/InspStart/Entry');
+                    $('form').submit();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        // 登録ボタンを押下時
+        $('#InspEntryBtn').on('click', function () {
+            if (!isEmpty($('#MasterCartonSerial').val())) {
+                $('form').attr('action', '/InspStart/Entry');
+                $('form').submit();
+                return true;
+            }
+            return false;
+        });
+
+    });
+</script>
