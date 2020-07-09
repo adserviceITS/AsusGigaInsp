@@ -1,5 +1,6 @@
 ﻿using AsusGigaInsp.Models;
 using AsusGigaInsp.Modules;
+using System;
 using System.Data.SqlClient;
 using System.Text;
 using System.Web.Mvc;
@@ -24,7 +25,7 @@ namespace AsusGigaInsp.Controllers
             // バリデーションチェック START ***************************************************************
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder stbSql = new StringBuilder();
-            string[] SerialNOs = models.MasterCartonSerial.Split(',');
+            string[] SerialNOs = models.MasterCartonSerial.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
             // シリアルの登録がなければエラー
             StringBuilder SerialErrMsg = new StringBuilder();
@@ -32,20 +33,23 @@ namespace AsusGigaInsp.Controllers
             SerialErrMsg.Append("シリアル番号：");
             for (int i = 0; i < SerialNOs.Length; i++)
             {
-                stbSql.Append("SELECT ");
-                stbSql.Append("   COUNT(1) ");
-                stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
-                stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
-
-                SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
-
-                if (!sqlRdr.HasRows)
+                if (!String.IsNullOrEmpty(SerialNOs[i]))
                 {
-                    SerialErrMsg.Append("【" + SerialNOs[i] + "】");
-                    ExistErr = true;
+                    stbSql.Append("SELECT ");
+                    stbSql.Append("   * ");
+                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
+                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
+
+                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+                    if (!sqlRdr.HasRows)
+                    {
+                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
+                        ExistErr = true;
+                    }
+                    stbSql.Clear();
+                    sqlRdr.Close();
                 }
-                stbSql.Clear();
-                sqlRdr.Close();
             }
             SerialErrMsg.Append("は登録されていません！");
 
@@ -54,10 +58,43 @@ namespace AsusGigaInsp.Controllers
             if (ExistErr)
                 ModelState.AddModelError("MasterCartonSerial", SerialErrMsg.ToString());
 
-            
+            if (!ModelState.IsValid)
+                return Index();
+
+
             // 既に作業開始されていた場合はエラー
+            SerialErrMsg.Clear();
+            SerialErrMsg.Append("シリアル番号：");
+            for (int i = 0; i < SerialNOs.Length; i++)
+            {
+                if (!String.IsNullOrEmpty(SerialNOs[i]))
+                {
+                    stbSql.Append("SELECT ");
+                    stbSql.Append("   * ");
+                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
+                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
+                    stbSql.Append("      AND SERIAL_STATUS_ID >= '3010' ");
 
+                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
+                    if (sqlRdr.HasRows)
+                    {
+                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
+                        ExistErr = true;
+                    }
+                    stbSql.Clear();
+                    sqlRdr.Close();
+                }
+            }
+            SerialErrMsg.Append("は既に作業開始されています。");
+
+            dsnLib.DB_Close();
+
+            if (ExistErr)
+                ModelState.AddModelError("MasterCartonSerial", SerialErrMsg.ToString());
+
+            if (!ModelState.IsValid)
+                return Index();
 
             // バリデーションチェック END ****************************************************************************
 

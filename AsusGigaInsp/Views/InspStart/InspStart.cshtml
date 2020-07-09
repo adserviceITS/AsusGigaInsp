@@ -10,7 +10,7 @@
     <hr>
     <h5>選択ライン：@Session["LineID"].ToString()</h5>
     <div class="form-row" style="margin-top:15px;">
-        @Html.TextBoxFor(model => model.MasterCartonSerial, null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", placeholder = "マスターカートンQR" })
+        @Html.TextAreaFor(model => model.MasterCartonSerial, 6, 100, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", placeholder = "マスターカートンQR" })
         <button type="button" class="btn btn-danger btn" style="margin-left:20px;" name="InspEntryBtn" id="InspEntryBtn">登録</button>
     </div>
     <div id="MasterCartonSerialErr"></div>
@@ -55,9 +55,15 @@
 <script type="text/javascript">
     $(function () {
 
+        $('#MasterCartonSerial').focus();
+        $('#MasterCartonSerial').select();
+
         // マスターカートンQRエンター時
         $('#MasterCartonSerial').keypress(function (e) {
             if (e.which == 13) {
+                setTimeout(function () {
+                    
+                }, 500);
                 if (!isEmpty($('#MasterCartonSerial').val())) {
                     $('form').attr('action', '/InspStart/Entry');
                     $('form').submit();
