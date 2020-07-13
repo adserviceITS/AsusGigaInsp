@@ -1,0 +1,33 @@
+﻿@model AsusGigaInsp.Models.UploadFile
+
+@{
+    ViewBag.Title = "SOList取り込み";
+}
+<h2>オーダーリスト　取り込み</h2>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div style="color:red;">@ViewBag.Message</div>
+    <div class="container">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <input id="ExcelFile" type="file" name="ExcelFile" style="display:none">
+                <div class="input-group mb-3">
+                    <input type="text" id="SelectExcel" class="form-control" placeholder="select file...">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-info" onclick="$('input[id=ExcelFile]').click();">選択</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="取り込み" class="btn btn-danger btn" />
+            </div>
+        </form>
+    </div>
+}
+<script>
+    $('input[id=ExcelFile]').change(function () {
+        $('#SelectExcel').val($(this).val().replace("C:\\fakepath\\", ""));
+    });
+</script>

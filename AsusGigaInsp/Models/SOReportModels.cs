@@ -1,111 +1,17 @@
-﻿using AsusGigaInsp.Models;
-using System.IO;
-using System.Web.Mvc;
-using ClosedXML.Excel;
-using System;
+﻿using ClosedXML.Excel;
 using AsusGigaInsp.Modules;
-using System.Text;
-using System.Data.SqlClient;
 using System.Collections.Generic;
-using System.Web;
+using System.Data.SqlClient;
+using System.Text;
+using System;
+using System.IO;
 
-namespace AsusGigaInsp.Controllers
+namespace AsusGigaInsp.Models
 {
-    public class SOListController : Controller
+    public class SOReportModels
     {
-        // GET: SOList
-        [HttpGet]
-        public ActionResult SOListSearch()
+        public void OutPutReport(string strSONO)
         {
-            // 検索条件をセット
-            SOListModels models = new SOListModels();
-
-            //models.SetSrchRstOrderList();
-
-            // ステータスコンボBOXをセット
-            models.SetDropDownListStatusName();
-
-            return View(models);
-        }
-
-        // POST: SOList/SOListSearch/Search
-        // オーダー検索画面/検索ボタン押下時
-        [HttpPost]
-        public ActionResult SOListSearchResult(SOListModels models)
-        {
-            // 選択された表示方法を元にWhere句を作成
-            models.SetWhere();
-
-            // モデルにオーダーリストをセット
-            models.SetSrchRstOrderList();
-
-            // ステータスコンボBOXをセット
-            models.SetDropDownListStatusName();
-
-            return View("SOListSearch", models);
-        }
-
-        public ActionResult SOListUpLoad()
-        {
-            UploadFile UploadFile = new UploadFile();
-            return View(UploadFile);
-        }
-
-        [HttpPost]
-        public ActionResult SOListUpLoad(UploadFile UploadFile)
-        {
-            TestModels models = new TestModels();
-
-            if (ModelState.IsValid)
-            {
-
-                if (UploadFile.ExcelFile.ContentLength > 0)
-                {
-                    if (UploadFile.ExcelFile.FileName.EndsWith(".xlsx") || UploadFile.ExcelFile.FileName.EndsWith(".xls"))
-                    {
-                        XLWorkbook Workbook;
-                        try
-                        {
-                            Workbook = new XLWorkbook(UploadFile.ExcelFile.InputStream);
-                        }
-                        catch (Exception ex)
-                        {
-                            ModelState.AddModelError(String.Empty, $"ファイルを確認してください。 {ex.Message}");
-                            return View();
-                        }
-                        IXLWorksheet WorkSheet = null;
-                        try
-                        {
-                            WorkSheet = Workbook.Worksheet(1);
-                        }
-                        catch
-                        {
-                            ModelState.AddModelError(String.Empty, "sheetが存在しません。");
-                            return View();
-                        }
-
-                        models.OutPutReport(Session["ID"].ToString(), UploadFile);
-
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(String.Empty, "読み込めるのは、.xlsx ファイルと .xls ファイルのみです。");
-                        return View();
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError(String.Empty, "有効なファイルではありません。");
-                    return View();
-                }
-            }
-            ViewBag.Message = "取り込みが完了しました。";
-            return View();
-        }
-
-        public FileResult Export()
-        {
-            string strSONO = this.Request.QueryString["SONO"];
             int RecCount = 0;
             int InspectionQuantity = 0;
             int ShipmentQuantity = 0;
@@ -336,7 +242,8 @@ namespace AsusGigaInsp.Controllers
             WorkSheet.Columns().AdjustToContents();
             WorkSheet.Columns("C:H").Hide();
 
-            OutputFileName = DateTime.Now.ToString("yyyy年MM月dd日")
+            OutputFileName = @"C:\Temp\"
+                            + DateTime.Now.ToString("yyyy年MM月dd日")
                             + "_検品_"
                             + SOListModelName
                             + "("
@@ -348,111 +255,31 @@ namespace AsusGigaInsp.Controllers
                             + SOListN01NO
                             + ".xlsx";
 
+            //WorkBook.SaveAs(OutputFileName);
+
             using (MemoryStream stream = new MemoryStream())
             {
                 WorkBook.SaveAs(stream);
-                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", OutputFileName);
             }
         }
+    }
 
-        //GET: SOList/SOListUpdate
-        public ActionResult Index()
-        {
-            // 画面表示
-            return View();
-        }
-
-        //GET: SOList/SOListUpdate
-        public ActionResult SOListUpdate()
-        {
-            SOListUpdateModels mdlSOListUpdate = new SOListUpdateModels();
-
-            mdlSOListUpdate.EntMode = this.Request.QueryString["Mode"];
-
-            mdlSOListUpdate.SetSOListDetails(this.Request.QueryString["SOID"]);
-
-            // 画面表示
-            return View(mdlSOListUpdate);
-        }
-
-        // POST: SOList/SOListUpdate
-        // オーダー情報編集画面/登録ボタン押下時
-        [HttpPost]
-        public ActionResult SOListUpdateResult(SOListUpdateModels mdlSOListUpdate)
-        {
-            // エラーがなければ処理継続
-            if (ModelState.IsValid)
-            {
-                bool blErrFLG = true;
-
-                // SO#が変更されていれば重複チェック
-                if (mdlSOListUpdate.EntSONO != mdlSOListUpdate.CompSONO)
-                {
-                    if (mdlSOListUpdate.ChkSONO()) { }
-                    else
-                    {
-                        // SO#重複あり
-                        this.ModelState.AddModelError("EntSONO", "指定されたSO#は既に登録されています。");
-                        blErrFLG = false;
-                    }
-                }
-
-                // N01#が変更されていれば重複チェック
-                if (mdlSOListUpdate.EntN01 != mdlSOListUpdate.CompN01)
-                {
-                    // SO# 重複チェック
-                    if (mdlSOListUpdate.ChkN01()) { }
-                    else
-                    {
-                        // N01#重複あり
-                        this.ModelState.AddModelError("EntN01", "指定されたN01#は既に登録されています。");
-                        blErrFLG = false;
-                    }
-                }
-
-                // 重複がなければ登録する。
-                if (blErrFLG)
-                {
-                    // オーダー情報（T_SO_STATUS）更新
-                    mdlSOListUpdate.UpdateSOList(Session["ID"].ToString());
-
-                    // SO#が変更されていればシリアル情報（T_SERIAL_STATUS）のSO#を更新
-                    if (mdlSOListUpdate.EntSONO != mdlSOListUpdate.CompSONO)
-                    {
-                        mdlSOListUpdate.UpdateSONO(Session["ID"].ToString());
-                    }
-
-                    // N01#が変更されていればシリアル情報（T_SERIAL_STATUS）のN01#を更新
-                    if (mdlSOListUpdate.EntN01 != mdlSOListUpdate.CompN01)
-                    {
-                        mdlSOListUpdate.UpdateN01(Session["ID"].ToString());
-                    }
-
-                    return RedirectToAction("SOListSearch", "SOList");
-
-                }
-                else
-                {
-                    return this.View("SOListUpdate", mdlSOListUpdate);
-                }
-            }
-            // 画面表示
-            return this.View("SOListUpdate", mdlSOListUpdate);
-        }
-
-        // POST: SOList/SOListUpdate
-        // オーダー情報編集画面/登録ボタン押下時
-        [HttpPost]
-        public ActionResult SOListDeleteResult(SOListUpdateModels mdlSOListUpdate)
-        {
-            // オーダー情報（T_SO_STATUS）削除
-            mdlSOListUpdate.DeleteSOList(Session["ID"].ToString());
-
-            // オーダー情報（T_SERIAL_STATUS）削除
-            mdlSOListUpdate.DeleteSOList(Session["ID"].ToString());
-
-            return RedirectToAction("SOListSearch", "SOList");
-
-        }
+    public class SrchRstOrderReport
+    {
+        public int RecNum { get; set; }
+        public string SerialNumber { get; set; }
+        public string Digit15 { get; set; }
+        public string Digit8 { get; set; }
+        public string Digit9 { get; set; }
+        public string Digit11 { get; set; }
+        public string Digit12 { get; set; }
+        public string SerialDigitVarification { get; set; }
+        public string NGFLG { get; set; }
+        public string NGReason { get; set; }
+        public DateTime? WorkDay { get; set; }
+        public string Instruction { get; set; }
+        public string RmaType { get; set; }
+        public string DeliveryLocation { get; set; }
+        public string Other { get; set; }
     }
 }

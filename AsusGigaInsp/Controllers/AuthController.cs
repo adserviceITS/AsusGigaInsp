@@ -48,7 +48,7 @@ namespace AsusGigaInsp.Controllers
                 // ユーザー認証 成功
                 this.SetUserInfo(model);
 
-                
+
                 model.SetUserAuthority();
                 model.SetDropDownListLine();
 
@@ -105,7 +105,7 @@ namespace AsusGigaInsp.Controllers
             // セッションにラインをセット
             Session["LineID"] = model.CondLineID;
 
-            return RedirectToAction("WhiteBord", "WhiteBord");
+            return RedirectToAction("WhiteBoard", "WhiteBoard");
         }
 
     }

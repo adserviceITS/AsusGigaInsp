@@ -1,0 +1,82 @@
+﻿@model AsusGigaInsp.Models.ProgressBoardModels
+@{
+    ViewBag.Title = "進捗ボード";
+}
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Refresh" content="60">
+    <link href="~/Content/ProgressBoard.css" rel="stylesheet" />
+</head>
+
+@Html.ValidationSummary()
+@using (Html.BeginForm())
+{
+    <!-- ここから検索結果 ------------------------------------------------------------------>
+    <table class="table table-sm">
+        <thead class="thead-light">
+            @if (Model.SrchRstDisplayTime != null)
+            {
+                foreach (var item in Model.SrchRstDisplayTime)
+                {
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th style="border-left:2px solid; border-color:black;">@Html.DisplayFor(modelItem => item.Period01)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period02)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period03)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period04)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period05)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period06)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period07)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period08)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period09)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period10)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period11)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period12)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Period13)</th>
+                    </tr>
+                }
+            }
+        </thead>
+        <tbody>
+            @if (Model.SrchRstProgressBoard != null)
+            {
+                foreach (var item in Model.SrchRstProgressBoard)
+                {
+                    string StrClass = null;
+                    string StrStyle = null;
+                    <tr>
+                        @if (item.Division == "計画")
+                        {
+                            StrClass = "table-default";
+                        }
+                        else if (item.Division == "実績")
+                        {
+                            StrClass = "table-success";
+                        }
+                        else
+                        {
+                            StrClass = "table-warning";
+                            StrStyle = "border-bottom: 2px solid;";
+                        }
+                        <td class="@StrClass" style="@StrStyle; text-align: left">@Html.DisplayFor(modelItem => item.LineName)</td>
+                        <td class="@StrClass" style="@StrStyle; text-align: center">@Html.DisplayFor(modelItem => item.Division)</td>
+                        <td class="@StrClass" style="@StrStyle; border-left: 2px solid">@Html.DisplayFor(modelItem => item.Period01)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period02)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period03)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period04)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period05)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period06)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period07)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period08)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period09)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period10)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period11)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period12)</td>
+                        <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period13)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}

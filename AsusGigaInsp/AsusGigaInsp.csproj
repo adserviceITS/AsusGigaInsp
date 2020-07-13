@@ -47,6 +47,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClosedXML, Version=0.95.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.95.3\lib\net46\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.0.10.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.0.10\lib\net20\ExcelNumberFormat.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
@@ -54,6 +63,12 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.0.1\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Packaging, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.4.0.0\lib\net46\System.IO.Packaging.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -115,6 +130,7 @@
       <Private>True</Private>
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -125,7 +141,8 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SOListController.cs" />
-    <Compile Include="Controllers\WhiteBordController.cs" />
+    <Compile Include="Controllers\SOReportController.cs" />
+    <Compile Include="Controllers\WhiteBoardController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -134,6 +151,8 @@
     <Compile Include="Models\SOListModels.cs" />
     <Compile Include="Models\LoginModels.cs" />
     <Compile Include="Models\SerialListModels.cs" />
+    <Compile Include="Models\SOReportModels.cs" />
+    <Compile Include="Models\WhiteBoardModels.cs" />
     <Compile Include="Modules\ConstDef.cs" />
     <Compile Include="Modules\DropDownList.cs" />
     <Compile Include="Modules\DSNLibrary.cs" />
@@ -149,6 +168,7 @@
     <Content Include="Content\InspStart.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\Login.css" />
+    <Content Include="Content\ProgressBoard.css" />
     <Content Include="Content\SOList.css" />
     <Content Include="Content\SerialList.css" />
     <Content Include="favicon.ico" />
@@ -182,6 +202,11 @@
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Properties\PublishProfiles\CustomProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\CustomProfile2.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile3.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile4.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile5.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -296,10 +321,11 @@
     <Content Include="Views\SOList\modeSearch.cshtml" />
     <Content Include="Views\SOList\SOListUpdate.cshtml" />
     <Content Include="Views\SerialList\SerialList.cshtml" />
-    <Content Include="Views\SOList\test.cshtml" />
-    <Content Include="Views\WhiteBord\WhiteBord.cshtml" />
+    <Content Include="Views\WhiteBoard\WhiteBoard.cshtml" />
     <Content Include="Views\SerialList\SerialEdit.cshtml" />
     <Content Include="Views\InspStart\InspStart.cshtml" />
+    <Content Include="Views\WhiteBoard\ProgressBoard.cshtml" />
+    <Content Include="Views\SOList\SOListUpLoad.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
