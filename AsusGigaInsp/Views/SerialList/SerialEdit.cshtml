@@ -1,53 +1,89 @@
 ﻿@model AsusGigaInsp.Models.SerialEditModels
 
 @{
-    ViewBag.Title = "シリアル編集";
+    ViewBag.Title = "シリアル情報修正";
 }
+
+<h4 class="alert alert-success">@ViewBag.CompleteMSG</h4>
 
 @using (Html.BeginForm())
 {
-    <div class="form-group row">
-        <label for="SONo" class="col-sm-2 col-form-label">SO#</label>
-        <div class="col-sm-10">
-            @Html.TextBoxFor(model => model.SONo, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "" })
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="SerialNumber" class="col-sm-2 col-form-label">シリアル</label>
-        <div class="col-sm-10">
-            @Html.TextBoxFor(model => model.SerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "" })
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="NGFlg" class="col-sm-2 col-form-label">NGフラグ</label>
-        <div class="col-sm-10">
-            @Html.CheckBoxFor(
-                    model => model.NGFlg,  // プロパティ
-                    new { @class="form-check-input", style="margin-left:10px;" }      // その他の属性
+    <div class="form-row" style="margin-top:15px;">
+        <div class="col-md-6">
+            <div class="row">
+                <label for="ID" class="col-form-label-sm">ID</label>
+                @Model.SerialID;
+                @Html.HiddenFor(model => model.SerialID)
+            </div>
+            <div class="row">
+                <label for="SONo" class="col-form-label-sm">SO#</label>
+                @Html.TextBoxFor(model => model.SONo, new { @class = "form-control form-control-sm", style = "max-width:200px;margin:2px;", inputmode = "url", placeholder = "SONo" })
+                <label class="col invalid-feedback"></label>
+            </div>
+            <div class="row">
+                <label for="SerialNumber" class="col-form-label-sm">シリアル</label>
+                @Html.TextBoxFor(model => model.SerialNumber, new { @class = "form-control form-control-sm", style = "max-width:200px;margin:2px;", inputmode = "url", placeholder = "SerialNumber" })
+                <label class="col invalid-feedback"></label>
+            </div>
+            <div class="row">
+                <div class="form-check">
+                    <label for="NGFlg" class="form-check-label col-form-label-sm">NGフラグ</label>
+                    @Html.CheckBoxFor(
+                        model => model.NGFlg,  // プロパティ
+                        new { @class="form-check-input", style="margin-left:10px;" }      // その他の属性
+                    )
+                </div>
+            </div>
+            <div class="row">
+                <label for="NGReason" class="col-form-label-sm">NG理由</label>
+                @Html.TextAreaFor(model => model.NGReason, 8, 100, new { @class = "form-control form-control-sm", style = "max-width:400px;", placeholder = "NG理由" })
+                <label class="col invalid-feedback"></label>
+            </div>
+            <div class="row">
+                <label for="Instruction" class="col-form-label-sm">ASUS様指示</label>
+                @Html.DropDownListFor(
+                    model => model.Instruction, // プロパティ
+                    new SelectList(Model.DropDownListInstruction, "InstructionID", "Instruction"),
+                    "",
+                    new { @class= "form-control form-control-sm", style="max-width:120px;" }
                 )
+            </div>
+            <div class="row">
+                <label for="DescriptionAds" class="col-form-label-sm">備考</label>
+                @Html.TextAreaFor(model => model.DescriptionAds, 8, 100, new { @class = "form-control form-control-sm", style = "max-width:400px;", placeholder = "備考" })
+                <label class="col invalid-feedback"></label>
+            </div>
+            <div class="row">
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+            </div>
+            <div class="col-md-10">
+                <div class="row">
+                    @Html.ActionLink("戻る", "BackSerialList", "SerialList", new { @class = "btn btn-danger btn" })
+                    <button class="btn btn-danger btn" formaction="/SerialList/Delete" name="DeleteBtn" id="DeleteBtn">削除</button>
+                    <button class="btn btn-danger btn" formaction="/SerialList/EditEntry" name="EditEntryBtn" id="EditEntryBtn">登録</button>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="form-group row">
-        <label for="NGReason" class="col-sm-2 col-form-label">NG理由</label>
-        <div class="col-sm-10">
-            @Html.TextBoxFor(model => model.NGReason, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "" })
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="Instruction" class="col-sm-2 col-form-label">ASUS様指示</label>
-        <div class="col-sm-10">
-            @Html.DropDownListFor(
-            model => model.CondInstruction, // プロパティ
-            new SelectList(Model.DropDownListInstruction, "InstructionID", "Instruction"),
-            "",
-            new { @class= "form-control form-control-sm", style="max-width:120px;" }
-        )
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="SerialNumber" class="col-sm-2 col-form-label">備考</label>
-        <div class="col-sm-10">
-            @Html.TextBoxFor(model => model.SerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "" })
+        <div class="col-md-5">
+            <div class="row border">
+                <label class="col-form-label-sm border" style="width:60px;">登録日</label>
+                <label class="col-form-label-sm border" style="width:180px;">@Model.INSERT_DATE</label>
+                <label class="col-form-label-sm border" style="width:60px;">登録者</label>
+                <label class="col-form-label-sm border" style="width:150px;">@Model.INSERT_NAME</label>
+            </div>
+            <div class="row border">
+                <label class="col-form-label-sm border" style="width:60px;">更新日</label>
+                <label class="col-form-label-sm border" style="width:180px;">@Model.UPDATE_DATE</label>
+                <label class="col-form-label-sm border" style="width:60px;">更新者</label>
+                <label class="col-form-label-sm border" style="width:150px;">@Model.UPDATE_NAME</label>
+            </div>
         </div>
     </div>
 }
+
+<script type="text/javascript">
+    $(function () {
+
+
+    });
+</script>

@@ -1,0 +1,236 @@
+﻿@model AsusGigaInsp.Models.InspEndModels
+@{
+    ViewBag.Title = "検査完了";
+}
+<link href="~/Content/InspEnd.css" rel="stylesheet" />
+@using (Html.BeginForm())
+{
+    <!-- TOPエリア ------------------------------------------------------------------------------------------->
+    <div class="row d-flex align-items-end">
+        <div class="col-md-9">
+            <h4 style="margin-top:10px;">検査完了</h4>
+        </div>
+        <div class="col-md-3">
+            <h5 class="text-primary font-weight-bold">選択ライン：@Session["LineID"].ToString()</h5>
+        </div>
+    </div>
+    <hr style="margin-top:5px;">
+    <div class="form-row" style="margin-top:15px;">
+        <div class="col-md-5">
+            @Html.TextAreaFor(model => model.MasterCartonSerial, 8, 100, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;",inputmode= "url", placeholder = "マスターカートンQR" })
+        </div>
+        <div class="col-md-6">
+            <div class="row  align-items-center">
+                @Html.TextBox("SerialNo1", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:200px;margin:2px;", inputmode = "url", placeholder = "シリアル１" })
+                <label class="col invalid-feedback"></label>
+            </div>
+            <div class="row  align-items-center">
+                @Html.TextBox("SerialNo2", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:200px;margin:2px;", inputmode = "url", placeholder = "シリアル２" })
+                <label class="col invalid-feedback"></label>
+            </div>
+            <div class="row  align-items-center">
+                @Html.TextBox("SerialNo3", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:200px;margin:2px;", inputmode = "url", placeholder = "シリアル３" })
+                <label class="col invalid-feedback"></label>
+            </div>
+            <div class="row  align-items-center">
+                @Html.TextBox("SerialNo4", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:200px;margin:2px;", inputmode = "url", placeholder = "シリアル４" })
+                <label class="col invalid-feedback"></label>
+            </div>
+            <div class="row  align-items-center">
+                @Html.TextBox("SerialNo5", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:200px;margin:2px;", inputmode = "url", placeholder = "シリアル５" })
+                <label class="col invalid-feedback"></label>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger btn" name="InspEntryBtn" id="InspEntryBtn">登録</button>
+        </div>
+        @Html.ValidationMessageFor(model => model.MasterCartonSerial)
+    </div>
+    <!-- 結果エリア ------------------------------------------------------------------------------------------>
+    <table class="table table-striped table-bordered table-sm table-hover" style="margin-top:20px;">
+        <thead class="thead-light">
+            <tr>
+                @*<th></th>*@
+                <th>@Html.DisplayNameFor(model => model.InspEndSerialLists.First().SONo)</th>
+                <th>@Html.DisplayNameFor(model => model.InspEndSerialLists.First().n90N)</th>
+                <th>@Html.DisplayNameFor(model => model.InspEndSerialLists.First().ModelName)</th>
+                <th>@Html.DisplayNameFor(model => model.InspEndSerialLists.First().SerialNumber)</th>
+                <th>@Html.DisplayNameFor(model => model.InspEndSerialLists.First().LineID)</th>
+                <th>@Html.DisplayNameFor(model => model.InspEndSerialLists.First().StatusName)</th>
+                <th>@Html.DisplayNameFor(model => model.InspEndSerialLists.First().StatusUpdateDate)</th>
+                <th>@Html.DisplayNameFor(model => model.InspEndSerialLists.First().UserName)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.InspEndSerialLists)
+            {
+                <tr>
+                    @*<td>
+                        <button type="button" class="btn btn-danger btn-sm EditBtn" formaction='/InspEnd/Edit?SerialID=@(item.SerialID)' name="EditBtn" id="EditBtn">編集</button>
+                    </td>*@
+                    <td>@Html.DisplayFor(modelItem => item.SONo)</td>
+                    <td>@Html.DisplayFor(modelItem => item.n90N)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.SerialNumber)</td>
+                    <td>@Html.DisplayFor(modelItem => item.LineID)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StatusName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
+                    <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<script type="text/javascript">
+    $(function () {
+
+        $('#MasterCartonSerial').focus();
+        $('#MasterCartonSerial').select();
+
+        // 検品完了対象のマスターカートンQRエンターエンター時
+        EnterFlg = false;
+        $('#MasterCartonSerial').keypress(function (e) {
+            if (EnterFlg && e.keyCode == 13) {
+                if (!isEmpty($('#MasterCartonSerial').val())) {
+                    EnterFlg = false;
+                    // シリアル１にフォーカスを移す
+                    $('#SerialNo1').focus();
+                    $('#SerialNo1').select();
+                }
+            } else if (e.keyCode == 13) {
+                EnterFlg = true;
+            } else {
+                EnterFlg = false;
+            }
+        });
+
+        // マスターカートンQRとシリアルのチェック
+        var MasterSerialCheck = function (objSerial) {
+            // マスターカートンQRの入力チェック
+            if (isEmpty($('#MasterCartonSerial').val())) {
+                $("#MasterCartonSerial").addClass("is-invalid")
+                return false;
+            }
+            var MasterCartonSerials = $('#MasterCartonSerial').val().split(/\r\n|\r|\n/);
+
+            for (var i = 0; i < MasterCartonSerials.length; i++) {
+                if (MasterCartonSerials[i] == objSerial.val()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // 入力シリアルが他の入力シリアルと重複していないかチェック
+        var OtherSerialCheck = function (objSerial) {
+            var SerialNos = $('[id^="SerialNo"]').map(function (index, el) {
+                return $(this).val();
+            });
+
+            var MatchCnt = 0;
+            for (i = 0; i < SerialNos.length; i++) {
+                if (objSerial.val() == SerialNos[i]) {
+                    MatchCnt++;
+                }
+            }
+
+            if (MatchCnt > 1)
+                return false;
+
+            return true;
+        }
+
+        // マスターカートンのシリアル数と入力されたシリアル数の一致チェック
+        var SerialNumLenCheck = function () {
+            // マスターカートンのシリアル数算出
+            if (isEmpty($('#MasterCartonSerial').val())) {
+                $("#MasterCartonSerial").addClass("is-invalid")
+                return false;
+            }
+            var MasterCartonSerials = $('#MasterCartonSerial').val().split(/\r\n|\r|\n/);
+            var MasterCartonSerialNum = MasterCartonSerials.length - 1;     // 最後のエンターは2回だから
+
+            // 入力されたシリアル数算出
+            var SerialNos = $('[id^="SerialNo"]').map(function (index, el) {
+                if (!isEmpty($(this).val())) {
+                    return $(this).val();
+                }
+            });
+            var SerialNoNum = SerialNos.length;
+
+            // 一致チェック
+            if (MasterCartonSerialNum == SerialNoNum) {
+                return true;
+            }
+            return false;
+        }
+
+        // シリアルのチェックがOKだった時の処理
+        var SerialCheckOK = function (objSerial) {
+            objSerial.removeClass("is-invalid");
+            objSerial.addClass("is-valid");
+            // 次のシリアル入力欄にフォーカスを移す
+            if (!isEmpty($('input')[$('input').index(objSerial) + 1])) {
+                $('input')[$('input').index(objSerial) + 1].focus();
+                $('input')[$('input').index(objSerial) + 1].select();
+            }
+        }
+
+        // シリアルのチェックがNGだった時の処理
+        var SerialCheckNG = function (objSerial, ErrMsg) {
+            objSerial.next("label").text(ErrMsg);
+            objSerial.removeClass("is-valid")
+            objSerial.addClass("is-invalid");
+            objSerial.select();
+        }
+
+        // シリアル入力欄でエンターを押された時
+        $('[id^="SerialNo"]').keypress(function (e) {
+            if (e.which == 13) {
+                var objSerial = $(this);
+                // シリアルが入力されていたらチェック開始
+                if (!isEmpty(objSerial)) {
+                    var ErrMsg = "";
+
+                    // 入力シリアルがマスターカートンシリアルにあるか
+                    if (!MasterSerialCheck(objSerial)) {
+                        ErrMsg = "※マスターカートンにないシリアルです！"
+                        SerialCheckNG(objSerial, ErrMsg);
+                        return false;
+                    }
+
+                    // 入力シリアルが他の入力されたシリアルと重複していないか
+                    if (!OtherSerialCheck(objSerial)) {
+                        ErrMsg = "※このシリアルは既に入力されています！"
+                        SerialCheckNG(objSerial, ErrMsg);
+                        return false;
+                    }
+                    // OK表示
+                    SerialCheckOK(objSerial);
+
+                    // マスターカートンシリアル数と入力されたシリアル数が一致した場合は登録
+                    if (SerialNumLenCheck()) {
+                        $(this).parents('form').attr('action', '/InspEnd/Entry');
+                        $('form')[0].submit();
+                    }
+                } else { // シリアルが入力されていなかったら
+                    return false;
+                }
+            }
+        });
+
+
+        // 登録ボタンを押下時
+        $('#InspEntryBtn').on('click', function () {
+            // マスターカートンシリアル数と入力されたシリアル数が一致した場合は登録
+            if (SerialNumLenCheck()) {
+                $(this).parents('form').attr('action', '/InspEnd/Entry');
+                $('form')[0].submit();
+            }
+            alert("マスターカートンシリアル数とシリアル数が一致しません！")
+            return false;
+        });
+
+    });
+</script>

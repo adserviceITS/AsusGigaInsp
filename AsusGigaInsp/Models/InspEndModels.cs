@@ -8,12 +8,12 @@ using System.Web;
 
 namespace AsusGigaInsp.Models
 {
-    public class InspStartModels
+    public class InspEndModels
     {
         public string MasterCartonSerial { get; set; }
-        public IEnumerable<InspStartSerialList> InspStartSerialLists { get; set; }
+        public IEnumerable<InspEndSerialList> InspEndSerialLists { get; set; }
 
-        public void SetInspStartSerialLists()
+        public void SetInspEndSerialLists()
         {
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder stbSql = new StringBuilder();
@@ -36,7 +36,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    LEFT JOIN M_USER USR ON ");
             stbSql.Append("    USR.ID = TSH.UPDATE_ID ");
             stbSql.Append("WHERE ");
-            stbSql.Append("    TSH.STATUS = '3010' AND ");
+            stbSql.Append("    TSH.STATUS = '4010' AND ");
             stbSql.Append("    CONVERT(VARCHAR(30), TSH.UPDATE_DATE, 112) = CONVERT(VARCHAR(30), GETDATE(), 112) ");
             stbSql.Append("ORDER BY ");
             stbSql.Append("    TSH.UPDATE_DATE DESC, ");
@@ -44,11 +44,11 @@ namespace AsusGigaInsp.Models
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
-            List<InspStartSerialList> rstRstInspStartSerialList = new List<InspStartSerialList>();
+            List<InspEndSerialList> rstRstInspEndSerialList = new List<InspEndSerialList>();
 
             while (sqlRdr.Read())
             {
-                rstRstInspStartSerialList.Add(new InspStartSerialList
+                rstRstInspEndSerialList.Add(new InspEndSerialList
                 {
                     SerialID = sqlRdr["SERIAL_ID"].ToString(),
                     SONo = sqlRdr["SO_NO"].ToString(),
@@ -63,7 +63,7 @@ namespace AsusGigaInsp.Models
             }
             dsnLib.DB_Close();
 
-            InspStartSerialLists = rstRstInspStartSerialList;
+            InspEndSerialLists = rstRstInspEndSerialList;
         }
 
 
@@ -95,7 +95,7 @@ namespace AsusGigaInsp.Models
             // シリアルステータス更新
             stbSql.Append("UPDATE T_SERIAL_STATUS ");
             stbSql.Append("SET ");
-            stbSql.Append("    T_SERIAL_STATUS.SERIAL_STATUS_ID = '3010', ");
+            stbSql.Append("    T_SERIAL_STATUS.SERIAL_STATUS_ID = '4010', ");
             stbSql.Append("    T_SERIAL_STATUS.STATUS_UPDATE_DATE = GETDATE(), ");
             stbSql.Append("    T_SERIAL_STATUS.UPDATE_DATE = GETDATE(), ");
             stbSql.Append("    T_SERIAL_STATUS.UPDATE_ID = '" + strID + "' ");
@@ -108,7 +108,7 @@ namespace AsusGigaInsp.Models
 
             stbSql.Append("UPDATE T_SO_STATUS ");
             stbSql.Append("SET ");
-            stbSql.Append("    T_SO_STATUS.SO_STATUS_ID = '3010', ");
+            stbSql.Append("    T_SO_STATUS.SO_STATUS_ID = '4010', ");
             stbSql.Append("    T_SO_STATUS.ST_CHANGE_DATE = GETDATE(), ");
             stbSql.Append("    T_SO_STATUS.UPDATE_DATE = GETDATE(), ");
             stbSql.Append("    T_SO_STATUS.UPDATE_ID = '" + strID + "' ");
@@ -147,7 +147,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    T_SO_STATUS_HYSTORY.SO_NO, ");
             stbSql.Append("    MAX(T_SO_STATUS_HYSTORY.SEQ) + 1, ");
             stbSql.Append("    MAX(T_SO_STATUS_HYSTORY.NOW_STATUS), ");
-            stbSql.Append("    '3010', ");
+            stbSql.Append("    '4010', ");
             stbSql.Append("    GETDATE(), ");
             stbSql.Append("    '" + strID + "', ");
             stbSql.Append("    GETDATE(), ");
@@ -165,7 +165,7 @@ namespace AsusGigaInsp.Models
         }
     }
 
-    public class InspStartSerialList
+    public class InspEndSerialList
     {
         public string SerialID { get; set; }
         [DisplayName("SO#")]

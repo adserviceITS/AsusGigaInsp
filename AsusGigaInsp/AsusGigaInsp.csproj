@@ -136,6 +136,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\InspEndController.cs" />
     <Compile Include="Controllers\InspStartController.cs" />
     <Compile Include="Controllers\SerialListController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\InspEndModels.cs" />
     <Compile Include="Models\InspStartModels.cs" />
     <Compile Include="Models\SerialEditModels.cs" />
     <Compile Include="Models\SOListModels.cs" />
@@ -165,6 +167,7 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\InspEnd.css" />
     <Content Include="Content\InspStart.css" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\Login.css" />
@@ -174,6 +177,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="img\calendar-icon.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -322,10 +326,11 @@
     <Content Include="Views\SOList\SOListUpdate.cshtml" />
     <Content Include="Views\SerialList\SerialList.cshtml" />
     <Content Include="Views\WhiteBoard\WhiteBoard.cshtml" />
-    <Content Include="Views\SerialList\SerialEdit.cshtml" />
     <Content Include="Views\InspStart\InspStart.cshtml" />
+    <Content Include="Views\InspEnd\InspEnd.cshtml" />
     <Content Include="Views\WhiteBoard\ProgressBoard.cshtml" />
     <Content Include="Views\SOList\SOListUpLoad.cshtml" />
+    <Content Include="Views\SerialList\SerialEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

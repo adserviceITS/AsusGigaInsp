@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -13,23 +14,21 @@ namespace AsusGigaInsp.Models
         public IEnumerable<CombInstruction> DropDownListInstruction { get; set; }
         public IEnumerable<CombLine> DropDownListLine { get; set; }
 
-        public string CondSONo { get; set; }
-        public string CondMasterCartonStartSerial { get; set; }
-        public string CondMasterCartonEndSerial { get; set; }
-        public string CondLineID { get; set; }
-        public string CondSerialNumber { get; set; }
-        public string Cond90N { get; set; }
-        public string CondModelName { get; set; }
-        public string CondWorkDayFrom { get; set; }
-        public string CondWorkDayTo { get; set; }
-        public string CondInstruction { get; set; }
-        public bool CondNGFlg { get; set; }
+        public string SearchSONo { get; set; }
+        public string SearchSerialNumber { get; set; }
+        public string Search90N { get; set; }
+        public string SearchModelName { get; set; }
+        public string SearchWorkDayFrom { get; set; }
+        public string SearchWorkDayTo { get; set; }
+        public string SearchInstruction { get; set; }
+        public bool SearchNGFlg { get; set; }
 
-        public string MasterCartonSerials = "";
-        private string SearchWhere = "";
+        private StringBuilder SearchWhere = new StringBuilder();
         public IEnumerable<SerialList> RstSerialList { get; set; }
 
-        public string SelectEditSerialID;
+        public string inputNGReason { get; set; }
+
+        public string SelectSerialID { get; set; }
 
         public void SetDropDownListInstruction()
         {
@@ -59,7 +58,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSE.NG_FLG, ");
             stbSql.Append("    TSE.NG_REASON, ");
             stbSql.Append("    TSE.WORKDAY, ");
-            stbSql.Append("    TSE.INSTRUCTION, ");
+            stbSql.Append("    MIN.INSTRUCTION, ");
             stbSql.Append("    TSO.DELIVERY_LOCATION, ");
             stbSql.Append("    TSE.DESCRIPTION_ADS, ");
             stbSql.Append("    MSS.SERIAL_STATUS_NAME, ");
@@ -69,13 +68,15 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSE.SO_NO = TSO.SO_NO ");
             stbSql.Append("    LEFT JOIN M_SERIAL_STATUS MSS ON ");
             stbSql.Append("    TSE.SERIAL_STATUS_ID = MSS.SERIAL_STATUS_ID ");
-            stbSql.Append(SearchWhere);
+            stbSql.Append("    LEFT JOIN M_INSTRUCTION MIN ON ");
+            stbSql.Append("    TSE.INSTRUCTION = MIN.INSTRUCTION_ID ");
+            stbSql.Append(SearchWhere.ToString());
             stbSql.Append("ORDER BY ");
             stbSql.Append("    TSE.SO_NO, ");
             stbSql.Append("    TSE.SERIAL_NUMBER ");
 
             //stbSql.Append(stbWhere);
-            //Debug.WriteLine(stbSql.ToString());
+            Debug.WriteLine(stbSql.ToString());
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
             
@@ -105,129 +106,57 @@ namespace AsusGigaInsp.Models
             RstSerialList = lstRstSerialList;
         }
 
-        public void SetSearchWhere()
+        public void SetSearchWhere ()
         {
-            StringBuilder stbWhere = new StringBuilder();
-            stbWhere.Append("WHERE TSE.DEL_FLG = '0' ");
+            SearchWhere.Append("WHERE TSE.DEL_FLG = '0' ");
+            
+            if (!string.IsNullOrEmpty(SearchSONo))
+                SearchWhere.Append("AND TSE.SO_NO = '" + SearchSONo + "' ");
 
-            // マスターカートンQR
-            if (!string.IsNullOrEmpty(MasterCartonSerials))
-            {
-                string[] SerialNOs = MasterCartonSerials.Split(',');
-                stbWhere.Append(" AND TSE.SERIAL_NUMBER IN ( ");
-                for (int i = 0; i < SerialNOs.Length; i++)
-                {
-                    if (i + 1 != SerialNOs.Length)
-                    {
-                        stbWhere.Append("'" + SerialNOs[i] + "', ");
-                    }
-                    else
-                    {
-                        stbWhere.Append("'" + SerialNOs[i] + "') ");
-                    }
-                }
-            }
+            if (!string.IsNullOrEmpty(SearchSerialNumber))
+                SearchWhere.Append("AND TSE.SERIAL_NUMBER = '" + SearchSerialNumber + "' ");
 
-            SearchWhere = stbWhere.ToString();
+            if (!string.IsNullOrEmpty(Search90N))
+                SearchWhere.Append("AND TSE.SO = '" + Search90N + "' ");
 
+            if (!string.IsNullOrEmpty(SearchModelName))
+                SearchWhere.Append("AND TSE.MODEL_NAME = '" + SearchModelName + "' ");
+
+            if (!string.IsNullOrEmpty(SearchWorkDayFrom))
+                SearchWhere.Append("AND TSE.WORKDAY >= '" + SearchWorkDayFrom + "' ");
+
+            if (!string.IsNullOrEmpty(SearchWorkDayTo))
+                SearchWhere.Append("AND TSE.WORKDAY <= '" + SearchWorkDayTo + "' ");
+
+            if (!string.IsNullOrEmpty(SearchInstruction))
+                SearchWhere.Append("AND TSE.INSTRUCTION = '" + SearchInstruction + "' ");
+
+            if (SearchNGFlg)
+                SearchWhere.Append("AND TSE.NG_FLG = '1' ");
         }
 
-        // マスターカートンシリアルのステータス更新処理
-        public void UpdateStatus(string UpdateStatusID)
+        public void UpdateNgFlg ()
         {
-            string[] SerialNOs = MasterCartonSerials.Split(',');
-
-            StringBuilder stbWhere = new StringBuilder();
-            stbWhere.Append("T_SERIAL_STATUS.SERIAL_NUMBER IN ( ");
-
-            for (int i = 0; i < SerialNOs.Length; i++)
-            {
-                if (i + 1 != SerialNOs.Length)
-                {
-                    stbWhere.Append("'" + SerialNOs[i] + "', ");
-                }
-                else
-                {
-                    stbWhere.Append("'" + SerialNOs[i] + "') ");
-                }
-            }
-
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder stbSql = new StringBuilder();
 
-            string strID = HttpContext.Current.Session["ID"].ToString();
+            string strUID = HttpContext.Current.Session["ID"].ToString();
 
             // シリアルステータス更新
             stbSql.Append("UPDATE T_SERIAL_STATUS ");
             stbSql.Append("SET ");
-            stbSql.Append("    T_SERIAL_STATUS.SERIAL_STATUS_ID = '" + UpdateStatusID + "', ");
-            stbSql.Append("    T_SERIAL_STATUS.STATUS_UPDATE_DATE = GETDATE(), ");
+            stbSql.Append("    T_SERIAL_STATUS.NG_FLG = '1', ");
+            stbSql.Append("    T_SERIAL_STATUS.NG_REASON = '" + inputNGReason + "', ");
             stbSql.Append("    T_SERIAL_STATUS.UPDATE_DATE = GETDATE(), ");
-            stbSql.Append("    T_SERIAL_STATUS.UPDATE_ID = '" + strID + "' ");
+            stbSql.Append("    T_SERIAL_STATUS.UPDATE_ID = '" + strUID + "' ");
             stbSql.Append("WHERE ");
-            stbSql.Append(stbWhere.ToString());
+            stbSql.Append("    T_SERIAL_STATUS.ID = '" + SelectSerialID + "' ");
 
             dsnLib.ExecSQLUpdate(stbSql.ToString());
 
             stbSql.Clear();
-
-            stbSql.Append("UPDATE T_SO_STATUS ");
-            stbSql.Append("SET ");
-            stbSql.Append("    T_SO_STATUS.SO_STATUS_ID = '" + UpdateStatusID + "', ");
-            stbSql.Append("    T_SO_STATUS.ST_CHANGE_DATE = GETDATE(), ");
-            stbSql.Append("    T_SO_STATUS.UPDATE_DATE = GETDATE(), ");
-            stbSql.Append("    T_SO_STATUS.UPDATE_ID = '" + strID + "' ");
-            stbSql.Append("WHERE EXISTS ( ");
-            stbSql.Append("    SELECT * FROM T_SERIAL_STATUS ");
-            stbSql.Append("    WHERE T_SO_STATUS.SO_NO = T_SERIAL_STATUS.SO_NO AND ");
-            stbSql.Append(stbWhere.ToString() + ") ");
-
-            dsnLib.ExecSQLUpdate(stbSql.ToString());
-
-            stbSql.Clear();
-
-            stbSql.Append("INSERT INTO T_SERIAL_STATUS_HYSTORY ");
-            stbSql.Append("SELECT ");
-            stbSql.Append("    T_SERIAL_STATUS.ID, ");
-            stbSql.Append("    T_SERIAL_STATUS.SERIAL_NUMBER, ");
-            stbSql.Append("    '" + CondLineID + "', ");
-            stbSql.Append("    T_SERIAL_STATUS.SO_NO, ");
-            stbSql.Append("    T_SERIAL_STATUS.SERIAL_STATUS_ID, ");
-            stbSql.Append("    GETDATE(), ");
-            stbSql.Append("    '" + strID + "', ");
-            stbSql.Append("    GETDATE(), ");
-            stbSql.Append("    '" + strID + "' ");
-            stbSql.Append("FROM T_SERIAL_STATUS ");
-            stbSql.Append("WHERE ");
-            stbSql.Append(stbWhere.ToString());
-
-            dsnLib.ExecSQLUpdate(stbSql.ToString());
-
-            stbSql.Clear();
-
-            stbSql.Append("INSERT INTO T_SO_STATUS_HYSTORY ");
-            stbSql.Append("SELECT ");
-            stbSql.Append("    T_SO_STATUS_HYSTORY.SO_NO, ");
-            stbSql.Append("    MAX(T_SO_STATUS_HYSTORY.SEQ) + 1, ");
-            stbSql.Append("    MAX(T_SO_STATUS_HYSTORY.NOW_STATUS), ");
-            stbSql.Append("    '" + UpdateStatusID + "', ");
-            stbSql.Append("    GETDATE(), ");
-            stbSql.Append("    '" + strID + "', ");
-            stbSql.Append("    GETDATE(), ");
-            stbSql.Append("    '" + strID + "' ");
-            stbSql.Append("FROM T_SO_STATUS_HYSTORY LEFT JOIN T_SERIAL_STATUS ON ");
-            stbSql.Append("     T_SO_STATUS_HYSTORY.SO_NO = T_SERIAL_STATUS.SO_NO ");
-            stbSql.Append("WHERE ");
-            stbSql.Append(stbWhere.ToString());
-            stbSql.Append("GROUP BY  ");
-            stbSql.Append("     T_SO_STATUS_HYSTORY.SO_NO  ");
-
-            dsnLib.ExecSQLUpdate(stbSql.ToString());
-
             dsnLib.DB_Close();
         }
-
-        
     }
 
     public class SerialList
@@ -241,7 +170,7 @@ namespace AsusGigaInsp.Models
         public string ModelName { get; set; }
         [DisplayName("シリアル")]
         public string SerialNumber { get; set; }
-        [DisplayName("NGフラグ")]
+        [DisplayName("NG状況")]
         public string NGFlg { get; set; }
         [DisplayName("NG理由")]
         public string NGReason { get; set; }

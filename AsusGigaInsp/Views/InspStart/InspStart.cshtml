@@ -10,7 +10,7 @@
     <hr>
     <h5>選択ライン：@Session["LineID"].ToString()</h5>
     <div class="form-row" style="margin-top:15px;">
-        @Html.TextAreaFor(model => model.MasterCartonSerial, 6, 100, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", placeholder = "マスターカートンQR" })
+        @Html.TextAreaFor(model => model.MasterCartonSerial, 6, 100, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", inputmode = "url", placeholder = "マスターカートンQR" })
         <button type="button" class="btn btn-danger btn" style="margin-left:20px;" name="InspEntryBtn" id="InspEntryBtn">登録</button>
     </div>
     <div id="MasterCartonSerialErr"></div>
@@ -20,7 +20,7 @@
     <table class="table table-striped table-bordered table-sm table-hover" style="margin-top:20px;">
         <thead class="thead-light">
             <tr>
-                <th></th>
+                @*<th></th>*@
                 <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().SONo)</th>
                 <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().n90N)</th>
                 <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().ModelName)</th>
@@ -35,9 +35,9 @@
             @foreach (var item in Model.InspStartSerialLists)
             {
                 <tr>
-                    <td>
+                    @*<td>
                         <button type="button" class="btn btn-danger btn-sm EditBtn" formaction='/InspStart/Edit?SerialID=@(item.SerialID)' name="EditBtn" id="EditBtn">編集</button>
-                    </td>
+                    </td>*@
                     <td>@Html.DisplayFor(modelItem => item.SONo)</td>
                     <td>@Html.DisplayFor(modelItem => item.n90N)</td>
                     <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
@@ -58,18 +58,20 @@
         $('#MasterCartonSerial').focus();
         $('#MasterCartonSerial').select();
 
-        // マスターカートンQRエンター時
+        // マスターカートンQRエンターエンター時
+        EnterFlg = false;
         $('#MasterCartonSerial').keypress(function (e) {
-            if (e.which == 13) {
-                setTimeout(function () {
-                    
-                }, 500);
+            if (EnterFlg && e.keyCode == 13) {
                 if (!isEmpty($('#MasterCartonSerial').val())) {
+                    EnterFlg = false;
                     $('form').attr('action', '/InspStart/Entry');
                     $('form').submit();
                     return true;
                 }
-                return false;
+            } else if (e.keyCode == 13) {
+                EnterFlg = true;
+            } else {
+                EnterFlg = false;
             }
         });
 
