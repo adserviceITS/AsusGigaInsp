@@ -45,36 +45,211 @@
                 {
                     string StrClass = null;
                     string StrStyle = null;
-                    <tr>
-                        @if (item.Division == "計画")
-                        {
-                            StrClass = "table-default";
-                        }
-                        else if (item.Division == "実績")
-                        {
-                            StrClass = "table-success";
-                        }
-                        else
-                        {
-                            StrClass = "table-warning";
-                            StrStyle = "border-bottom: 2px solid;";
-                        }
-                        <td class="@StrClass" style="@StrStyle; text-align: left">@Html.DisplayFor(modelItem => item.LineName)</td>
-                        <td class="@StrClass" style="@StrStyle; text-align: center">@Html.DisplayFor(modelItem => item.Division)</td>
-                        <td class="@StrClass" style="@StrStyle; border-left: 2px solid">@Html.DisplayFor(modelItem => item.Period01)</td>
+            <tr>
+                @if (item.Division == "計画")
+                {
+                    StrClass = "table-default";
+                }
+                else if (item.Division == "実績")
+                {
+                    StrClass = "table-success";
+                }
+                else
+                {
+                    StrClass = "table-warning";
+                    StrStyle = "border-bottom: 2px solid black;";
+                }
+                <td class="@StrClass" style="@StrStyle; text-align: left">@Html.DisplayFor(modelItem => item.LineName)</td>
+                <td class="@StrClass" style="@StrStyle; text-align: center">@Html.DisplayFor(modelItem => item.Division)</td>
+                @if (int.Parse(item.Period01) < 0)
+                {
+                    <td class="@StrClass" style="@StrStyle; border-left: 2px solid black; color: red;">@Html.DisplayFor(modelItem => item.Period01)</td>
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle; border-left: 2px solid">@Html.DisplayFor(modelItem => item.Period01)</td>
+                }
+                @if (item.Period02 != null)
+                {
+                    if (int.Parse(item.Period02) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red;">@Html.DisplayFor(modelItem => item.Period02)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period02)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period02)</td>
+                }
+                @if (item.Period03 != null)
+                {
+                    if (int.Parse(item.Period03) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period03)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period03)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period03)</td>
+                }
+                @if (item.Period04 != null)
+                {
+                    if (int.Parse(item.Period04) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period04)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period04)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period04)</td>
+                }
+                @if (item.Period05 != null)
+                {
+                    if (int.Parse(item.Period05) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period05)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period05)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period05)</td>
+                }
+                @if (item.Period06 != null)
+                {
+                    if (int.Parse(item.Period06) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period06)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period06)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period06)</td>
+                }
+                @if (item.Period07 != null)
+                {
+                    if (int.Parse(item.Period07) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period07)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period07)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period07)</td>
+                }
+                @if (item.Period08 != null)
+                {
+                    if (int.Parse(item.Period08) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period08)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period08)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period08)</td>
+                }
+                @if (item.Period09 != null)
+                {
+                    if (int.Parse(item.Period09) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period09)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period09)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period09)</td>
+                }
+                @if (item.Period10 != null)
+                {
+                    if (int.Parse(item.Period10) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period10)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period10)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period10)</td>
+                }
+                @if (item.Period11 != null)
+                {
+                    if (int.Parse(item.Period11) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period11)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period11)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period11)</td>
+                }
+                @if (item.Period12 != null)
+                {
+                    if (int.Parse(item.Period12) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period12)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period12)</td>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period12)</td>
+                }
+                @if (item.Period13 != null)
+                {
+                    if (int.Parse(item.Period13) < 0)
+                    {
+                        <td class="@StrClass" style="@StrStyle; color: red">@Html.DisplayFor(modelItem => item.Period13)</td>
+                    }
+                    else
+                    {
                         <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period13)</td>
-                    </tr>
+                    }
+                }
+                else
+                {
+                    <td class="@StrClass" style="@StrStyle;">@Html.DisplayFor(modelItem => item.Period13)</td>
+                }
+            </tr>
                 }
             }
         </tbody>
