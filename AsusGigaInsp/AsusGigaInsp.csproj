@@ -150,6 +150,7 @@
     <Compile Include="Models\InspEndModels.cs" />
     <Compile Include="Models\InspStartModels.cs" />
     <Compile Include="Models\SerialEditModels.cs" />
+    <Compile Include="Models\SerialUploadModels.cs" />
     <Compile Include="Models\SOListModels.cs" />
     <Compile Include="Models\LoginModels.cs" />
     <Compile Include="Models\SerialListModels.cs" />
@@ -331,6 +332,7 @@
     <Content Include="Views\WhiteBoard\ProgressBoard.cshtml" />
     <Content Include="Views\SOList\SOListUpLoad.cshtml" />
     <Content Include="Views\SerialList\SerialEdit.cshtml" />
+    <Content Include="Views\SerialList\SerialUpLoad.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

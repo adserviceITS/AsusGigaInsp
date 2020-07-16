@@ -38,8 +38,8 @@
     </div>
     <div class="float-right" style="margin-top:15px;">
         <button class="btn btn-danger btn" style="margin-left:auto;" formaction="/SerialList/Search" name="SearchBtn" id="SearchBtn">検索</button>
-        <button type="button" class="btn btn-danger btn" formaction="/SerialList/SerialDataUpload" name="SerialDataUploadBtn" id="SerialDataUploadBtn">シリアル情報取込</button>
-        <button type="button" class="btn btn-danger btn" formaction="/SerialList/SerialDataCsv" name="SerialDataCsvBtn" id="SerialDataCsvBtn">CSV出力</button>
+        <input type="button" class="btn btn-danger btn" onclick="location.href='@Url.Action("SerialUpLoad", "SerialList")'" value="シリアル情報取込" />
+        <button class="btn btn-danger btn" formaction="/SerialList/DLCsv" name="DLCsvBtn" id="DLCsvBtn">CSV出力</button>
     </div>
 
     <!-- 検索結果エリア ------------------------------------------------------------------------------------------>

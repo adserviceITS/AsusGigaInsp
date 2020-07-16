@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text;
@@ -29,6 +30,8 @@ namespace AsusGigaInsp.Models
         public string inputNGReason { get; set; }
 
         public string SelectSerialID { get; set; }
+
+        public StringBuilder stbCsvData = new StringBuilder();
 
         public void SetDropDownListInstruction()
         {
@@ -155,6 +158,50 @@ namespace AsusGigaInsp.Models
             dsnLib.ExecSQLUpdate(stbSql.ToString());
 
             stbSql.Clear();
+            dsnLib.DB_Close();
+        }
+
+        public void MakeCsvData ()
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    TSE.ID + ',' + ");
+            stbSql.Append("    TSO.SO_NO + ',' + ");
+            stbSql.Append("    TSO.n90N + ',' +  ");
+            stbSql.Append("    TSE.MODEL_NAME + ',' +  ");
+            stbSql.Append("    TSE.SERIAL_NUMBER + ',' +  ");
+            stbSql.Append("    TSE.NG_FLG + ',' +  ");
+            stbSql.Append("    TSE.NG_REASON + ',' +  ");
+            stbSql.Append("    CONVERT(nvarchar, TSE.WORKDAY, 111) + ',' +  ");
+            stbSql.Append("    MIN.INSTRUCTION + ',' +  ");
+            stbSql.Append("    TSO.DELIVERY_LOCATION + ',' +  ");
+            stbSql.Append("    TSE.DESCRIPTION_ADS + ',' +  ");
+            stbSql.Append("    MSS.SERIAL_STATUS_NAME + ',' +  ");
+            stbSql.Append("    CONVERT(nvarchar, TSE.STATUS_UPDATE_DATE, 111) AS CSV_DATA ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SERIAL_STATUS TSE LEFT JOIN T_SO_STATUS TSO ON ");
+            stbSql.Append("    TSE.SO_NO = TSO.SO_NO ");
+            stbSql.Append("    LEFT JOIN M_SERIAL_STATUS MSS ON ");
+            stbSql.Append("    TSE.SERIAL_STATUS_ID = MSS.SERIAL_STATUS_ID ");
+            stbSql.Append("    LEFT JOIN M_INSTRUCTION MIN ON ");
+            stbSql.Append("    TSE.INSTRUCTION = MIN.INSTRUCTION_ID ");
+            stbSql.Append(SearchWhere.ToString());
+            stbSql.Append("ORDER BY ");
+            stbSql.Append("    TSE.SO_NO, ");
+            stbSql.Append("    TSE.SERIAL_NUMBER ");
+
+            //stbSql.Append(stbWhere);
+            Debug.WriteLine(stbSql.ToString());
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            while (sqlRdr.Read())
+            {
+                stbCsvData.Append(sqlRdr["CSV_DATA"].ToString());
+                stbCsvData.Append("\r\n");
+            }
             dsnLib.DB_Close();
         }
     }
