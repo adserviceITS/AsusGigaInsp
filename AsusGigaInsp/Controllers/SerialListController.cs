@@ -112,7 +112,7 @@ namespace AsusGigaInsp.Controllers
 
                             sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
-                            if (sqlRdr.HasRows)
+                            if (!sqlRdr.HasRows)
                                 ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目のシリアル【" + models.SerialList[RowCounter, 0] + "】のSO#が登録されていません。");
 
                             stbSql.Clear();
