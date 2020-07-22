@@ -7,14 +7,9 @@
     <link href="~/Content/SOList.css" rel="stylesheet" />
     <style type="text/css">
 
-        .auto-style1 {
-            height: 30px;
-            width: 130px;
-        }
-
-        .auto-style2 {
-            height: 30px;
-            width: 400px;
+        .row {
+            margin-right: -15px;
+            margin-left: -15px;
         }
 
         .no-border-style {
@@ -22,48 +17,107 @@
         }
     </style>
 </head>
-
 @using (Html.BeginForm())
 {
     @Html.ValidationSummary()
-
-    <input type="hidden" name="EntMode" value="@Model.EntMode" />
-    <input type="hidden" name="EntSOID" value="@Model.EntSOID" />
-    <input type="hidden" name="CompSONO" value="@Model.CompSONO" />
-    <input type="hidden" name="CompN01" value="@Model.CompN01" />
-
+    @Html.HiddenFor(model => model.CompStatusID)
     <div class="container-fluid">
         <div>
-            <table border="0">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label-lg">SO#</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(model => model.EntSONO, new { @class = "form-control form-control-lg", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label-lg">ステータス</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(
+                        model => model.EntStatusID,
+                        new SelectList(Model.DropDownListNewStatusName, "SOStatusID", "SOStatusName"),
+                        null,
+                        new { @class= "form-control form-control-lg", style="width:300px;" }
+                    )
+                </div>
+            </div>
+        </div>
+        <div style="margin-right: auto; margin-left : auto;">
+            <table style="width:90%" border="0">
                 <tr>
                     <td style="width:50%">
                         <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">SO#</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.EntSONO, new { @class = "form-control", placeholder = "" })
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">90N</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.Ent90N, new { @class = "form-control", @readonly = "readonly" })
                             </div>
+                            <div class="col-sm-1"></div>
                         </div>
                     </td>
-                    <td rowspan="3" style="width:50%;vertical-align:top;">
+                    <td style="width:50%">
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">納品地</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.EntDeliveryLocation, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <div class="col-sm-1"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">ModelName</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.EntModelName, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-sm-1"></div>
+                    </td>
+                    <td>
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">N01#</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.EntN01, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <div class="col-sm-1"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">出荷予定数</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.EntShippingQuantity, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <div class="col-sm-1"></div>
+                        </div>
+                    </td>
+                    <td rowspan="4" style="width:50%; vertical-align:bottom;">
                         <table class="table table-bordered">
                             <tr>
                                 <td>
                                     <label for="AddDate" class="col-form-label-sm">登録日　</label>
-                                    @Html.TextBoxFor(model => Model.AddDate, new { @readonly = "readonly", @class = "no-border-style", style = "width:180px" })
+                                    @Html.TextBoxFor(model => Model.AddDate, new { @class = "no-border-style", style = "width:180px", @readonly = "readonly" })
                                 </td>
                                 <td>
                                     <label for="AddUser" class="col-form-label-sm">登録者　</label>
-                                    @Html.TextBoxFor(model => Model.AddUser, new { @readonly = "readonly", @class = "no-border-style", style = "width:130px" })
+                                    @Html.TextBoxFor(model => Model.AddUser, new { @class = "no-border-style", style = "width:130px", @readonly = "readonly" })
                                 </td>
                             </tr>
                             <tr>
                                 <td>
                                     <label for="UpdateDate" class="col-form-label-sm">更新日　</label>
-                                    @Html.TextBoxFor(model => Model.UpdateDate, new { @readonly = "readonly", @class = "no-border-style", style = "width:180px" })
+                                    @Html.TextBoxFor(model => Model.UpdateDate, new { @class = "no-border-style", style = "width:180px", @readonly = "readonly" })
                                 </td>
                                 <td>
                                     <label for="UpdateUser" class="col-form-label-sm">更新者　</label>
-                                    @Html.TextBoxFor(model => Model.UpdateUser, new { @readonly = "readonly", @class = "no-border-style", style = "width:130px" })
+                                    @Html.TextBoxFor(model => Model.UpdateUser, new { @class = "no-border-style", style = "width:130px", @readonly = "readonly" })
                                 </td>
                             </tr>
                         </table>
@@ -72,97 +126,46 @@
                 <tr>
                     <td>
                         <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">90N</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.Ent90N, new { @class = "form-control", placeholder = "" })
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">ModelName</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.EntModelName, new { @class = "form-control", placeholder = "" })
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">出荷予定数</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.EntShippingQuantity, new { @class = "form-control", placeholder = "" })
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">SI/TEK到着予定日</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.EntSiTekEstArrivalDate, new { @class = "form-control", placeholder = "" })
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">ADS到着予定日</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.EntEstArrivalDate, new { @class = "form-control", placeholder = "" })
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">納品地</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.EntDeliveryLocation, new { @class = "form-control", placeholder = "" })
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
                             <label class="col-sm-4 col-form-label">レポート提出希望日</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.EntPrefReportingDate, new { @class = "form-control", placeholder = "" })
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">N01#</label>
-                            <div class="col-sm-8">
-                                @Html.TextBoxFor(model => model.EntN01, new { @class = "form-control", placeholder = "" })
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.EntPrefReportingDate, new { @class = "form-control", @readonly = "readonly" })
+                                <div class="col-sm-1"></div>
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
                     <td>
-                        @if (Model.EntMode == "Delete")
-                        {
-                            <div class="form row">
-                                <label class="col-sm col-form-label">このオーダー情報を削除してよろしければ、削除ボタンを押してください。</label>
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">ADS到着予定日</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.EntEstArrivalDate, new { @class = "form-control", @readonly = "readonly" })
                             </div>
-                        }
+                            <div class="col-sm-1"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">SI/TEK到着予定日</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.EntSiTekEstArrivalDate, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                            <div class="col-sm-1"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    </td>
+                    <td>
                         <div style="float: right">
-                            @if (Model.EntMode == "Delete")
-                            {
-                                <input type="submit" class="btn btn-primary btn btn-lg" formaction="/SOList/SOListSearch" name="Back" value="戻る">
-                                <input type="submit" class="btn btn-danger btn btn-lg" formaction="/SOList/SOListDeleteResult" name="Delete" value="削除">
-                            }
-                            else
-                            {
-                                <input type="submit" class="btn btn-primary btn btn-lg" formaction="/SOList/SOListSearch" name="Back" value="戻る">
-                                <input type="submit" class="btn btn-danger btn btn-lg" formaction="/SOList/SOListUpdateResult" name="Update" value="登録">
-                            }
+                            <input type="button" class="btn btn-primary btn-lg" onclick="history.back()" name="Back" value="戻る">
+                            <input type="submit" class="btn btn-danger btn-lg" formaction="/SOList/SOListUpdateResult" name="Update" value="登録">
                         </div>
                     </td>
                 </tr>

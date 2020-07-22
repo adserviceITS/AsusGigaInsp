@@ -6,12 +6,258 @@ using System.Text;
 using System;
 using System.Linq;
 using DataTable = System.Data.DataTable;
+using ClosedXML.Excel;
+using System.ComponentModel.DataAnnotations;
+using System.Web;
 
 namespace AsusGigaInsp.Models
 {
+
+    //---------------------------------------------------------------------------//
+    //                      　　 ホワイトボード出力処理                          //
+    //---------------------------------------------------------------------------//
     public class WhiteBoardModels
     {
+        public int IntRstInput { get; set; }
+        public int IntRstComplete { get; set; }
+
+        public int IntRstAccumulationBeforeArrival { get; set; }
+        public int IntRstAccumulationBeforeStart { get; set; }
+        public int IntRstAccumulationWorking { get; set; }
+        public int IntRstAccumulationComplete { get; set; }
+        public int IntRstAccumulationReadyToShip { get; set; }
+        public int IntRstAccumulationTotal { get; set; }
+
+        public void SetSrchRstWhiteBoard()
+        {
+            IntRstInput = 0;
+            IntRstComplete = 0;
+            IntRstAccumulationBeforeArrival = 0;
+            IntRstAccumulationBeforeStart = 0;
+            IntRstAccumulationWorking = 0;
+            IntRstAccumulationComplete = 0;
+            IntRstAccumulationReadyToShip = 0;
+            IntRstAccumulationTotal = 0;
+
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder strSql = new StringBuilder();
+
+            //------------------------------------------------------
+            // 本日の作業実績（完了）を取得する。
+            //------------------------------------------------------
+            strSql.Append("SELECT ");
+            strSql.Append("    STATUS, ");
+            strSql.Append("    COUNT(STATUS) AS COUNT ");
+            strSql.Append("FROM ");
+            strSql.Append("    ( ");
+            strSql.Append("        SELECT ");
+            strSql.Append("            STATUS ");
+            strSql.Append("        FROM ");
+            strSql.Append("            T_SERIAL_STATUS_HYSTORY ");
+            strSql.Append("        WHERE ");
+            strSql.Append("            UPDATE_DATE >= '" + DateTime.Today + "' ");
+            strSql.Append("            AND (STATUS = '3010' OR STATUS = '4010') ");
+            strSql.Append("        GROUP BY ");
+            strSql.Append("            SERIAL_NUMBER, ");
+            strSql.Append("            STATUS ");
+            strSql.Append("    ) TBL ");
+            strSql.Append("GROUP BY ");
+            strSql.Append("    STATUS ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
+
+            // ステータスごとの件数を各項目にセット
+            while (sqlRdr.Read())
+            {
+                if (sqlRdr["STATUS"].ToString() == "3010")
+                {
+                    IntRstInput = int.Parse(sqlRdr["COUNT"].ToString());
+
+                }
+                else
+                {
+                    IntRstComplete = int.Parse(sqlRdr["COUNT"].ToString());
+                }
+            }
+
+            dsnLib.DB_Close();
+            strSql.Clear();
+
+            //------------------------------------------------------
+            // 累積の作業実績（仕掛り）を取得する。
+            //------------------------------------------------------
+            strSql.Append("SELECT ");
+            strSql.Append("    SERIAL_STATUS_ID, ");
+            strSql.Append("    COUNT(SERIAL_STATUS_ID) AS COUNT ");
+            strSql.Append("FROM ");
+            strSql.Append("    T_SERIAL_STATUS ");
+            strSql.Append("WHERE ");
+            strSql.Append("    DEL_FLG = '0' ");
+            strSql.Append("GROUP BY ");
+            strSql.Append("    SERIAL_STATUS_ID ");
+
+            sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
+
+            while (sqlRdr.Read())
+            {
+                switch (sqlRdr["SERIAL_STATUS_ID"].ToString())
+                {
+                    case "1010":
+                        IntRstAccumulationBeforeArrival = int.Parse(sqlRdr["COUNT"].ToString());
+                        break;
+                    case "2010":
+                        IntRstAccumulationBeforeStart = int.Parse(sqlRdr["COUNT"].ToString());
+                        break;
+                    case "3010":
+                        IntRstAccumulationWorking = int.Parse(sqlRdr["COUNT"].ToString());
+                        break;
+                    case "4010":
+                        IntRstAccumulationComplete = int.Parse(sqlRdr["COUNT"].ToString());
+                        break;
+                    case "6010":
+                        IntRstAccumulationReadyToShip = int.Parse(sqlRdr["COUNT"].ToString());
+                        break;
+                    default:
+                        break;
+                }
+            }
+            dsnLib.DB_Close();
+            strSql.Clear();
+
+            // 拠点内総仕掛の算出
+            IntRstAccumulationTotal = IntRstAccumulationBeforeStart + IntRstAccumulationWorking + IntRstAccumulationComplete + IntRstAccumulationReadyToShip;
+
+        }
     }
+
+    //---------------------------------------------------------------------------//
+    //                             作業計画取込処理                              //
+    //---------------------------------------------------------------------------//
+    // 取込ファイル取得用クラス
+    public class PlanUploadFileModels
+    {
+        [Required(ErrorMessage = "ファイルを選択してください。")]
+        public HttpPostedFileBase PlanDataExcelFile { get; set; }
+    }
+
+    // 取込処理
+    public class PlanDataUpLoadModels
+    {
+        public void UpLoadPlanData(string StrUpdUID, PlanUploadFileModels UFUploadFile)
+        {
+            //　Excel取得用変数
+            string[,] PlanData = new string[1, 1];
+            int IntRowCount = 0;
+            int IntColumnCount = 0;
+
+            //------------------------------------------------------
+            // Excel取込処理
+            //------------------------------------------------------
+
+            using (var WorkBook = new XLWorkbook(UFUploadFile.PlanDataExcelFile.InputStream))
+            {
+                var WorkSheet = WorkBook.Worksheet("取り込み用");
+
+                // テーブル作成
+                var Table = WorkSheet.RangeUsed().AsTable();
+
+                //　テーブルの行数、列数を取得し、データ格納配列を定義する。
+                IntRowCount = Table.RowCount();
+                IntColumnCount = Table.ColumnCount();
+                PlanData = new string[IntRowCount, IntColumnCount];
+
+                // テーブルのデータをセル毎に取得
+                for (int RowCounter = 0; RowCounter < IntRowCount; RowCounter++)
+                {
+                    for (int ColCounter = 0; ColCounter < IntColumnCount; ColCounter++)
+                    {
+                        PlanData[RowCounter, ColCounter] = Table.Row(RowCounter + 1).Cell(ColCounter + 1).Value.ToString();
+                    }
+                }
+            }
+
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder strSql = new StringBuilder();
+
+            DateTime DTImportTime = DateTime.Now;
+
+            //------------------------------------------------------
+            // 既存のT_PLANSのレコードを削除する
+            //------------------------------------------------------
+            strSql.Append("DELETE ");
+            strSql.Append("FROM ");
+            strSql.Append("    T_PLANS ");
+
+            dsnLib.ExecSQLUpdate(strSql.ToString());
+            dsnLib.DB_Close();
+            strSql.Clear();
+
+            //------------------------------------------------------
+            // ExcelデータをT_PLANSに保存する。
+            //------------------------------------------------------
+            // Excelデータの2行目から順次データをDBに書き込む。
+            // (1行目はタイトル行のため、読み込まない、最終行も合計のため読み込まない。）
+            for (int RowCounter = 1; RowCounter < IntRowCount - 1; RowCounter++)
+            {
+                strSql.Append("INSERT ");
+                strSql.Append("INTO T_PLANS ");
+                strSql.Append("( ");
+                strSql.Append("    ID, ");
+                strSql.Append("    LINE_ID, ");
+                strSql.Append("    PERIOD_1, ");
+                strSql.Append("    PERIOD_2, ");
+                strSql.Append("    PERIOD_3, ");
+                strSql.Append("    PERIOD_4, ");
+                strSql.Append("    PERIOD_5, ");
+                strSql.Append("    PERIOD_6, ");
+                strSql.Append("    PERIOD_7, ");
+                strSql.Append("    PERIOD_8, ");
+                strSql.Append("    PERIOD_9, ");
+                strSql.Append("    PERIOD_10, ");
+                strSql.Append("    PERIOD_11, ");
+                strSql.Append("    PERIOD_12, ");
+                strSql.Append("    PERIOD_13, ");
+                strSql.Append("    INSERT_DATE, ");
+                strSql.Append("    INSERT_ID ");
+                strSql.Append(") ");
+                strSql.Append("VALUES ");
+                strSql.Append("( ");
+                strSql.Append("    '" + RowCounter + "', ");
+                strSql.Append("    '" + PlanData[RowCounter, 0].Substring(0, 1) + "', ");
+                for (int ColCounter = 1; ColCounter < IntColumnCount; ColCounter++)
+                {
+                    if (!string.IsNullOrEmpty(PlanData[RowCounter, ColCounter]))
+                    {
+                        if (ColCounter != IntColumnCount)
+                        {
+                            strSql.Append("    '" + PlanData[RowCounter, ColCounter] + "', ");
+                        }
+                        else
+                        {
+                            strSql.Append("    '" + PlanData[RowCounter, ColCounter] + "' ");
+                        }
+                    }
+                    else
+                    {
+                        strSql.Append("    null, ");
+                    }
+                }
+                strSql.Append("    '" + DTImportTime + "', ");
+                strSql.Append("    '" + StrUpdUID + "' ");
+                strSql.Append(") ");
+
+                dsnLib.ExecSQLUpdate(strSql.ToString());
+
+                dsnLib.DB_Close();
+
+                strSql.Clear();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------//
+    //                            進捗ボード表示処理　                           //
+    //---------------------------------------------------------------------------//
     public class ProgressBoardModels
     {
         public IEnumerable<SrchRst> SrchRstProgressBoard { get; set; }
@@ -201,10 +447,8 @@ namespace AsusGigaInsp.Models
                 strSql.Append("FROM ");
                 strSql.Append("    T_SERIAL_STATUS_HYSTORY ");
                 strSql.Append("WHERE ");
-                strSql.Append("    UPDATE_DATE >= '" + StrDT + "' ");
+                strSql.Append("    UPDATE_DATE >= '" + StrDT + " " + SRTT.StartTime + "'");
                 strSql.Append("    AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "'");
-                //strSql.Append("    UPDATE_DATE >= '2020/06/26' ");
-                //strSql.Append("    AND UPDATE_DATE < '2020/06/26 17:00:00'");
                 strSql.Append("    AND STATUS = '4010' ");
                 strSql.Append("GROUP BY ");
                 strSql.Append("    LINE_ID ");

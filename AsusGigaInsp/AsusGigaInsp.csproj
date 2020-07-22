@@ -142,7 +142,6 @@
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SOListController.cs" />
-    <Compile Include="Controllers\SOReportController.cs" />
     <Compile Include="Controllers\WhiteBoardController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -151,10 +150,11 @@
     <Compile Include="Models\InspStartModels.cs" />
     <Compile Include="Models\SerialEditModels.cs" />
     <Compile Include="Models\SerialUploadModels.cs" />
+    <Compile Include="Models\SOListUpDateModels.cs" />
+    <Compile Include="Models\SOListUpLoadModels.cs" />
     <Compile Include="Models\SOListModels.cs" />
     <Compile Include="Models\LoginModels.cs" />
     <Compile Include="Models\SerialListModels.cs" />
-    <Compile Include="Models\SOReportModels.cs" />
     <Compile Include="Models\WhiteBoardModels.cs" />
     <Compile Include="Modules\ConstDef.cs" />
     <Compile Include="Modules\DropDownList.cs" />
@@ -180,6 +180,9 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="img\calendar-icon.png" />
+    <Content Include="img\sort.png" />
+    <Content Include="img\sort_down.png" />
+    <Content Include="img\sort_up.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -211,6 +214,7 @@
     <None Include="Properties\PublishProfiles\CustomProfile3.pubxml" />
     <None Include="Properties\PublishProfiles\CustomProfile4.pubxml" />
     <None Include="Properties\PublishProfiles\CustomProfile5.pubxml" />
+    <None Include="Properties\PublishProfiles\CustomProfile6.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
@@ -324,7 +328,6 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\SOList\SOListSearch.cshtml" />
-    <Content Include="Views\SOList\modeSearch.cshtml" />
     <Content Include="Views\SOList\SOListUpdate.cshtml" />
     <Content Include="Views\SerialList\SerialList.cshtml" />
     <Content Include="Views\WhiteBoard\WhiteBoard.cshtml" />
@@ -334,6 +337,8 @@
     <Content Include="Views\SOList\SOListUpLoad.cshtml" />
     <Content Include="Views\SerialList\SerialEdit.cshtml" />
     <Content Include="Views\SerialList\SerialUpLoad.cshtml" />
+    <Content Include="Views\WhiteBoard\PlanDataUpLoad.cshtml" />
+    <Content Include="Views\SOList\SOListSearch - コピー.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

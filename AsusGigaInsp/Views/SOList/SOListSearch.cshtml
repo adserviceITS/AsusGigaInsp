@@ -3,11 +3,44 @@
     ViewBag.Title = "オーダー検索";
 }
 <!DOCTYPE html>
-<link href="~/Content/SOList.css" rel="stylesheet" />
+
+<head>
+    <link href="~/Content/SOList.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/css/theme.default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" defer></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js" defer></script>
+    <style>
+        .ui-datepicker-title {
+            display: flex;
+            justify-content: center;
+            -webkit-justify-content: center;
+        }
+
+        .ui-datepicker select.ui-datepicker-year {
+            margin-right: 0.1rem;
+            width: auto;
+        }
+
+        .ui-datepicker select.ui-datepicker-month {
+            margin-left: 0.3rem;
+            width: auto;
+        }
+
+        .ui-datepicker {
+            font-size: 100%;
+        }
+    </style>
+</head>
 
 @Html.ValidationSummary()
-@using (Html.BeginForm())
+@using (Html.BeginForm(new { autocomplete = "off" }))
 {
+    <div style="color:Red">
+        @Html.Encode(TempData["msg"])
+    </div>
     <div class="form-row">
         <label for="SrchSONO" class="col-form-label-sm">SO#</label>
         @Html.TextBoxFor(model => model.SrchSONO, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
@@ -21,26 +54,26 @@
 
     <div class="form-row">
         <label for="SrchEstArrivalDate_S" class="col-form-label-sm">ADS到着予定日</label>
-        @Html.TextBoxFor(model => model.SrchEstArrivalDate_S, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "From" })
+        @Html.TextBoxFor(model => model.SrchEstArrivalDate_S, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "From", id = "SrchEstArrivalDate_S" })
         <label for="SrchEstArrivalDate_E" class="col-form-label-sm">～</label>
-        @Html.TextBoxFor(model => model.SrchEstArrivalDate_E, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "To" })
+        @Html.TextBoxFor(model => model.SrchEstArrivalDate_E, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "To", id = "SrchEstArrivalDate_E" })
         <label for="SrchPrefReportingDate_S" class="col-form-label-sm">レポート提出希望日</label>
-        @Html.TextBoxFor(model => model.SrchPrefReportingDate_S, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "From" })
+        @Html.TextBoxFor(model => model.SrchPrefReportingDate_S, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "From", id = "SrchPrefReportingDate_S" })
         <label for="SrchPrefReportingDate_E" class="col-form-label-sm">～</label>
-        @Html.TextBoxFor(model => model.SrchPrefReportingDate_E, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "To" })
+        @Html.TextBoxFor(model => model.SrchPrefReportingDate_E, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "To", id = "SrchPrefReportingDate_E" })
     </div>
 
     <div class="form-row">
         <label for="SrchEstArrivalDate_S" class="col-form-label-sm">SI/TEK到着予定日</label>
-        @Html.TextBoxFor(model => model.SrchSiTekEstArrivalDate_S, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "From" })
+        @Html.TextBoxFor(model => model.SrchSiTekEstArrivalDate_S, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "From", id = "SrchSiTekEstArrivalDate_S" })
         <label for="SrchEstArrivalDate_E" class="col-form-label-sm">～</label>
-        @Html.TextBoxFor(model => model.SrchSiTekEstArrivalDate_E, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "To" })
+        @Html.TextBoxFor(model => model.SrchSiTekEstArrivalDate_E, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "To", id = "SrchSiTekEstArrivalDate_E" })
         <label for="SrchStatusID" class="col-form-label-sm">ステータス</label>
         @Html.DropDownListFor(
             model => model.SrchStatusID, // プロパティ
             new SelectList(Model.DropDownListStatusName, "SOStatusID", "SOStatusName"),
             "",
-            new { @class= "form-control form-control-sm", style="max-width:120px;" }
+            new { @class= "form-control form-control-sm", style="max-width:200px;" }
         )
     </div>
 
@@ -52,9 +85,10 @@
         <input type="button" class="btn btn-primary btn" name="Clear" id="ClearBtn" value="クリア">
     </div>
     <!-- ここから検索結果 ------------------------------------------------------------------>
-    <table class="table table-striped table-bordered table-sm table-hover">
+    <table id="So-List" class="table table-striped table-bordered table-sm table-hover">
         <thead class="thead-light">
             <tr>
+                <th></th>
                 <th></th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().SONO)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().n90N)</th>
@@ -67,6 +101,7 @@
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().DeliveryLocation)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().CompleteWorkUnit)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().DOAUnit)</th>
+                <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().HoldUnit)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().N01NO)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().SOStatusName)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().STChangeDate)</th>
@@ -77,28 +112,32 @@
             {
                 foreach (var item in Model.SrchRstOrderList)
                 {
-            <tr>
-                <!-- <td>
-    <input type="submit" class="btn btn-primary btn-sm" name="SOListUpdateLink" formaction="/SOList/SOListUpdate?SOID=@(item.SOID)&Mode=Update" value="編集" />
-    </td>-->
-                <td>
-                    <input type="button" class="btn btn-primary btn-sm" onclick="location.href='@Url.Action("Export", "SOList", new { SONO = item.SONO })'" value="レポート" />
-                </td>
-                <td>@Html.DisplayFor(modelItem => item.SONO)</td>
-                <td>@Html.DisplayFor(modelItem => item.n90N)</td>
-                <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
-                <td>@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
-                <td>@Html.DisplayFor(modelItem => item.FixedShippingQuantity)</td>
-                <td>@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
-                <td>@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
-                <td>@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
-                <td>@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
-                <td>@Html.DisplayFor(modelItem => item.CompleteWorkUnit)</td>
-                <td>@Html.DisplayFor(modelItem => item.DOAUnit)</td>
-                <td>@Html.DisplayFor(modelItem => item.N01NO)</td>
-                <td>@Html.DisplayFor(modelItem => item.SOStatusName)</td>
-                <td>@Html.DisplayFor(modelItem => item.STChangeDate)</td>
-            </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" class="btn btn-primary btn-sm" name="SOListUpdateLink" formaction="/SOList/SOListUpdate?SONO=@(item.SONO)" value="編集" />
+                        </td>
+                        <td>
+                            @if (string.Compare("4010", item.SOStatusID) <= 0)
+                            {
+                                <input type="button" class="btn btn-success btn-sm" onclick="location.href='@Url.Action("Export", "SOList", new { SONO =  item.SONO })'" value="レポート" />
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.SONO)</td>
+                        <td>@Html.DisplayFor(modelItem => item.n90N)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
+                        <td>@Html.DisplayFor(modelItem => item.FixedShippingQuantity)</td>
+                        <td>@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
+                        <td>@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
+                        <td>@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
+                        <td>@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
+                        <td>@Html.DisplayFor(modelItem => item.CompleteWorkUnit)</td>
+                        <td>@Html.DisplayFor(modelItem => item.DOAUnit)</td>
+                        <td>@Html.DisplayFor(modelItem => item.HoldUnit)</td>
+                        <td>@Html.DisplayFor(modelItem => item.N01NO)</td>
+                        <td>@Html.DisplayFor(modelItem => item.SOStatusName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.STChangeDate)</td>
+                    </tr>
                 }
             }
         </tbody>
@@ -107,8 +146,67 @@
 
 <script type="text/javascript">
     // クリアボタンクリック処理
-    $("#ClearBtn").on("click", function ()
-    {
+    $("#ClearBtn").on("click", function () {
         clearForm(this.form);
     });
+
+    // ソート処理
+    $(document).ready(function () {
+        $('#So-List').tablesorter();
+    });
+
+    // ADS到着予定日Fromクリック処理
+    $('#SrchEstArrivalDate_S').datepicker({
+        dateFormat: 'yy/mm/dd',
+        showButtonPanel: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true
+    });
+
+    // ADS到着予定日Toクリック処理
+    $('#SrchEstArrivalDate_E').datepicker({
+        dateFormat: 'yy/mm/dd',
+        showButtonPanel: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true
+    });
+
+    // レポート提出希望日Fromクリック処理
+    $('#SrchPrefReportingDate_S').datepicker({
+        dateFormat: 'yy/mm/dd',
+        showButtonPanel: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true
+    });
+
+    // レポート提出希望日Toクリック処理
+    $('#SrchPrefReportingDate_E').datepicker({
+        dateFormat: 'yy/mm/dd',
+        showButtonPanel: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true
+    });
+
+    // SI/TEK到着予定日Fromクリック処理
+    $('#SrchSiTekEstArrivalDate_S').datepicker({
+        dateFormat: 'yy/mm/dd',
+        showButtonPanel: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true
+    });
+
+    // SI/TEK到着予定日Toクリック処理
+    $('#SrchSiTekEstArrivalDate_E').datepicker({
+        dateFormat: 'yy/mm/dd',
+        showButtonPanel: true,
+        changeMonth: true,
+        changeYear: true,
+        showOtherMonths: true
+    });
+
 </script>

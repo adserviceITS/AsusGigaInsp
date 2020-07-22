@@ -7,7 +7,6 @@ using AsusGigaInsp.Modules;
 using System.Text;
 using System.Data.SqlClient;
 using System.Collections.Generic;
-using System.Web;
 
 namespace AsusGigaInsp.Controllers
 {
@@ -54,7 +53,13 @@ namespace AsusGigaInsp.Controllers
         [HttpPost]
         public ActionResult SOListUpLoad(UploadFile UploadFile)
         {
-            TestModels models = new TestModels();
+            SOListUpLoadModels models = new SOListUpLoadModels();
+
+            DateTime DTImportTime = DateTime.Now;
+            string StrUpdUID = Session["ID"].ToString();
+
+            // アップロードファイルをモデルにセット
+            models.UFUploadFile = UploadFile;
 
             if (ModelState.IsValid)
             {
@@ -70,7 +75,7 @@ namespace AsusGigaInsp.Controllers
                         }
                         catch (Exception ex)
                         {
-                            ModelState.AddModelError(String.Empty, $"ファイルを確認してください。 {ex.Message}");
+                            ModelState.AddModelError(string.Empty, $"ファイルを確認してください。 {ex.Message}");
                             return View();
                         }
                         IXLWorksheet WorkSheet = null;
@@ -80,22 +85,95 @@ namespace AsusGigaInsp.Controllers
                         }
                         catch
                         {
-                            ModelState.AddModelError(String.Empty, "sheetが存在しません。");
+                            ModelState.AddModelError(string.Empty, "sheetが存在しません。");
                             return View();
                         }
 
-                        models.OutPutReport(Session["ID"].ToString(), UploadFile);
+                        // Excelデータをモデルにセット
+                        models.GetSOExcelData();
+
+                        // バリデーションチェック
+                        int IntRowCount = models.SOList.GetLength(0);
+                        DSNLibrary dsnLib = new DSNLibrary();
+                        StringBuilder stbSql = new StringBuilder();
+
+                        for (int RowCounter = 2; RowCounter < IntRowCount; RowCounter++)
+                        {
+                            // Excelのデータチェック **********************************************
+                            string StrCheckID = models.SOList[RowCounter, 0];
+                            string StrCheckSONO = models.SOList[RowCounter, 1];
+                            string StrCheckN01 = models.SOList[RowCounter, 19];
+
+                            if (string.IsNullOrEmpty(StrCheckID))
+                            {
+                                ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目は行番号が入力されていません。");
+                            }
+
+                            if (string.IsNullOrEmpty(StrCheckSONO))
+                            {
+                                ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目はSO#が入力されていません。");
+                            }
+
+                            if (string.IsNullOrEmpty(StrCheckN01))
+                            {
+                                ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目はN01#が入力されていません。");
+                            }
+
+                            for (int CheckRow = RowCounter + 1; CheckRow < IntRowCount; CheckRow++)
+                            {
+                                if (!string.IsNullOrEmpty(StrCheckID))
+                                {
+                                    if (StrCheckID == models.SOList[CheckRow, 0])
+                                    {
+                                        ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目の行番号は" + (CheckRow + 1) + "行目の行番号と重複しています。");
+                                    }
+                                }
+
+                                if (!string.IsNullOrEmpty(StrCheckSONO))
+                                {
+                                    if (StrCheckSONO == models.SOList[CheckRow, 1])
+                                    {
+                                        ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目のSO#は" + (CheckRow + 1) + "行目のSO#と重複しています。");
+                                    }
+
+                                }
+
+                                if (!string.IsNullOrEmpty(StrCheckSONO))
+                                {
+                                    if (StrCheckSONO == models.SOList[CheckRow, 19])
+                                    {
+                                        ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目のN01番号は" + (CheckRow + 1) + "行目のN01番号と重複しています。");
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!ModelState.IsValid)
+                        {
+                            ModelState.AddModelError(string.Empty, "修正後、再度取込んで下さい。");
+                            return View();
+                        }
+
+                        // T_SO_LISTへのデータ取込み
+                        models.InsertSOList(DTImportTime, StrUpdUID);
+
+                        // T_SO_STATUSへの取込み
+                        models.UpsertSOStatus(DTImportTime, StrUpdUID);
+
+                        // T_SO_STATUS_HISTORYへの取込み
+                        models.InsertSOStatusHistory(DTImportTime, StrUpdUID);
+
 
                     }
                     else
                     {
-                        ModelState.AddModelError(String.Empty, "読み込めるのは、.xlsx ファイルと .xls ファイルのみです。");
+                        ModelState.AddModelError(string.Empty, "読み込めるのは、.xlsx ファイルと .xls ファイルのみです。");
                         return View();
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError(String.Empty, "有効なファイルではありません。");
+                    ModelState.AddModelError(string.Empty, "有効なファイルではありません。");
                     return View();
                 }
             }
@@ -162,10 +240,7 @@ namespace AsusGigaInsp.Controllers
             stbSql.Append("    IIF(T_SERIAL_STATUS.NG_FLG = '1', 'NG', '') AS NG_FLG, ");
             stbSql.Append("    T_SERIAL_STATUS.NG_REASON, ");
             stbSql.Append("    T_SERIAL_STATUS.WORKDAY, ");
-            stbSql.Append("    M_INSTRUCTION.INSTRUCTION, ");
-            stbSql.Append("    IIF(T_SERIAL_STATUS.NG_FLG = '1', 'New　Credit', '') AS RMA_TYPE, ");
-            stbSql.Append("    IIF(T_SERIAL_STATUS.NG_FLG = '1', '', T_SO_STATUS.DELIVERY_LOCATION) AS DELIVERY_LOCATION, ");
-            stbSql.Append("    IIF(T_SERIAL_STATUS.NG_FLG='1', 'REF', '') AS OTHER ");
+            stbSql.Append("    T_SO_STATUS.DELIVERY_LOCATION ");
             stbSql.Append("FROM ");
             stbSql.Append("    T_SO_STATUS ");
             stbSql.Append("    LEFT JOIN T_SERIAL_STATUS ");
@@ -196,10 +271,7 @@ namespace AsusGigaInsp.Controllers
                     NGFLG = sqlRdr["NG_FLG"].ToString(),
                     NGReason = sqlRdr["NG_REASON"].ToString(),
                     WorkDay = string.IsNullOrEmpty(sqlRdr["WORKDAY"].ToString()) ? (DateTime?)null : DateTime.Parse(sqlRdr["WORKDAY"].ToString()),
-                    Instruction = sqlRdr["INSTRUCTION"].ToString(),
-                    RmaType = sqlRdr["RMA_TYPE"].ToString(),
-                    DeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString(),
-                    Other = sqlRdr["OTHER"].ToString(),
+                    DeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString()
                 });
 
                 RecCount++;
@@ -222,6 +294,18 @@ namespace AsusGigaInsp.Controllers
             }
             dsnLib.DB_Close();
 
+            SOListUpdateModels mdlSOListUpdate = new SOListUpdateModels();
+            DateTime DTNow = DateTime.Now;
+            string StrStatusNow = mdlSOListUpdate.NowStatus(strSONO);
+
+            if (StrStatusNow.CompareTo("5010") < 0)
+            {
+                mdlSOListUpdate.UpdateSOList(Session["ID"].ToString(), DTNow, "5010", strSONO);
+                mdlSOListUpdate.UpdateSOListHistory(Session["ID"].ToString(), DTNow, StrStatusNow, "5010", strSONO);
+
+            }
+
+
             //----------------------------------------------------------------------------
             // ここからExcel設定
             //----------------------------------------------------------------------------
@@ -241,7 +325,6 @@ namespace AsusGigaInsp.Controllers
             WorkSheet.Range("L1:O1").Style.Font.Bold = true;
             WorkSheet.Range("L1:O1").Style.Fill.BackgroundColor = XLColor.FromHtml("#92D050");
             WorkSheet.Range("L1:O1").Style.Font.FontColor = XLColor.Black;
-
 
             // 見出し
             WorkSheet.Cell("C1").Value = "15桁用";
@@ -266,7 +349,7 @@ namespace AsusGigaInsp.Controllers
                     .Border.SetLeftBorder(XLBorderStyleValues.Medium)
                     .Border.SetRightBorder(XLBorderStyleValues.Medium);
 
-
+            // 内容
             while (Counter < RecCount)
             {
                 WorkSheet.Cell(Counter + 2, 1).Value = lstSrchRstOrderReport[Counter].RecNum;
@@ -280,28 +363,11 @@ namespace AsusGigaInsp.Controllers
                 WorkSheet.Cell(Counter + 2, 9).Value = lstSrchRstOrderReport[Counter].NGFLG;
                 WorkSheet.Cell(Counter + 2, 10).Value = lstSrchRstOrderReport[Counter].NGReason;
                 WorkSheet.Cell(Counter + 2, 11).Value = lstSrchRstOrderReport[Counter].WorkDay;
-                WorkSheet.Cell(Counter + 2, 12).Value = lstSrchRstOrderReport[Counter].Instruction;
-                WorkSheet.Cell(Counter + 2, 13).Value = lstSrchRstOrderReport[Counter].RmaType;
                 WorkSheet.Cell(Counter + 2, 14).Value = lstSrchRstOrderReport[Counter].DeliveryLocation;
-                WorkSheet.Cell(Counter + 2, 15).Value = lstSrchRstOrderReport[Counter].Other;
 
-                if (lstSrchRstOrderReport[Counter].Instruction == null)
-                {
-                    WorkSheet.Cell(Counter + 2, 12).Style.Font.FontColor = XLColor.Red;
-                    WorkSheet.Cell(Counter + 2, 12).Style.Fill.BackgroundColor = XLColor.FromHtml("#808080");
-                }
-
-                if (lstSrchRstOrderReport[Counter].RmaType == null)
-                {
-                    WorkSheet.Cell(Counter + 2, 13).Style.Font.FontColor = XLColor.Red;
-                    WorkSheet.Cell(Counter + 2, 13).Style.Fill.BackgroundColor = XLColor.FromHtml("#808080");
-                }
-
-                if (lstSrchRstOrderReport[Counter].Other == null)
-                {
-                    WorkSheet.Cell(Counter + 2, 15).Style.Font.FontColor = XLColor.Red;
-                    WorkSheet.Cell(Counter + 2, 15).Style.Fill.BackgroundColor = XLColor.FromHtml("#808080");
-                }
+                WorkSheet.Cell(Counter + 2, 12).Style.Fill.BackgroundColor = XLColor.FromHtml("#808080");
+                WorkSheet.Cell(Counter + 2, 13).Style.Fill.BackgroundColor = XLColor.FromHtml("#808080");
+                WorkSheet.Cell(Counter + 2, 15).Style.Fill.BackgroundColor = XLColor.FromHtml("#808080");
 
                 WorkSheet.Range(Counter + 2, 2, Counter + 2, 15).Style
                         .Border.SetTopBorder(XLBorderStyleValues.Thin)
@@ -316,6 +382,7 @@ namespace AsusGigaInsp.Controllers
 
             }
 
+            // 集計欄
             WorkSheet.Cell(Counter + 3, 13).Value = "検品数";
             WorkSheet.Cell(Counter + 4, 13).Value = "出荷数";
             WorkSheet.Cell(Counter + 5, 13).Value = "DOA";
@@ -336,6 +403,7 @@ namespace AsusGigaInsp.Controllers
             WorkSheet.Columns().AdjustToContents();
             WorkSheet.Columns("C:H").Hide();
 
+            // ファイル名
             OutputFileName = DateTime.Now.ToString("yyyy年MM月dd日")
                             + "_検品_"
                             + SOListModelName
@@ -356,20 +424,14 @@ namespace AsusGigaInsp.Controllers
         }
 
         //GET: SOList/SOListUpdate
-        public ActionResult Index()
-        {
-            // 画面表示
-            return View();
-        }
-
-        //GET: SOList/SOListUpdate
         public ActionResult SOListUpdate()
         {
             SOListUpdateModels mdlSOListUpdate = new SOListUpdateModels();
 
-            mdlSOListUpdate.EntMode = this.Request.QueryString["Mode"];
+            mdlSOListUpdate.SetSOListDetails(this.Request.QueryString["SONO"]);
 
-            mdlSOListUpdate.SetSOListDetails(this.Request.QueryString["SOID"]);
+            // ステータスコンボBOXをセット
+            mdlSOListUpdate.SetDropDownListNewStatusName(this.Request.QueryString["SONO"]);
 
             // 画面表示
             return View(mdlSOListUpdate);
@@ -383,65 +445,38 @@ namespace AsusGigaInsp.Controllers
             // エラーがなければ処理継続
             if (ModelState.IsValid)
             {
-                bool blErrFLG = true;
+                // オーダー情報（T_SO_STATUS）更新
+                DateTime DTNow = DateTime.Now;
 
-                // SO#が変更されていれば重複チェック
-                if (mdlSOListUpdate.EntSONO != mdlSOListUpdate.CompSONO)
+                // ステータスが変更されていればデータ更新
+                if (mdlSOListUpdate.EntStatusID != mdlSOListUpdate.CompStatusID)
                 {
-                    if (mdlSOListUpdate.ChkSONO()) { }
-                    else
-                    {
-                        // SO#重複あり
-                        this.ModelState.AddModelError("EntSONO", "指定されたSO#は既に登録されています。");
-                        blErrFLG = false;
-                    }
+                    // オーダーリスト更新
+                    mdlSOListUpdate.UpdateSOList(Session["ID"].ToString(), DTNow, mdlSOListUpdate.EntStatusID, mdlSOListUpdate.EntSONO);
+
+                    // オーダーリスト履歴更新
+                    mdlSOListUpdate.UpdateSOListHistory(Session["ID"].ToString(), DTNow, mdlSOListUpdate.CompStatusID, mdlSOListUpdate.EntStatusID, mdlSOListUpdate.EntSONO);
+
+                    // シリアルリスト更新
+                    mdlSOListUpdate.UpdateSerialList(Session["ID"].ToString(), DTNow, mdlSOListUpdate.EntStatusID, mdlSOListUpdate.EntSONO);
+
+                    // シリアルリスト履歴更新
+                    mdlSOListUpdate.UpdateSerialListHistory(Session["ID"].ToString(), DTNow, mdlSOListUpdate.EntStatusID, mdlSOListUpdate.EntSONO);
                 }
 
-                // N01#が変更されていれば重複チェック
-                if (mdlSOListUpdate.EntN01 != mdlSOListUpdate.CompN01)
-                {
-                    // SO# 重複チェック
-                    if (mdlSOListUpdate.ChkN01()) { }
-                    else
-                    {
-                        // N01#重複あり
-                        this.ModelState.AddModelError("EntN01", "指定されたN01#は既に登録されています。");
-                        blErrFLG = false;
-                    }
-                }
+                // 一時データ（成功メッセージ）を保存
+                TempData["msg"] = String.Format(
+                  "「{0}」のステータスを変更しました。", mdlSOListUpdate.EntSONO);
 
-                // 重複がなければ登録する。
-                if (blErrFLG)
-                {
-                    // オーダー情報（T_SO_STATUS）更新
-                    mdlSOListUpdate.UpdateSOList(Session["ID"].ToString());
+                return RedirectToAction("SOListSearch", "SOList");
 
-                    // SO#が変更されていればシリアル情報（T_SERIAL_STATUS）のSO#を更新
-                    if (mdlSOListUpdate.EntSONO != mdlSOListUpdate.CompSONO)
-                    {
-                        mdlSOListUpdate.UpdateSONO(Session["ID"].ToString());
-                    }
-
-                    // N01#が変更されていればシリアル情報（T_SERIAL_STATUS）のN01#を更新
-                    if (mdlSOListUpdate.EntN01 != mdlSOListUpdate.CompN01)
-                    {
-                        mdlSOListUpdate.UpdateN01(Session["ID"].ToString());
-                    }
-
-                    return RedirectToAction("SOListSearch", "SOList");
-
-                }
-                else
-                {
-                    return this.View("SOListUpdate", mdlSOListUpdate);
-                }
             }
             // 画面表示
             return this.View("SOListUpdate", mdlSOListUpdate);
         }
 
         // POST: SOList/SOListUpdate
-        // オーダー情報編集画面/登録ボタン押下時
+        // オーダー情報編集画面/削除ボタン押下時
         [HttpPost]
         public ActionResult SOListDeleteResult(SOListUpdateModels mdlSOListUpdate)
         {

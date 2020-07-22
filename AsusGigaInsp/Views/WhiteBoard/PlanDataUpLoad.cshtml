@@ -1,16 +1,18 @@
-﻿@model AsusGigaInsp.Models.UploadFile
+﻿@model AsusGigaInsp.Models.PlanUploadFileModels
+
 @{
-    ViewBag.Title = "SOList取り込み";
+    ViewBag.Title = "作業計画取り込み";
 }
-<h2>オーダーリスト　取り込み</h2>
+<h2>作業計画　取り込み</h2>
+
 @using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.ValidationSummary("", new { @class = "text-danger" })
     <div style="color:red;">@ViewBag.Message</div>
-    <div class="container-fluid">
+    <div class="container">
         <form class="form-horizontal">
             <div class="form-group">
-                <input id="ExcelFile" type="file" name="ExcelFile" style="display:none">
+                <input id="ExcelFile" type="file" name="PlanDataExcelFile" style="display:none">
                 <div class="input-group mb-3">
                     <input type="text" id="SelectExcel" class="form-control" placeholder="select file...">
                     <div class="input-group-append">
