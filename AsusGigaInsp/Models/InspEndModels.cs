@@ -95,6 +95,7 @@ namespace AsusGigaInsp.Models
             // シリアルステータス更新
             stbSql.Append("UPDATE T_SERIAL_STATUS ");
             stbSql.Append("SET ");
+            stbSql.Append("    T_SERIAL_STATUS.WORKDAY = GETDATE(), ");
             stbSql.Append("    T_SERIAL_STATUS.SERIAL_STATUS_ID = '4010', ");
             stbSql.Append("    T_SERIAL_STATUS.STATUS_UPDATE_DATE = GETDATE(), ");
             stbSql.Append("    T_SERIAL_STATUS.UPDATE_DATE = GETDATE(), ");

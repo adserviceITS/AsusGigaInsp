@@ -1,4 +1,5 @@
 ﻿using AsusGigaInsp.Models;
+using AsusGigaInsp.Modules;
 using System;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -21,57 +22,57 @@ namespace AsusGigaInsp.Controllers
         [HttpPost]
         public ActionResult Login(LoginModels model)
         {
-            String strErrFlg = "0";
+            // ライン選択用のドロップダウンリストをモデルにセット
+            model.SetDropDownListLine();
 
-            // ユーザーID未入力はエラー
-            if (String.IsNullOrWhiteSpace(model.Id))
+            // 認証（担当者はIDが登録されていればOK）
+            // ユーザーの存在確認
+            UserInfo userInfo = new UserInfo(model.Id);
+            if (string.IsNullOrEmpty(userInfo.ID))
             {
-                ModelState.AddModelError(string.Empty, "IDを入力して下さい");
-                strErrFlg = "1";
-            }
-
-            // パスワード未入力はエラー
-            if (String.IsNullOrWhiteSpace(model.Password))
-            {
-                ModelState.AddModelError(string.Empty, "passwordを入力して下さい");
-                strErrFlg = "1";
-            }
-
-            if (strErrFlg == "1")
-            {
+                ModelState.AddModelError(string.Empty, "ID、または Password が違います");
                 return View(model);
             }
 
-            // 認証
-            if (model.Auth())
+            // 管理者の場合は要パスワード
+            if (userInfo.AuthorityKbn == "1")
             {
-                // ユーザー認証 成功
-                this.SetUserInfo(model);
+                // パスワード未入力はエラー
+                if (String.IsNullOrWhiteSpace(model.Password))
+                {
+                    ModelState.AddModelError(string.Empty, "管理者はpasswordが必要です");
+                    return View(model);
+                }
 
+                // 管理者認証
+                if (userInfo.Password != model.Password)
+                {
+                    ModelState.AddModelError(string.Empty, "ID、または Password が違います");
+                    return View(model);
+                }
+            }
 
-                model.SetUserAuthority();
-                model.SetDropDownListLine();
+            // ユーザー認証 成功
+            // 認証クッキーにユーザーIDをセット
+            FormsAuthentication.SetAuthCookie(model.Id, false);
 
-                //// 管理者はホワイトボード、管理者以外はライン選択
-                //if (int.Parse(model.AuthorityKbn) >= 4)
-                //{
-                //    return RedirectToAction("WhiteBord", "WhiteBord");
-                //} else
-                //{
-                //    // ライン選択モードをオンに設定
-                //    ViewBag.ControllAction = "LineSelect";
-                //    return View(model);
-                //}
+            // ユーザーID、ユーザー名をセッションにセット
+            Session["ID"] = model.Id;
+            Session["UserName"] = userInfo.UserName;
 
+            // 権限情報をモデルにセット
+            model.AuthorityKbn = userInfo.AuthorityKbn;
+
+            // 管理者はホワイトボード、管理者以外はライン選択へ
+            if (userInfo.AuthorityKbn == "1")
+            {
+                return RedirectToAction("WhiteBoard", "WhiteBoard");
+            }
+            else
+            {
                 // ライン選択モードをオンに設定
                 ViewBag.ControllAction = "LineSelect";
                 return View(model);
-
-            }
-            else {
-                // ユーザー認証 失敗
-                this.ModelState.AddModelError(string.Empty, "指定されたユーザー名またはパスワードが正しくありません。");
-                return this.View(model);
             }
         }
 
@@ -86,27 +87,13 @@ namespace AsusGigaInsp.Controllers
             return RedirectToAction("Login");
         }
 
-        private void SetUserInfo(LoginModels model)
-        {
-            // 認証クッキーにユーザーIDをセット
-            FormsAuthentication.SetAuthCookie(model.Id, false);
-
-            // ユーザー名取得
-            string strUserName = model.GetUserName(model.Id);
-
-            // ユーザーID、ユーザー名をセッションにセット
-            Session["ID"] = model.Id;
-            Session["UserName"] = strUserName;
-        }
-
         [HttpPost]
         public ActionResult SelectLine(LoginModels model)
         {
             // セッションにラインをセット
             Session["LineID"] = model.CondLineID;
 
-            return RedirectToAction("WhiteBoard", "WhiteBoard");
+            return RedirectToAction("Index", "InspStart");
         }
-
     }
 }

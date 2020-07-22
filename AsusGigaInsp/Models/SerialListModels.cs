@@ -13,7 +13,7 @@ namespace AsusGigaInsp.Models
     public class SerialListModels
     {
         public IEnumerable<CombInstruction> DropDownListInstruction { get; set; }
-        public IEnumerable<CombLine> DropDownListLine { get; set; }
+        public IEnumerable<CombSerialStatus> DropDownListSerialStatus { get; set; }
 
         public string SearchSONo { get; set; }
         public string SearchSerialNumber { get; set; }
@@ -23,6 +23,7 @@ namespace AsusGigaInsp.Models
         public string SearchWorkDayTo { get; set; }
         public string SearchInstruction { get; set; }
         public bool SearchNGFlg { get; set; }
+        public string SearchSerialStatus { get; set; }
 
         private StringBuilder SearchWhere = new StringBuilder();
         public IEnumerable<SerialList> RstSerialList { get; set; }
@@ -40,11 +41,11 @@ namespace AsusGigaInsp.Models
             DropDownListInstruction = ddList.GetDropDownListInstruction();
         }
 
-        public void SetDropDownListLine()
+        public void SetDropDownListSerialStatus()
         {
-            // ラインドロップダウンリストを取得
+            // シリアルステータスドロップダウンリストを取得
             DropDownList ddList = new DropDownList();
-            DropDownListLine = ddList.GetDropDownListLine();
+            DropDownListSerialStatus = ddList.GetDropDownListSerialStatus();
         }
 
         public void SetRstSerialList()
@@ -79,10 +80,10 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSE.SERIAL_NUMBER ");
 
             //stbSql.Append(stbWhere);
-            Debug.WriteLine(stbSql.ToString());
+            //Debug.WriteLine(stbSql.ToString());
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
-            
+
             List<SerialList> lstRstSerialList = new List<SerialList>();
 
             while (sqlRdr.Read())
@@ -96,7 +97,7 @@ namespace AsusGigaInsp.Models
                     SerialNumber = sqlRdr["SERIAL_NUMBER"].ToString(),
                     NGFlg = sqlRdr["NG_FLG"].ToString(),
                     NGReason = sqlRdr["NG_REASON"].ToString(),
-                    WorkDay = sqlRdr["WORKDAY"].ToString(),
+                    WorkDay = string.IsNullOrEmpty(sqlRdr["WORKDAY"].ToString()) ? "" : sqlRdr["WORKDAY"].ToString().Substring(0, 10),
                     Instruction = sqlRdr["INSTRUCTION"].ToString(),
                     ShippingAddress = sqlRdr["DELIVERY_LOCATION"].ToString(),
                     DescriptionAds = sqlRdr["DESCRIPTION_ADS"].ToString(),
@@ -112,7 +113,7 @@ namespace AsusGigaInsp.Models
         public void SetSearchWhere ()
         {
             SearchWhere.Append("WHERE TSE.DEL_FLG = '0' ");
-            
+
             if (!string.IsNullOrEmpty(SearchSONo))
                 SearchWhere.Append("AND TSE.SO_NO = '" + SearchSONo + "' ");
 
@@ -136,6 +137,9 @@ namespace AsusGigaInsp.Models
 
             if (SearchNGFlg)
                 SearchWhere.Append("AND TSE.NG_FLG = '1' ");
+
+            if (!string.IsNullOrEmpty(SearchSerialStatus))
+                SearchWhere.Append("AND TSE.SERIAL_STATUS_ID = '" + SearchSerialStatus + "' ");
         }
 
         public void UpdateNgFlg ()
@@ -172,10 +176,20 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    IsNull(TSO.n90N, '') + ',' +  ");
             stbSql.Append("    IsNull(TSE.MODEL_NAME, '') + ',' +  ");
             stbSql.Append("    IsNull(TSE.SERIAL_NUMBER, '') + ',' +  ");
-            stbSql.Append("    IsNull(TSE.NG_FLG, '') + ',' +  ");
-            stbSql.Append("    IsNull(TSE.NG_REASON, '') + ',' +  ");
-            stbSql.Append("    CONVERT(nvarchar, IsNull(TSE.WORKDAY, ''), 111) + ',' +  ");
-            stbSql.Append("    IsNull(MIN.INSTRUCTION, '') + ',' +  ");
+            stbSql.Append("    CASE ");
+            stbSql.Append("       WHEN TSE.NG_FLG IS NULL THEN '' ");
+            stbSql.Append("       WHEN TSE.NG_FLG = '' THEN '' ");
+            stbSql.Append("       WHEN TSE.NG_FLG = '0' THEN '' ");
+            stbSql.Append("       WHEN TSE.NG_FLG = '1' THEN 'NG' ");
+            stbSql.Append("       ELSE 'システムエラー' ");
+            stbSql.Append("    END + ', ' + ");
+            stbSql.Append("    IsNull(TSE.NG_REASON, '') + ',' + ");
+            stbSql.Append("    CASE ");
+            stbSql.Append("       WHEN TSE.WORKDAY IS NULL THEN '' ");
+            stbSql.Append("       WHEN TSE.WORKDAY = '' THEN '' ");
+            stbSql.Append("       ELSE CONVERT(nvarchar, TSE.WORKDAY, 111) ");
+            stbSql.Append("    END + ', ' + ");
+            stbSql.Append("    IsNull(MIN.INSTRUCTION, '') + ',' + ");
             stbSql.Append("    IsNull(TSO.DELIVERY_LOCATION, '') + ',' +  ");
             stbSql.Append("    IsNull(TSE.DESCRIPTION_ADS, '') + ',' +  ");
             stbSql.Append("    IsNull(MSS.SERIAL_STATUS_NAME, '') + ',' +  ");
@@ -196,6 +210,22 @@ namespace AsusGigaInsp.Models
             Debug.WriteLine(stbSql.ToString());
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            // 1行目はヘッダ
+            stbCsvData.Append("ID,");
+            stbCsvData.Append("SO#,");
+            stbCsvData.Append("90N,");
+            stbCsvData.Append("ModelName,");
+            stbCsvData.Append("シリアル,");
+            stbCsvData.Append("NG状況,");
+            stbCsvData.Append("NG理由,");
+            stbCsvData.Append("作業日,");
+            stbCsvData.Append("ASUS様指示,");
+            stbCsvData.Append("発送先,");
+            stbCsvData.Append("備考,");
+            stbCsvData.Append("ステータス,");
+            stbCsvData.Append("ステータス変更日");
+            stbCsvData.Append("\r\n");
 
             while (sqlRdr.Read())
             {

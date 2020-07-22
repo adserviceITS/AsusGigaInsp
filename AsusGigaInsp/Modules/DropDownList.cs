@@ -8,7 +8,7 @@ namespace AsusGigaInsp.Modules
     {
         // ASUS様指示
         public List<CombInstruction> GetDropDownListInstruction()
-        {    
+        {
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder stbSql = new StringBuilder();
 
@@ -69,6 +69,38 @@ namespace AsusGigaInsp.Modules
 
             return DropDownListLine;
         }
+
+        // シリアルステータス
+        public List<CombSerialStatus> GetDropDownListSerialStatus()
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    M_SERIAL_STATUS.SERIAL_STATUS_ID, ");
+            stbSql.Append("    M_SERIAL_STATUS.SERIAL_STATUS_NAME ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    M_SERIAL_STATUS ");
+            stbSql.Append("ORDER BY ");
+            stbSql.Append("    M_SERIAL_STATUS.SERIAL_STATUS_ID ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            List<CombSerialStatus> DropDownListSerialStatus = new List<CombSerialStatus>();
+
+            while (sqlRdr.Read())
+            {
+                DropDownListSerialStatus.Add(new CombSerialStatus
+                {
+                    SerialStatusID = sqlRdr["SERIAL_STATUS_ID"].ToString(),
+                    SerialStatusName = sqlRdr["SERIAL_STATUS_NAME"].ToString()
+                });
+            }
+            sqlRdr.Close();
+            dsnLib.DB_Close();
+
+            return DropDownListSerialStatus;
+        }
     }
 
     public class CombInstruction
@@ -81,5 +113,11 @@ namespace AsusGigaInsp.Modules
     {
         public string LineID { get; set; }
         public string LineName { get; set; }
+    }
+
+    public class CombSerialStatus
+    {
+        public string SerialStatusID { get; set; }
+        public string SerialStatusName { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace AsusGigaInsp.Modules
 
         /* 開発機用 */
         public const string DB_DATA_SOURCE = "192.168.113.20";
-        public const string DB_DATA_BASE = "AsusGigaInsp";
+        public const string DB_DATA_BASE = "SIVA";
         public const string DB_USER_ID = "sa";
         public const string DB_PASSWORD = "takota";
 

@@ -6,36 +6,43 @@
 @using (Html.BeginForm())
 {
     <!-- 検索条件エリア ------------------------------------------------------------------------------------------>
-    <div class="form-row">
-        <label for="SearchSONo" class="col-form-label-sm">SO#</label>
-        @Html.TextBoxFor(model => model.SearchSONo, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-        <label for="SearchSerialNumber" class="col-form-label-sm">シリアル</label>
-        @Html.TextBoxFor(model => model.SearchSerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-        <label for="Search90N" class="col-form-label-sm">90N</label>
-        @Html.TextBoxFor(model => model.Search90N, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-        <label for="SearchModelName" class="col-form-label-sm">Model Name</label>
-        @Html.TextBoxFor(model => model.SearchModelName, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-    </div>
-    <div class="row">
-        <label for="SearchWorkDayFrom" class="col-form-label-sm">作業日</label>
-        @Html.TextBoxFor(model => model.SearchWorkDayFrom, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "From" })
-        <label for="SearchWorkDayTo" class="col-form-label-sm">～</label>
-        @Html.TextBoxFor(model => model.SearchWorkDayTo, null, new { @class = "form-control form-control-sm", style = "max-width:200px;", placeholder = "To" })
-        <label for="SearchInstruction" class="col-form-label-sm">ASUS様指示</label>
-        @Html.DropDownListFor(
-            model => model.SearchInstruction, // プロパティ
-            new SelectList(Model.DropDownListInstruction, "InstructionID", "Instruction"),
-            "",
-            new { @class= "form-control form-control-sm", style="max-width:120px;" }
+<div class="form-row">
+    <label for="SearchSONo" class="col-form-label-sm">SO#</label>
+    @Html.TextBoxFor(model => model.SearchSONo, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+    <label for="SearchSerialNumber" class="col-form-label-sm">シリアル</label>
+    @Html.TextBoxFor(model => model.SearchSerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+    <label for="Search90N" class="col-form-label-sm">90N</label>
+    @Html.TextBoxFor(model => model.Search90N, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+    <label for="SearchModelName" class="col-form-label-sm">Model Name</label>
+    @Html.TextBoxFor(model => model.SearchModelName, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+</div>
+<div class="row">
+    <label for="SearchWorkDayFrom" class="col-form-label-sm">作業日</label>
+    @Html.TextBoxFor(model => model.SearchWorkDayFrom, null, new { @class = "form-control form-control-sm", style = "max-width:120px;margin-right:1px;", placeholder = "From" })
+    <label for="SearchWorkDayTo" class="col-form-label-sm">～</label>
+    @Html.TextBoxFor(model => model.SearchWorkDayTo, null, new { @class = "form-control form-control-sm", style = "max-width:120px;margin-right:1px;", placeholder = "To" })
+    <label for="SearchSerialStatus" class="col-form-label-sm">ステータス</label>
+    @Html.DropDownListFor(
+        model => model.SearchSerialStatus, // プロパティ
+        new SelectList(Model.DropDownListSerialStatus, "SerialStatusID", "SerialStatusName"),
+        "",
+        new { @class= "form-control form-control-sm", style="max-width:150px;" }
+    )
+    <label for="SearchInstruction" class="col-form-label-sm">ASUS様指示</label>
+    @Html.DropDownListFor(
+        model => model.SearchInstruction, // プロパティ
+        new SelectList(Model.DropDownListInstruction, "InstructionID", "Instruction"),
+        "",
+        new { @class= "form-control form-control-sm", style="max-width:120px;" }
+    )
+    <div class="form-check">
+        <label for="SearchNGFlg" class="form-check-label col-form-label-sm">NGフラグ</label>
+        @Html.CheckBoxFor(
+            model => model.SearchNGFlg,  // プロパティ
+            new { @class="form-check-input", style="margin-left:10px;" }      // その他の属性
         )
-        <div class="form-check">
-            <label for="SearchNGFlg" class="form-check-label col-form-label-sm">NGフラグ</label>
-            @Html.CheckBoxFor(
-                model => model.SearchNGFlg,  // プロパティ
-                new { @class="form-check-input", style="margin-left:10px;" }      // その他の属性
-            )
-        </div>
     </div>
+</div>
     <div class="float-right" style="margin-top:15px;">
         <button class="btn btn-danger btn" style="margin-left:auto;" formaction="/SerialList/Search" name="SearchBtn" id="SearchBtn">検索</button>
         <input type="button" class="btn btn-danger btn" onclick="location.href='@Url.Action("SerialUpLoad", "SerialList")'" value="シリアル情報取込" />
@@ -46,7 +53,7 @@
     <table class="table table-striped table-bordered table-sm table-hover">
         <thead class="thead-light">
             <tr>
-                <th colspan="2"></th>
+                <th></th>
                 <th>@Html.DisplayNameFor(model => model.RstSerialList.First().SONo)</th>
                 <th>@Html.DisplayNameFor(model => model.RstSerialList.First().n90N)</th>
                 <th>@Html.DisplayNameFor(model => model.RstSerialList.First().ModelName)</th>
@@ -62,34 +69,39 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.RstSerialList)
+            @if (Model.RstSerialList != null)
             {
-                <tr>
-                    <td style="display:none;">@Html.DisplayFor(modelItem => item.SerialID)</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm EditBtn" formaction='/SerialList/Edit' name="EditBtn" id="EditBtn">修</button>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger btn-sm NGBtn" name="NGBtn" id="NGBtn">NG</button>
-                    </td>
-                    <td>@Html.DisplayFor(modelItem => item.SONo)</td>
-                    <td>@Html.DisplayFor(modelItem => item.n90N)</td>
-                    <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.SerialNumber)</td>
-                    <td>
-                        @if (item.NGFlg == "1")
-                        {
-                            <span class="text-danger font-weight-bold">NG</span>
-                        }
-                    </td>
-                    <td>@Html.DisplayFor(modelItem => item.NGReason)</td>
-                    <td>@Html.DisplayFor(modelItem => item.WorkDay)</td>
-                    <td>@Html.DisplayFor(modelItem => item.Instruction)</td>
-                    <td>@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
-                    <td>@Html.DisplayFor(modelItem => item.DescriptionAds)</td>
-                    <td>@Html.DisplayFor(modelItem => item.StatusName)</td>
-                    <td>@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
-                </tr>
+                foreach (var item in Model.RstSerialList)
+                {
+                    <tr>
+                        <td style="display:none;">@Html.DisplayFor(modelItem => item.SerialID)</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm EditBtn" formaction='/SerialList/Edit' name="EditBtn" id="EditBtn">修</button>
+                        </td>
+                        <!-- 2020/7/20 廃止
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm NGBtn" name="NGBtn" id="NGBtn">NG</button>
+                            </td>
+                        -->
+                        <td>@Html.DisplayFor(modelItem => item.SONo)</td>
+                        <td>@Html.DisplayFor(modelItem => item.n90N)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.SerialNumber)</td>
+                        <td>
+                            @if (item.NGFlg == "1")
+                            {
+                                <span class="text-danger font-weight-bold">NG</span>
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.NGReason)</td>
+                        <td>@Html.DisplayFor(modelItem => item.WorkDay)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Instruction)</td>
+                        <td>@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
+                        <td>@Html.DisplayFor(modelItem => item.DescriptionAds)</td>
+                        <td>@Html.DisplayFor(modelItem => item.StatusName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
@@ -130,7 +142,11 @@
             buttonImage: "/img/calendar-icon.png",        // カレンダーアイコン画像
             buttonText: "カレンダーから選択", // ツールチップ表示文言
             buttonImageOnly: true,           // 画像として表示
-            showOn: "button"                   // カレンダー呼び出し元の定義
+            showOn: "button",                   // カレンダー呼び出し元の定義
+            showButtonPanel: true,
+            changeYear: true,
+            changeMonth: true,
+            firstDay: 1
         });
 
         // 修正ボタンを押下時

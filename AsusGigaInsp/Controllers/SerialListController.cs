@@ -16,9 +16,9 @@ namespace AsusGigaInsp.Controllers
         public ActionResult Index()
         {
             SerialListModels models = new SerialListModels();
-            models.SetSearchWhere();
-            models.SetRstSerialList();
-            models.SetDropDownListLine();
+            // models.SetSearchWhere();
+            // models.SetRstSerialList();
+            models.SetDropDownListSerialStatus();
             models.SetDropDownListInstruction();
             return View("SerialList", models);
         }
@@ -29,7 +29,7 @@ namespace AsusGigaInsp.Controllers
         {
             models.SetSearchWhere();
             models.SetRstSerialList();
-            models.SetDropDownListLine();
+            models.SetDropDownListSerialStatus();
             models.SetDropDownListInstruction();
 
             return View("SerialList", models);

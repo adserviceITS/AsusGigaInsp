@@ -159,6 +159,7 @@
     <Compile Include="Modules\ConstDef.cs" />
     <Compile Include="Modules\DropDownList.cs" />
     <Compile Include="Modules\DSNLibrary.cs" />
+    <Compile Include="Modules\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
