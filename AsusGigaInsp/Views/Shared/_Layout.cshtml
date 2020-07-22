@@ -61,48 +61,8 @@
             }
         </nav>
     </div>
-        <div class="container body-content">
-            @RenderBody()
-            <hr />
-            <footer>
-                <p>&copy; @DateTime.Now.Year - Address Service Co., Ltd.</p>
-            </footer>
-        </div>
-        @Scripts.Render("~/bundles/bootstrap")
-        @Scripts.Render("~/bundles/cmnlib")
-        @RenderSection("scripts", required: false)
-    <nav id="navigation">
-        <a href="../Auth/Login" class="logo">SIVA</a>
-        @if (User.Identity.IsAuthenticated)
-        {
-        <ul class="links">
-            <li>@Html.ActionLink("ホワイトボード", "WhiteBoard", "WhiteBoard")</li>
-            <li>@Html.ActionLink("進捗ボード", "ProgressBoard", "WhiteBoard")</li>
-            <li>@Html.ActionLink("オーダーリスト", "SOListSearch", "SOList")</li>
-            <li>@Html.ActionLink("シリアルリスト", "Index", "SerialList")</li>
-            <li class="dropdown">
-                <a href="#" class="trigger-drop" style="margin-right:80px;">工程用<i class="arrow"></i></a>
-                <ul class="drop">
-                    <li>@Html.ActionLink("検査開始", "Index", "InspStart")</li>
-                    <li>@Html.ActionLink("検査完了", "Index", "InspEnd")</li>
-                </ul>
-            </li>
-            <li class="dropdown">
-                <a href="#" class="trigger-drop" style="margin-right:80px;">マスタメンテ<i class="arrow"></i></a>
-                <ul class="drop">
-                    <li><a href="#">ユーザーマスタ</a></li>
-                    <li><a href="#">ASUS様指示マスタ</a></li>
-                    <li>@Html.ActionLink("作業計画取り込み", "PlanDataUpLoad", "WhiteBoard")</li>
-                </ul>
-            </li>
-            @if (Session["UserName"] != null)
-            {
-                <li><a href="#">@Session["UserName"].ToString()</a></li>
-            }
-            <li>@Html.ActionLink("ログアウト", "Logout", "Auth")</li>
-        </ul>
-        }
-    </nav>
+    <div class="page-title">
+    </div>
     <div class="container body-content">
         @RenderBody()
         <hr />
@@ -110,7 +70,6 @@
             <p>&copy; @DateTime.Now.Year - Address Service Co., Ltd.</p>
         </footer>
     </div>
-
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/cmnlib")
     @RenderSection("scripts", required: false)
