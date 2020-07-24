@@ -3,44 +3,18 @@
     ViewBag.Title = "オーダー検索";
 }
 <!DOCTYPE html>
-
 <head>
-    <link href="~/Content/SOList.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/css/theme.default.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" defer></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" defer></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js" defer></script>
-    <style>
-        .ui-datepicker-title {
-            display: flex;
-            justify-content: center;
-            -webkit-justify-content: center;
-        }
-
-        .ui-datepicker select.ui-datepicker-year {
-            margin-right: 0.1rem;
-            width: auto;
-        }
-
-        .ui-datepicker select.ui-datepicker-month {
-            margin-left: 0.3rem;
-            width: auto;
-        }
-
-        .ui-datepicker {
-            font-size: 100%;
-        }
-    </style>
+    <link href="~/Content/SOList.css" rel="stylesheet" />
 </head>
-
 @Html.ValidationSummary()
 @using (Html.BeginForm(new { autocomplete = "off" }))
 {
     <div style="color:Red">
         @Html.Encode(TempData["msg"])
     </div>
+
+    <!------------------------------------------------------------- 検索条件 ------------------------------------------------------------------>
     <div class="form-row">
         <label for="SrchSONO" class="col-form-label-sm">SO#</label>
         @Html.TextBoxFor(model => model.SrchSONO, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
@@ -77,14 +51,25 @@
         )
     </div>
 
+    <div class="form-row">
+        <label for="SrchStatusID" class="col-form-label-sm">日付チェック</label>
+        @Html.DropDownListFor(
+         model => model.SrchDateError, // プロパティ
+         (IEnumerable<SelectListItem>)ViewBag.DropDownDateError,
+         "",
+         new { @class = "form-control form-control-sm", style = "max-width:200px;" }
+        )
+    </div>
+
     <div style="float: left; margin-bottom:2px;">
-        <input type="button" class="btn btn-danger btn" onclick="location.href='@Url.Action("SOListUpLoad", "SOList")'" value="オーダー情報取り込み" />
+        <input type="button" class="btn btn-danger" onclick="location.href='@Url.Action("SOListUpLoad", "SOList")'" value="オーダー情報取り込み" />
     </div>
     <div style="float: right; margin-bottom:2px;">
-        <input type="submit" class="btn btn-primary btn" formaction="/SOList/SOListSearchResult" name="Search" value="検索">
-        <input type="button" class="btn btn-primary btn" name="Clear" id="ClearBtn" value="クリア">
+        <input type="submit" class="btn btn-primary" formaction="/SOList/SOListSearchResult" name="Search" value="検索">
+        <input type="button" class="btn btn-primary" name="Clear" id="ClearBtn" value="クリア">
     </div>
-    <!-- ここから検索結果 ------------------------------------------------------------------>
+
+    <!------------------------------------------------------ ここから検索結果 ------------------------------------------------------------------>
     <table id="So-List" class="table table-striped table-bordered table-sm table-hover">
         <thead class="thead-light">
             <tr>
@@ -112,7 +97,22 @@
             {
                 foreach (var item in Model.SrchRstOrderList)
                 {
-                    <tr>
+                    string StrClass = null;
+
+                    if (item.RecordKBN == "1")
+                    {
+                        StrClass = "table-danger";
+                    }
+                    else if (item.RecordKBN == "2")
+                    {
+                        StrClass = "table-warning";
+                    }
+                    else
+                    {
+                        StrClass = "table-primary";
+                    }
+
+                    <tr class="@StrClass">
                         <td>
                             <input type="submit" class="btn btn-primary btn-sm" name="SOListUpdateLink" formaction="/SOList/SOListUpdate?SONO=@(item.SONO)" value="編集" />
                         </td>
@@ -123,18 +123,95 @@
                             }
                         </td>
                         <td>@Html.DisplayFor(modelItem => item.SONO)</td>
-                        <td>@Html.DisplayFor(modelItem => item.n90N)</td>
-                        <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
-                        <td>@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
+                        @if (item.CHGn90NFLG == "1")
+                        {
+                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.n90N)</td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(modelItem => item.n90N)</td>
+                        }
+                        @if (item.CHGModelNameFLG == "1")
+                        {
+                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.ModelName)</td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
+                        }
+                        @if (item.CHGShippingQuantityFLG == "1")
+                        {
+                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
+                        }
                         <td>@Html.DisplayFor(modelItem => item.FixedShippingQuantity)</td>
-                        <td>@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
-                        <td>@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
-                        <td>@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
-                        <td>@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
+                        @if (item.EstArrivalDateWarningFLG == "1")
+                        {
+                            <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
+                        }
+                        else
+                        {
+                            if (item.CHGEstArrivalDateFLG == "1")
+                            {
+                                <td class="bg-warning">@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
+                            }
+                            else
+                            {
+                                <td>@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
+                            }
+                        }
+                        @if (item.PrefReportingDateWarningFLG == "1")
+                        {
+                            <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
+                        }
+                        else
+                        {
+                            if (item.CHGPrefReportingDateFLG == "1")
+                            {
+                                <td class="bg-warning">@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
+                            }
+                            else
+                            {
+                                <td>@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
+                            }
+                        }
+                        @if (item.SiTekEstArrivalDateWarningFLG == "1")
+                        {
+                            <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
+                        }
+                        else
+                        {
+                            if (item.CHGSiTekEstArrivalDateFLG == "1")
+                            {
+                                <td class="bg-warning">@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
+                            }
+                            else
+                            {
+                                <td>@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
+                            }
+                        }
+                        @if (item.CHGDeliveryLocationFLG == "1")
+                        {
+                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
+                        }
                         <td>@Html.DisplayFor(modelItem => item.CompleteWorkUnit)</td>
                         <td>@Html.DisplayFor(modelItem => item.DOAUnit)</td>
                         <td>@Html.DisplayFor(modelItem => item.HoldUnit)</td>
-                        <td>@Html.DisplayFor(modelItem => item.N01NO)</td>
+                        @if (item.CHGN01NoFLG == "1")
+                        {
+                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.N01NO)</td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(modelItem => item.N01NO)</td>
+                        }
                         <td>@Html.DisplayFor(modelItem => item.SOStatusName)</td>
                         <td>@Html.DisplayFor(modelItem => item.STChangeDate)</td>
                     </tr>
@@ -143,8 +220,12 @@
         </tbody>
     </table>
 }
-
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" defer></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.0/js/jquery.tablesorter.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" defer></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js" defer></script>
 <script type="text/javascript">
+
     // クリアボタンクリック処理
     $("#ClearBtn").on("click", function () {
         clearForm(this.form);
@@ -152,7 +233,12 @@
 
     // ソート処理
     $(document).ready(function () {
-        $('#So-List').tablesorter();
+        $('#So-List').tablesorter({
+            headers: {
+                0: { sorter: false },
+                1: { sorter: false }
+            }
+        });
     });
 
     // ADS到着予定日Fromクリック処理

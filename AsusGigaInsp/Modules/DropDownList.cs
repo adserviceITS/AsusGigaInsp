@@ -101,6 +101,40 @@ namespace AsusGigaInsp.Modules
 
             return DropDownListSerialStatus;
         }
+
+        // 権限
+        public List<CombAuthorityName> GetDropDownListAuthorityName()
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    ID, ");
+            stbSql.Append("    AUTHORITY_NAME ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    M_AUTHORITY ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    DEL_FLG = '0' ");
+            stbSql.Append("ORDER BY ");
+            stbSql.Append("    ID ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            List<CombAuthorityName> DropDownAuthorityName = new List<CombAuthorityName>();
+
+            while (sqlRdr.Read())
+            {
+                DropDownAuthorityName.Add(new CombAuthorityName
+                {
+                    ID = sqlRdr["ID"].ToString(),
+                    AuthorityName = sqlRdr["AUTHORITY_NAME"].ToString()
+                });
+            }
+            dsnLib.DB_Close();
+
+            return DropDownAuthorityName;
+        }
+
     }
 
     public class CombInstruction
@@ -120,4 +154,11 @@ namespace AsusGigaInsp.Modules
         public string SerialStatusID { get; set; }
         public string SerialStatusName { get; set; }
     }
+
+    public class CombAuthorityName
+    {
+        public string ID { get; set; }
+        public string AuthorityName { get; set; }
+    }
+
 }

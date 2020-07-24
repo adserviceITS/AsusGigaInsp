@@ -1,0 +1,126 @@
+﻿@model AsusGigaInsp.Models.UserEntModels
+@{
+    ViewBag.Title = "ユーザー登録";
+}
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary()
+
+    <head>
+        <style type="text/css">
+            .auto-style1 {
+                height: 30px;
+                width: 130px;
+            }
+
+            .auto-style2 {
+                height: 30px;
+                width: 400px;
+            }
+
+            .no-border-style {
+                border: solid 0px;
+            }
+        </style>
+    </head>
+    <input type="hidden" id="EntMode" name="EntMode" value="@Model.EntMode" />
+
+    <div class="container-fluid">
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">ユーザーID</label>
+            @if (Model.EntMode == "Add")
+            {
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(model => model.EntUserID, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+                </div>
+            }
+            else
+            {
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(model => model.EntUserID, new { @readonly = "readonly", @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+                </div>
+            }
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">ユーザー名</label>
+            <div class="col-sm-8">
+                @Html.TextBoxFor(model => model.EntUserName, null, new { @class = "form-control form-control-sm", style = "width:300px;", placeholder = "" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">社員番号</label>
+            <div class="col-sm-8">
+                @Html.TextBoxFor(model => model.EntEmployeeNo, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">パスワード</label>
+            <div class="col-sm-8">
+                @Html.PasswordFor(model => model.EntPass, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "", value = Model.EntPass })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">パスワード確認</label>
+            <div class="col-sm-8">
+                @Html.PasswordFor(model => model.EntChkPass, new { value = Model.EntChkPass, @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">メールアドレス</label>
+            <div class="col-sm-8">
+                @Html.TextBoxFor(model => model.EntMail, null, new { @class = "form-control form-control-sm", style = "max-width:300px;", placeholder = "" })
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">権限</label>
+            <div class="col-sm-8">
+                @Html.DropDownListFor(
+                    model =>model.EntAuthorityKBN, // プロパティ
+                    new SelectList(Model.DropDownListAuthorityName, "ID", "AuthorityName"),
+                    "選択してください",
+                    new { @class= "form-control form-control-sm", style="max-width:200px;" }
+                )
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <label class="col-sm-2 col-form-label">使用中</label>
+            <div class="col-sm-8">
+                @Html.DropDownListFor(
+                     model => model.EntDelFLG, // プロパティ
+                     (IEnumerable<SelectListItem>)ViewBag.DropDownDelFlg,
+                     "選択してください",
+                     new { @class = "form-control form-control-sm", style = "max-width:100px;" }
+                )
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-8"></div>
+            <div class="col-sm-1">
+                <input type="submit" class="btn btn-danger" formaction="/Master/UserEntryResult" name="UserEntryResult" value="登録">
+            </div>
+            <div class="col-sm-1">
+                <input type="button" class="btn btn-primary" onclick="history.back()" name="Back" value="戻る">
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+    </div>
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>

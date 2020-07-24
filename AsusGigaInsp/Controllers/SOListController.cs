@@ -24,6 +24,13 @@ namespace AsusGigaInsp.Controllers
             // ステータスコンボBOXをセット
             models.SetDropDownListStatusName();
 
+            // 日付のエラー有無コンボBOXをセット
+            ViewBag.DropDownDateError = new SelectListItem[]
+            {
+                new SelectListItem() { Value="0", Text="非稼働日に該当しない"},
+                new SelectListItem() { Value="1", Text="非稼働日に該当する"}
+            };
+
             return View(models);
         }
 
@@ -40,6 +47,13 @@ namespace AsusGigaInsp.Controllers
 
             // ステータスコンボBOXをセット
             models.SetDropDownListStatusName();
+
+            // 日付のエラー有無コンボBOXをセット
+            ViewBag.DropDownDateError = new SelectListItem[]
+            {
+                new SelectListItem() { Value="0", Text="非稼働日に該当しない"},
+                new SelectListItem() { Value="1", Text="非稼働日に該当する"}
+            };
 
             return View("SOListSearch", models);
         }

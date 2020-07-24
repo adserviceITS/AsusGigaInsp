@@ -342,6 +342,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append("    ADS_REMARK, ");
                 stbSql.Append("    N01_NO, ");
                 stbSql.Append("    SO_STATUS_ID, ");
+                stbSql.Append("    ST_CHANGE_DATE, ");
                 stbSql.Append("    RECORD_KBN, ");
                 stbSql.Append("    DEL_FLG, ");
                 stbSql.Append("    INSERT_DATE, ");
@@ -369,6 +370,7 @@ namespace AsusGigaInsp.Models
                     }
                 }
                 stbSql.Append("    '1010', ");
+                stbSql.Append("    '" + DTImportTime + "', ");
                 stbSql.Append("    '1', ");　//---　レコード区分（新規）
                 stbSql.Append("    '0', ");
                 stbSql.Append("    '" + DTImportTime + "', ");
@@ -392,8 +394,10 @@ namespace AsusGigaInsp.Models
                 stbSql.Clear();
             }
 
+            // T_SO_STATUSの前後比較のためレコード読み取り
             stbSql.Append("SELECT ");
             stbSql.Append("    T_SO_STATUS.SO_NO, ");
+            stbSql.Append("    T_SO_STATUS.RECORD_KBN, ");
             stbSql.Append("    T_SO_STATUS.n90N AS NEW_n90N, ");
             stbSql.Append("    T_SO_STATUS.MODEL_NAME AS NEW_MODEL_NAME, ");
             stbSql.Append("    T_SO_STATUS.SHIPPING_QUANTITY AS NEW_SHIPPING_QUANTITY, ");
@@ -409,20 +413,55 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    WK_T_SO_STATUS.PREF_REPORTING_DATE AS OLD_PREF_REPORTING_DATE, ");
             stbSql.Append("    WK_T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE AS OLD_SI_TEK_EST_ARRIVAL_DATE, ");
             stbSql.Append("    WK_T_SO_STATUS.DELIVERY_LOCATION AS OLD_DELIVERY_LOCATION, ");
-            stbSql.Append("    WK_T_SO_STATUS.N01_NO AS OLD_N01_NO ");
+            stbSql.Append("    WK_T_SO_STATUS.N01_NO AS OLD_N01_NO, ");
+            stbSql.Append("    IsNull(TBL1.EST_ARRIVAL_DATE_WARNING_FLG, '0') AS EST_ARRIVAL_DATE_WARNING_FLG, ");
+            stbSql.Append("    IsNull(TBL2.PREF_REPORTING_DATE_WARNING_FLG, '0') AS PREF_REPORTING_DATE_WARNING_FLG, ");
+            stbSql.Append("    IsNull(TBL3.SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG, '0') AS SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG ");
             stbSql.Append("FROM ");
             stbSql.Append("    T_SO_STATUS ");
-            stbSql.Append("    	INNER JOIN WK_T_SO_STATUS  ");
-            stbSql.Append("    	    ON T_SO_STATUS.SO_NO = WK_T_SO_STATUS.SO_NO  ");
-            stbSql.Append("WHERE ");
-            stbSql.Append("    RECORD_KBN = '2' ");
+            stbSql.Append("    LEFT JOIN WK_T_SO_STATUS  ");
+            stbSql.Append("        ON T_SO_STATUS.SO_NO = WK_T_SO_STATUS.SO_NO ");
+            stbSql.Append("    LEFT JOIN ");
+            stbSql.Append("        (  ");
+            stbSql.Append("            SELECT  ");
+            stbSql.Append("                T_SO_STATUS.SO_NO, ");
+            stbSql.Append("    	           '1' AS EST_ARRIVAL_DATE_WARNING_FLG ");
+            stbSql.Append("    	       FROM ");
+            stbSql.Append("    	           T_SO_STATUS ");
+            stbSql.Append("    	           INNER JOIN M_HOLIDAY ");
+            stbSql.Append("    	               ON T_SO_STATUS.EST_ARRIVAL_DATE = M_HOLIDAY.HOLIDAY ");
+            stbSql.Append("        ) TBL1 ");
+            stbSql.Append("    	       ON T_SO_STATUS.SO_NO = TBL1.SO_NO ");
+            stbSql.Append("    LEFT JOIN ");
+            stbSql.Append("        ( ");
+            stbSql.Append("            SELECT  ");
+            stbSql.Append("                T_SO_STATUS.SO_NO, ");
+            stbSql.Append("                '1' AS PREF_REPORTING_DATE_WARNING_FLG ");
+            stbSql.Append("            FROM ");
+            stbSql.Append("                T_SO_STATUS ");
+            stbSql.Append("                INNER JOIN M_HOLIDAY ");
+            stbSql.Append("                    ON T_SO_STATUS.PREF_REPORTING_DATE = M_HOLIDAY.HOLIDAY ");
+            stbSql.Append("        ) TBL2 ");
+            stbSql.Append("            ON T_SO_STATUS.SO_NO = TBL2.SO_NO ");
+            stbSql.Append("    LEFT JOIN ");
+            stbSql.Append("        ( ");
+            stbSql.Append("            SELECT  ");
+            stbSql.Append("                T_SO_STATUS.SO_NO, ");
+            stbSql.Append("                '1' AS SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG ");
+            stbSql.Append("            FROM ");
+            stbSql.Append("                T_SO_STATUS ");
+            stbSql.Append("                INNER JOIN M_HOLIDAY ");
+            stbSql.Append("                    ON T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE = M_HOLIDAY.HOLIDAY ");
+            stbSql.Append("        ) TBL3 ");
+            stbSql.Append("            ON T_SO_STATUS.SO_NO = TBL3.SO_NO ");
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
+            // データテーブルの追加
             DataSet DSDataSet = new DataSet();
-            DataTable DTDataTable = new DataTable();
+            DataTable DTDataTable = new DataTable("Table1");
 
-            // カラム名の追加
+            // データテーブルにカラム名の追加
             DTDataTable.Columns.Add("SO_NO");
             DTDataTable.Columns.Add("CHG_n90N_FLG");
             DTDataTable.Columns.Add("CHG_MODEL_NAME_FLG");
@@ -432,91 +471,165 @@ namespace AsusGigaInsp.Models
             DTDataTable.Columns.Add("CHG_SI_TEK_EST_ARRIVAL_DATE_FLG");
             DTDataTable.Columns.Add("CHG_DELIVERY_LOCATION_FLG");
             DTDataTable.Columns.Add("CHG_N01_NO_FLG");
+            DTDataTable.Columns.Add("EST_ARRIVAL_DATE_WARNING_FLG");
+            DTDataTable.Columns.Add("PREF_REPORTING_DATE_WARNING_FLG");
+            DTDataTable.Columns.Add("SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG");
+
+            // データセットにデータテーブルを追加
+            DSDataSet.Tables.Add(DTDataTable);
 
             while (sqlRdr.Read())
             {
                 // DataRowクラスを使ってデータを追加
-                DataRow DRDataRow = DTDataTable.NewRow();
+                DataRow DRDataRow = DSDataSet.Tables["Table1"].NewRow();
 
-                DRDataRow["SONO"] = sqlRdr["NEW_n90N"].ToString();
+                DRDataRow["SO_NO"] = sqlRdr["SO_NO"].ToString();
 
-                if (sqlRdr["NEW_n90N"].ToString() != sqlRdr["OLD_n90N"].ToString())
+                if (sqlRdr["RECORD_KBN"].ToString() == "2")
                 {
-                    DRDataRow["CHG_n90N_FLG"] = "1";
-                }
-                else
-                {
-                    DRDataRow["CHG_n90N_FLG"] = "0";
+                    if (sqlRdr["NEW_n90N"].ToString() != sqlRdr["OLD_n90N"].ToString())
+                    {
+                        DRDataRow["CHG_n90N_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_n90N_FLG"] = "0";
+                    }
+
+                    if (sqlRdr["NEW_MODEL_NAME"].ToString() != sqlRdr["OLD_MODEL_NAME"].ToString())
+                    {
+                        DRDataRow["CHG_MODEL_NAME_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_MODEL_NAME_FLG"] = "0";
+                    }
+
+                    if (sqlRdr["NEW_SHIPPING_QUANTITY"].ToString() != sqlRdr["OLD_SHIPPING_QUANTITY"].ToString())
+                    {
+                        DRDataRow["CHG_SHIPPING_QUANTITY_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_SHIPPING_QUANTITY_FLG"] = "0";
+                    }
+
+                    if (sqlRdr["NEW_EST_ARRIVAL_DATE"].ToString() != sqlRdr["OLD_EST_ARRIVAL_DATE"].ToString())
+                    {
+                        DRDataRow["CHG_EST_ARRIVAL_DATE_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_EST_ARRIVAL_DATE_FLG"] = "0";
+                    }
+
+                    if (sqlRdr["NEW_PREF_REPORTING_DATE"].ToString() != sqlRdr["OLD_PREF_REPORTING_DATE"].ToString())
+                    {
+                        DRDataRow["CHG_PREF_REPORTING_DATE_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_PREF_REPORTING_DATE_FLG"] = "0";
+                    }
+
+                    if (sqlRdr["NEW_SI_TEK_EST_ARRIVAL_DATE"].ToString() != sqlRdr["OLD_SI_TEK_EST_ARRIVAL_DATE"].ToString())
+                    {
+                        DRDataRow["CHG_SI_TEK_EST_ARRIVAL_DATE_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_SI_TEK_EST_ARRIVAL_DATE_FLG"] = "0";
+                    }
+
+                    if (sqlRdr["NEW_DELIVERY_LOCATION"].ToString() != sqlRdr["OLD_DELIVERY_LOCATION"].ToString())
+                    {
+                        DRDataRow["CHG_DELIVERY_LOCATION_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_DELIVERY_LOCATION_FLG"] = "0";
+                    }
+
+                    if (sqlRdr["NEW_N01_NO"].ToString() != sqlRdr["OLD_N01_NO"].ToString())
+                    {
+                        DRDataRow["CHG_N01_NO_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_N01_NO_FLG"] = "0";
+                    }
                 }
 
-                if (sqlRdr["NEW_MODEL_NAME"].ToString() != sqlRdr["OLD_MODEL_NAME"].ToString())
-                {
-                    DRDataRow["CHG_MODEL_NAME_FLG"] = "1";
-                }
-                else
-                {
-                    DRDataRow["CHG_MODEL_NAME_FLG"] = "0";
-                }
+                DRDataRow["EST_ARRIVAL_DATE_WARNING_FLG"] = sqlRdr["EST_ARRIVAL_DATE_WARNING_FLG"].ToString();
+                DRDataRow["PREF_REPORTING_DATE_WARNING_FLG"] = sqlRdr["PREF_REPORTING_DATE_WARNING_FLG"].ToString();
+                DRDataRow["SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG"] = sqlRdr["SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG"].ToString();
 
-                if (sqlRdr["NEW_SHIPPING_QUANTITY"].ToString() != sqlRdr["OLD_SHIPPING_QUANTITY"].ToString())
-                {
-                    DRDataRow["CHG_SHIPPING_QUANTITY_FLG"] = "1";
-                }
-                else
-                {
-                    DRDataRow["CHG_SHIPPING_QUANTITY_FLG"] = "0";
-                }
-
-                if (sqlRdr["NEW_EST_ARRIVAL_DATE"].ToString() != sqlRdr["OLD_EST_ARRIVAL_DATE"].ToString())
-                {
-                    DRDataRow["CHG_EST_ARRIVAL_DATE_FLG"] = "1";
-                }
-                else
-                {
-                    DRDataRow["CHG_EST_ARRIVAL_DATE_FLG"] = "0";
-                }
-
-                if (sqlRdr["NEW_PREF_REPORTING_DATE"].ToString() != sqlRdr["OLD_PREF_REPORTING_DATE"].ToString())
-                {
-                    DRDataRow["CHG_PREF_REPORTING_DATE_FLG"] = "1";
-                }
-                else
-                {
-                    DRDataRow["CHG_PREF_REPORTING_DATE_FLG"] = "0";
-                }
-
-                if (sqlRdr["NEW_SI_TEK_EST_ARRIVAL_DATE"].ToString() != sqlRdr["OLD_SI_TEK_EST_ARRIVAL_DATE"].ToString())
-                {
-                    DRDataRow["CHG_SI_TEK_EST_ARRIVAL_DATE_FLG"] = "1";
-                }
-                else
-                {
-                    DRDataRow["CHG_SI_TEK_EST_ARRIVAL_DATE_FLG"] = "0";
-                }
-
-                if (sqlRdr["NEW_DELIVERY_LOCATION"].ToString() != sqlRdr["OLD_DELIVERY_LOCATION"].ToString())
-                {
-                    DRDataRow["CHG_DELIVERY_LOCATION_FLG"] = "1";
-                }
-                else
-                {
-                    DRDataRow["CHG_DELIVERY_LOCATION_FLG"] = "0";
-                }
-
-                if (sqlRdr["NEW_N01_NO"].ToString() != sqlRdr["OLD_N01_NO"].ToString())
-                {
-                    DRDataRow["CHG_N01_NO_FLG"] = "1";
-                }
-                else
-                {
-                    DRDataRow["CHG_N01_NO_FLG"] = "0";
-                }
-
-                DTDataTable.Rows.Add(DRDataRow);
+                DSDataSet.Tables["Table1"].Rows.Add(DRDataRow);
             }
 
+            // T_SO_CHANGE_CONTROLのレコード削除
+            stbSql.Append("DELETE ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SO_CHANGE_CONTROL ");
 
+            dsnLib.ExecSQLUpdate(stbSql.ToString());
+            dsnLib.DB_Close();
+            stbSql.Clear();
 
+            int IntDTRowCount = DTDataTable.Rows.Count;
+            int IntDTColumnCount = DTDataTable.Columns.Count;
+
+            // T_SO_CHANGE_CONTROLにレコード追加
+            for (int IntRowCounter = 0; IntRowCounter < IntDTRowCount; IntRowCounter++)
+            {
+                stbSql.Append("INSERT ");
+                stbSql.Append("INTO T_SO_CHANGE_CONTROL ");
+                stbSql.Append("( ");
+                stbSql.Append("    SO_NO, ");
+                stbSql.Append("    CHG_n90N_FLG, ");
+                stbSql.Append("    CHG_MODEL_NAME_FLG, ");
+                stbSql.Append("    CHG_SHIPPING_QUANTITY_FLG, ");
+                stbSql.Append("    CHG_EST_ARRIVAL_DATE_FLG, ");
+                stbSql.Append("    CHG_PREF_REPORTING_DATE_FLG, ");
+                stbSql.Append("    CHG_SI_TEK_EST_ARRIVAL_DATE_FLG, ");
+                stbSql.Append("    CHG_DELIVERY_LOCATION_FLG, ");
+                stbSql.Append("    CHG_N01_NO_FLG, ");
+                stbSql.Append("    EST_ARRIVAL_DATE_WARNING_FLG, ");
+                stbSql.Append("    PREF_REPORTING_DATE_WARNING_FLG, ");
+                stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG, ");
+                stbSql.Append("    INSERT_DATE, ");
+                stbSql.Append("    INSERT_ID ");
+                stbSql.Append(") ");
+                stbSql.Append("VALUES ");
+                stbSql.Append("( ");
+                for (int IntColCounter = 0; IntColCounter < IntDTColumnCount; IntColCounter++)
+                {
+                    if (!string.IsNullOrEmpty(DSDataSet.Tables["Table1"].Rows[IntRowCounter][IntColCounter].ToString()))
+                    {
+                        if (IntColCounter != IntDTColumnCount)
+                        {
+                            stbSql.Append("    '" + DSDataSet.Tables["Table1"].Rows[IntRowCounter][IntColCounter].ToString() + "', ");
+                        }
+                        else
+                        {
+                            stbSql.Append("    '" + DSDataSet.Tables["Table1"].Rows[IntRowCounter][IntColCounter].ToString() + "' ");
+                        }
+                    }
+                    else
+                    {
+                        stbSql.Append("    null, ");
+                    }
+                }
+                stbSql.Append("    '" + DTImportTime + "', ");
+                stbSql.Append("    '" + StrUpdUID + "') ");
+
+                dsnLib.ExecSQLUpdate(stbSql.ToString());
+
+                dsnLib.DB_Close();
+
+                stbSql.Clear();
+
+            }
         }
 
         //------------------------------------------------------

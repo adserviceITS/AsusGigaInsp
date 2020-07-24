@@ -138,6 +138,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\InspEndController.cs" />
     <Compile Include="Controllers\InspStartController.cs" />
+    <Compile Include="Controllers\MasterController.cs" />
     <Compile Include="Controllers\SerialListController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -148,6 +149,7 @@
     </Compile>
     <Compile Include="Models\InspEndModels.cs" />
     <Compile Include="Models\InspStartModels.cs" />
+    <Compile Include="Models\MasterModels.cs" />
     <Compile Include="Models\SerialEditModels.cs" />
     <Compile Include="Models\SerialUploadModels.cs" />
     <Compile Include="Models\SOListUpDateModels.cs" />
@@ -174,6 +176,7 @@
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\Login.css" />
     <Content Include="Content\ProgressBoard.css" />
+    <Content Include="Content\UserSearch.css" />
     <Content Include="Content\SOList.css" />
     <Content Include="Content\SerialList.css" />
     <Content Include="favicon.ico" />
@@ -181,8 +184,8 @@
     <Content Include="Content\Site.css" />
     <Content Include="img\calendar-icon.png" />
     <Content Include="img\sort.png" />
-    <Content Include="img\sort_down.png" />
-    <Content Include="img\sort_up.png" />
+    <Content Include="img\sort_asc.png" />
+    <Content Include="img\sort_desc.png" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -338,7 +341,9 @@
     <Content Include="Views\SerialList\SerialEdit.cshtml" />
     <Content Include="Views\SerialList\SerialUpLoad.cshtml" />
     <Content Include="Views\WhiteBoard\PlanDataUpLoad.cshtml" />
-    <Content Include="Views\SOList\SOListSearch - コピー.cshtml" />
+    <Content Include="Views\Master\UserEntry.cshtml" />
+    <Content Include="Views\Master\UserSearch.cshtml" />
+    <Content Include="Views\Master\HolidayDataUpLoad.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

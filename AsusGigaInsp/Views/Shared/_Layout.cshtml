@@ -21,88 +21,48 @@
                 // ユーザー情報を取得
                 UserInfo userInfo = new UserInfo(Session["ID"].ToString());
 
-                <ul class="links">
-                    @*管理者用のメニューを生成*@
-                    @if (userInfo.AuthorityKbn == "1")
-                    {
-                        <li><a href="#">ホワイトボード</a></li>
-                        <li>@Html.ActionLink("進捗ボード", "ProgressBoard", "WhiteBoard")</li>
-                        <li>@Html.ActionLink("オーダーリスト", "SOListSearch", "SOList")</li>
-                        <li>@Html.ActionLink("シリアルリスト", "Index", "SerialList")</li>
-                        @*<li class="dropdown">
-                            <a href="#" class="trigger-drop">工程用<i class="arrow"></i></a>
-                            <ul class="drop" style="padding-left:10px;">
-                                <li style="margin-right:70px;">@Html.ActionLink("検査開始", "Index", "InspStart")</li>
-                                <li>@Html.ActionLink("検査完了", "Index", "InspEnd")</li>
-                            </ul>
-                        </li>*@
-                        <li class="dropdown">
-                            <a href="#" class="trigger-drop">マスタメンテ<i class="arrow"></i></a>
-                            <ul class="drop" style="padding-left:10px;">
-                                <li style="margin-right:150px;"><a href="#">ユーザーマスタ</a>
-                                <li><a href="#">ASUS様指示マスタ</a></li>
-                            </ul>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="dropdown">
-                            <a href="#" class="trigger-drop">工程用<i class="arrow"></i></a>
-                            <ul class="drop" style="padding-left:10px;">
-                                <li style="margin-right:70px;">@Html.ActionLink("検査開始", "Index", "InspStart")</li>
-                                <li>@Html.ActionLink("検査完了", "Index", "InspEnd")</li>
-                            </ul>
-                        </li>
-                    }
-                    <li><a href="https://192.168.121.181" target="_blank" class="text-primary"><u>カメラツール</u></a></li>
-                    <li class="text-success mark" style="padding-top:0;">@userInfo.UserName</li>
-                    <li>@Html.ActionLink("ログアウト", "Logout", "Auth")</li>
+            <ul class="links">
+                @*管理者用のメニューを生成*@
+                @if (userInfo.AuthorityKbn == "1")
+                {
+                    <li>@Html.ActionLink("ホワイトボード", "WhiteBoard", "WhiteBoard")</li>
+                    <li>@Html.ActionLink("進捗ボード", "ProgressBoard", "WhiteBoard")</li>
+                    <li>@Html.ActionLink("オーダーリスト", "SOListSearch", "SOList")</li>
+                    <li>@Html.ActionLink("シリアルリスト", "Index", "SerialList")</li>
+                    @*<li class="dropdown">
+                <a href="#" class="trigger-drop">工程用<i class="arrow"></i></a>
+                <ul class="drop" style="padding-left:10px;">
+                    <li style="margin-right:70px;">@Html.ActionLink("検査開始", "Index", "InspStart")</li>
+                    <li>@Html.ActionLink("検査完了", "Index", "InspEnd")</li>
                 </ul>
+            </li>*@
+                    <li class="dropdown">
+                        <a href="#" class="trigger-drop">マスタメンテ<i class="arrow"></i></a>
+                        <ul class="drop" style="padding-left:10px;">
+                            <li style="margin-right:150px;">@Html.ActionLink("ユーザーマスタ", "UserSearch", "Master")</li>
+                            <li><a href="#">ASUS様指示マスタ</a></li>
+                            <li>@Html.ActionLink("非稼働日取り込み", "HolidayDataUpLoad", "Master")</li>
+                            <li>@Html.ActionLink("作業計画取り込み", "PlanDataUpLoad", "WhiteBoard")</li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="dropdown">
+                        <a href="#" class="trigger-drop">工程用<i class="arrow"></i></a>
+                        <ul class="drop" style="padding-left:10px;">
+                            <li style="margin-right:70px;">@Html.ActionLink("検査開始", "Index", "InspStart")</li>
+                            <li>@Html.ActionLink("検査完了", "Index", "InspEnd")</li>
+                        </ul>
+                    </li>
+                }
+                <li><a href="https://192.168.121.181" target="_blank" class="text-primary"><u>カメラツール</u></a></li>
+                <li class="text-success mark" style="padding-top:0;">@userInfo.UserName</li>
+                <li>@Html.ActionLink("ログアウト", "Logout", "Auth")</li>
+            </ul>
             }
         </nav>
     </div>
-        <div class="container body-content">
-            @RenderBody()
-            <hr />
-            <footer>
-                <p>&copy; @DateTime.Now.Year - Address Service Co., Ltd.</p>
-            </footer>
-        </div>
-        @Scripts.Render("~/bundles/bootstrap")
-        @Scripts.Render("~/bundles/cmnlib")
-        @RenderSection("scripts", required: false)
-    <nav id="navigation">
-        <a href="../Auth/Login" class="logo">SIVA</a>
-        @if (User.Identity.IsAuthenticated)
-        {
-        <ul class="links">
-            <li>@Html.ActionLink("ホワイトボード", "WhiteBoard", "WhiteBoard")</li>
-            <li>@Html.ActionLink("進捗ボード", "ProgressBoard", "WhiteBoard")</li>
-            <li>@Html.ActionLink("オーダーリスト", "SOListSearch", "SOList")</li>
-            <li>@Html.ActionLink("シリアルリスト", "Index", "SerialList")</li>
-            <li class="dropdown">
-                <a href="#" class="trigger-drop" style="margin-right:80px;">工程用<i class="arrow"></i></a>
-                <ul class="drop">
-                    <li>@Html.ActionLink("検査開始", "Index", "InspStart")</li>
-                    <li>@Html.ActionLink("検査完了", "Index", "InspEnd")</li>
-                </ul>
-            </li>
-            <li class="dropdown">
-                <a href="#" class="trigger-drop" style="margin-right:80px;">マスタメンテ<i class="arrow"></i></a>
-                <ul class="drop">
-                    <li><a href="#">ユーザーマスタ</a></li>
-                    <li><a href="#">ASUS様指示マスタ</a></li>
-                    <li>@Html.ActionLink("作業計画取り込み", "PlanDataUpLoad", "WhiteBoard")</li>
-                </ul>
-            </li>
-            @if (Session["UserName"] != null)
-            {
-                <li><a href="#">@Session["UserName"].ToString()</a></li>
-            }
-            <li>@Html.ActionLink("ログアウト", "Logout", "Auth")</li>
-        </ul>
-        }
-    </nav>
     <div class="container body-content">
         @RenderBody()
         <hr />
@@ -110,7 +70,6 @@
             <p>&copy; @DateTime.Now.Year - Address Service Co., Ltd.</p>
         </footer>
     </div>
-
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/cmnlib")
     @RenderSection("scripts", required: false)

@@ -16,3 +16,50 @@
 .form-control-sm {
     margin: 3px 20px 3px 5px;
 }
+
+.tablesorter-headerUnSorted {
+    background-image: url('../img/sort.png');
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: 15px;
+}
+
+.tablesorter-headerAsc {
+    background-image: url('../img/sort_asc.png');
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    border-bottom: #000 2px solid;
+    background-size: 13px;
+}
+
+.tablesorter-headerDesc {
+    background-image: url('../img/sort_desc.png');
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    border-bottom: #000 2px solid;
+    background-size: 13px;
+}
+
+.sorter-false {
+    background-image: none;
+}
+
+.ui-datepicker-title {
+    display: flex;
+    justify-content: center;
+    -webkit-justify-content: center;
+}
+
+.ui-datepicker select.ui-datepicker-year {
+    margin-right: 0.1rem;
+    width: auto;
+}
+
+.ui-datepicker select.ui-datepicker-month {
+    margin-left: 0.3rem;
+    width: auto;
+}
+
+.ui-datepicker {
+    font-size: 100%;
+}

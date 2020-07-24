@@ -22,6 +22,7 @@ namespace AsusGigaInsp.Models
         public string SrchSiTekEstArrivalDate_S { get; set; }
         public string SrchSiTekEstArrivalDate_E { get; set; }
         public string SrchStatusID { get; set; }
+        public string SrchDateError { get; set; }
 
         public IEnumerable<SrchRstOrder> SrchRstOrderList { get; set; }
         private StringBuilder stbWhere = new StringBuilder();
@@ -78,10 +79,22 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    T_SO_STATUS.SO_STATUS_ID, ");
             stbSql.Append("    M_SO_STATUS.SO_STATUS_NAME, ");
             stbSql.Append("    T_SO_STATUS.ST_CHANGE_DATE, ");
+            stbSql.Append("    T_SO_STATUS.RECORD_KBN, ");
             stbSql.Append("    IsNull(TBL1.COMPLETE_WORK_UNIT, 0) AS COMPLETE_WORK_UNIT, ");
             stbSql.Append("    IsNull(TBL2.DOA_UNIT, 0) AS DOA_UNIT, ");
             stbSql.Append("    IsNull(TBL3.HOLD_UNIT, 0) AS HOLD_UNIT, ");
-            stbSql.Append("    IsNull(TBL1.COMPLETE_WORK_UNIT, 0) - IsNull(TBL2.DOA_UNIT, 0) - IsNull(TBL3.HOLD_UNIT, 0) AS FIXED_SHIPPING_QUANTITY ");
+            stbSql.Append("    IsNull(TBL1.COMPLETE_WORK_UNIT, 0) - IsNull(TBL2.DOA_UNIT, 0) - IsNull(TBL3.HOLD_UNIT, 0) AS FIXED_SHIPPING_QUANTITY, ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_n90N_FLG, '0') AS CHG_n90N_FLG,  ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_MODEL_NAME_FLG, '0') AS CHG_MODEL_NAME_FLG, ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_SHIPPING_QUANTITY_FLG, '0') AS CHG_SHIPPING_QUANTITY_FLG, ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_EST_ARRIVAL_DATE_FLG, '0') AS CHG_EST_ARRIVAL_DATE_FLG, ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_PREF_REPORTING_DATE_FLG, '0') AS CHG_PREF_REPORTING_DATE_FLG, ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_SI_TEK_EST_ARRIVAL_DATE_FLG, '0') AS CHG_SI_TEK_EST_ARRIVAL_DATE_FLG, ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_DELIVERY_LOCATION_FLG, '0') AS CHG_DELIVERY_LOCATION_FLG, ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_N01_NO_FLG, '0') AS CHG_N01_NO_FLG, ");
+            stbSql.Append("    T_SO_CHANGE_CONTROL.EST_ARRIVAL_DATE_WARNING_FLG, ");
+            stbSql.Append("    T_SO_CHANGE_CONTROL.PREF_REPORTING_DATE_WARNING_FLG, ");
+            stbSql.Append("    T_SO_CHANGE_CONTROL.SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG ");
             stbSql.Append("FROM ");
             stbSql.Append("    T_SO_STATUS ");
             stbSql.Append("    INNER JOIN M_SO_STATUS ");
@@ -122,6 +135,8 @@ namespace AsusGigaInsp.Models
             stbSql.Append("            T_SERIAL_STATUS.SO_NO ");
             stbSql.Append("    ) TBL3 ");
             stbSql.Append("        ON T_SO_STATUS.SO_NO = TBL3.SO_NO ");
+            stbSql.Append("    LEFT JOIN T_SO_CHANGE_CONTROL ");
+            stbSql.Append("        ON T_SO_STATUS.SO_NO = T_SO_CHANGE_CONTROL.SO_NO ");
             stbSql.Append(stbWhere);
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
@@ -147,7 +162,19 @@ namespace AsusGigaInsp.Models
                     N01NO = sqlRdr["N01_NO"].ToString(),
                     SOStatusID = sqlRdr["SO_STATUS_ID"].ToString(),
                     SOStatusName = sqlRdr["SO_STATUS_NAME"].ToString(),
-                    STChangeDate = sqlRdr["ST_CHANGE_DATE"].ToString()
+                    STChangeDate = sqlRdr["ST_CHANGE_DATE"].ToString(),
+                    RecordKBN = sqlRdr["RECORD_KBN"].ToString(),
+                    CHGn90NFLG = sqlRdr["CHG_n90N_FLG"].ToString(),
+                    CHGModelNameFLG = sqlRdr["CHG_MODEL_NAME_FLG"].ToString(),
+                    CHGShippingQuantityFLG = sqlRdr["CHG_SHIPPING_QUANTITY_FLG"].ToString(),
+                    CHGEstArrivalDateFLG = sqlRdr["CHG_EST_ARRIVAL_DATE_FLG"].ToString(),
+                    CHGPrefReportingDateFLG = sqlRdr["CHG_PREF_REPORTING_DATE_FLG"].ToString(),
+                    CHGSiTekEstArrivalDateFLG = sqlRdr["CHG_SI_TEK_EST_ARRIVAL_DATE_FLG"].ToString(),
+                    CHGDeliveryLocationFLG = sqlRdr["CHG_DELIVERY_LOCATION_FLG"].ToString(),
+                    CHGN01NoFLG = sqlRdr["CHG_N01_NO_FLG"].ToString(),
+                    EstArrivalDateWarningFLG = sqlRdr["EST_ARRIVAL_DATE_WARNING_FLG"].ToString(),
+                    PrefReportingDateWarningFLG = sqlRdr["PREF_REPORTING_DATE_WARNING_FLG"].ToString(),
+                    SiTekEstArrivalDateWarningFLG = sqlRdr["SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG"].ToString()
                 });
             }
             dsnLib.DB_Close();
@@ -217,14 +244,24 @@ namespace AsusGigaInsp.Models
                     stbWhere.Append("AND T_SO_STATUS.SO_STATUS_ID = N'" + SrchStatusID + "' ");
                 }
 
+                if (!string.IsNullOrEmpty(SrchDateError))
+                {
+                    if (SrchDateError == "0")
+                    {
+                        stbWhere.Append("AND (T_SO_CHANGE_CONTROL.EST_ARRIVAL_DATE_WARNING_FLG = N'0' AND T_SO_CHANGE_CONTROL.PREF_REPORTING_DATE_WARNING_FLG = N'0' AND T_SO_CHANGE_CONTROL.SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG = N'0') ");
+                    }
+                    else
+                    {
+                        stbWhere.Append("AND (T_SO_CHANGE_CONTROL.EST_ARRIVAL_DATE_WARNING_FLG = N'1' OR T_SO_CHANGE_CONTROL.PREF_REPORTING_DATE_WARNING_FLG = N'1' OR T_SO_CHANGE_CONTROL.SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG = N'1') ");
+                    }
+                }
+
             }
         }
     }
 
     public class SrchRstOrder
     {
-        [DisplayName("SO ID")]
-        public string SOID { get; set; }
         [DisplayName("SO#")]
         public string SONO { get; set; }
         [DisplayName("90N")]
@@ -254,13 +291,24 @@ namespace AsusGigaInsp.Models
         public string HoldUnit { get; set; }
         [DisplayName("N01#")]
         public string N01NO { get; set; }
-        [DisplayName("ステータスID")]
-        public string SOStatusID { get; set; }
         [DisplayName("ステータス")]
         public string SOStatusName { get; set; }
         [DisplayName("ステータス変更日")]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd HH:mm:ss}")]
         public string STChangeDate { get; set; }
+        public string SOStatusID { get; set; }
+        public string RecordKBN { get; set; }
+        public string CHGn90NFLG { get; set; }
+        public string CHGModelNameFLG { get; set; }
+        public string CHGShippingQuantityFLG { get; set; }
+        public string CHGEstArrivalDateFLG { get; set; }
+        public string CHGPrefReportingDateFLG { get; set; }
+        public string CHGSiTekEstArrivalDateFLG { get; set; }
+        public string CHGDeliveryLocationFLG { get; set; }
+        public string CHGN01NoFLG { get; set; }
+        public string EstArrivalDateWarningFLG { get; set; }
+        public string PrefReportingDateWarningFLG { get; set; }
+        public string SiTekEstArrivalDateWarningFLG { get; set; }
     }
 
     public class DropDownStatusName
