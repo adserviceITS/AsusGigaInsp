@@ -2,26 +2,32 @@
 @{
     ViewBag.Title = "シリアルリスト";
 }
+<!-- カレンダーの月の右と左がBundleだと出ないのでとりあえずここで読み込む。後から調べる。 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
 <link href="~/Content/SerialList.css" rel="stylesheet" />
 @using System.Text
 @using (Html.BeginForm())
 {
     <!-- 検索条件エリア ------------------------------------------------------------------------------------------>
-    <div class="form-row">
-        <label for="SearchSONo" class="col-form-label-sm">SO#</label>
-        @Html.TextBoxFor(model => model.SearchSONo, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+    <div class="row">
+        <div class="row col-md-4";>
+            <label for="SearchSONo" class="col-form-label-sm col-md-3">SO#</label>
+            @Html.TextBoxFor(model => model.SearchSONo, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+        </div>
         <label for="SearchSerialNumber" class="col-form-label-sm">シリアル</label>
-        @Html.TextBoxFor(model => model.SearchSerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
+        @Html.TextBoxFor(model => model.SearchSerialNumber, null, new { @class = "form-control form-control-sm", style = "max-width:150px; margin-left:19px;", placeholder = "" })
         <label for="Search90N" class="col-form-label-sm">90N</label>
         @Html.TextBoxFor(model => model.Search90N, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
         <label for="SearchModelName" class="col-form-label-sm">Model Name</label>
         @Html.TextBoxFor(model => model.SearchModelName, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
     </div>
     <div class="row">
-        <label for="SearchWorkDayFrom" class="col-form-label-sm">作業日</label>
-        @Html.TextBoxFor(model => model.SearchWorkDayFrom, null, new { @class = "form-control form-control-sm", style = "max-width:120px;margin-right:1px;", placeholder = "From" })
-        <label for="SearchWorkDayTo" class="col-form-label-sm">～</label>
-        @Html.TextBoxFor(model => model.SearchWorkDayTo, null, new { @class = "form-control form-control-sm", style = "max-width:120px;margin-right:1px;", placeholder = "To" })
+        <div class="row col-md-4">
+            <label for="SearchWorkDayFrom" class="col-form-label-sm col-md-3">作業日</label>
+            @Html.TextBoxFor(model => model.SearchWorkDayFrom, null, new { @class = "form-control form-control-sm", style = "max-width:100px;margin-right:5px;", placeholder = "From" })
+            <label for="SearchWorkDayTo" class="col-form-label-sm">～</label>
+            @Html.TextBoxFor(model => model.SearchWorkDayTo, null, new { @class = "form-control form-control-sm", style = "max-width:100px;margin-left:5px;", placeholder = "To" })
+        </div>
         <label for="SearchSerialStatus" class="col-form-label-sm">ステータス</label>
         @Html.DropDownListFor(
             model => model.SearchSerialStatus, // プロパティ
@@ -40,7 +46,7 @@
             <label for="SearchNGFlg" class="form-check-label col-form-label-sm">NGフラグ</label>
             @Html.CheckBoxFor(
              model => model.SearchNGFlg,  // プロパティ
-             new { @class = "form-check-input", style = "margin-left:10px;" }      // その他の属性
+             new { @class = "form-check-input", style = "margin-left:10px; margin-top:10px;" }      // その他の属性
          )
         </div>
     </div>
@@ -142,19 +148,16 @@
         </div>
     </div>
 }
+
 <script type="text/javascript">
 $(function () {
     // 日付選択のカレンダー表示
     $('#SearchWorkDayFrom, #SearchWorkDayTo').datepicker({
-        buttonImage: "/img/calendar-icon.png",        // カレンダーアイコン画像
-        buttonText: "カレンダーから選択", // ツールチップ表示文言
-        buttonImageOnly: true,           // 画像として表示
-        showOn: "button",                   // カレンダー呼び出し元の定義
+        dateFormat: 'yy/mm/dd',
         showButtonPanel: true,
-        changeYear: true,
         changeMonth: true,
-        showOtherMonths: true,
-        firstDay: 1
+        changeYear: true,
+        showOtherMonths: true
     });
 
     // クリアボタンクリック処理

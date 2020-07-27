@@ -101,8 +101,8 @@ namespace AsusGigaInsp.Controllers
             models.UpdateStatus();
             models.SetInspStartSerialLists();
 
-            // 続けてバーコード入力出来るように画面表示を継続させる。
-            //ViewBag.ControllAction = "InspStart";
+            // 更新完了フラグをセット
+            ViewBag.CompleteFlg = "true";
 
             return View("InspStart", models);
         }

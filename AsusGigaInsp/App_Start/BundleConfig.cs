@@ -28,8 +28,8 @@ namespace AsusGigaInsp
                       "~/Scripts/umd/popper.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
+                      "~/Content/jquery-ui.min.css",
                       "~/Content/bootstrap.css",
-                      "~/Content/jquery-ui.css",
                       "~/Content/theme.default.min.css",
                       "~/Content/site.css"));
 
