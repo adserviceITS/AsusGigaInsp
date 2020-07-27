@@ -138,6 +138,9 @@ namespace AsusGigaInsp.Controllers
             models.UpdateStatus();
             models.SetInspEndSerialLists();
 
+            // 更新完了フラグをセット
+            ViewBag.CompleteFlg = "true";
+
             return View("InspEnd", models);
         }
     }

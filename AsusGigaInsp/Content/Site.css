@@ -713,39 +713,39 @@ nav {
 
 /* Datepicker 設定 ************************************************************/
 
-/* 日曜日のカラー設定 */
-td.ui-datepicker-week-end:last-child a.ui-state-default {
-    background-color: #ffecec; /* 背景色を設定 */
-    color: #f00 !important; /* 文字色を設定 */
-}
 /* 土曜日のカラー設定 */
-td.ui-datepicker-week-end a.ui-state-default {
+td.ui-datepicker-week-end:last-child a.ui-state-default {
     background-color: #eaeaff; /* 背景色を設定 */
     color: #00f !important; /* 文字色を設定 */
+}
+/* 日曜日のカラー設定 */
+td.ui-datepicker-week-end a.ui-state-default {
+    background-color: #ffecec; /* 背景色を設定 */
+    color: #f00 !important; /* 文字色を設定 */
 }
 /* 当日を示す色はそのまま */
 td.ui-datepicker-week-end a.ui-state-highlight {
     background-color: #fffa90 !important;
-}
-/* 当日を示す色はそのまま */
-td.ui-datepicker-week-end a.ui-state-highlight{
-  background-color: #fffa90!important;
-}
-/* 年プルダウンの調整 */
-select.ui-datepicker-year {
-    height: 1.7em !important; /* 高さ調整 */
-    margin-right: 5px !important; /* 「年」との余白設定 */
-    width: 70px !important; /* 幅調整 */
-}
-/* 月プルダウンの調整 */
-select.ui-datepicker-month {
-    height: 1.7em !important; /* 高さ調整 */
-    margin-left: 5px !important; /* 「年」との余白設定 */
-    width: 70px !important; /* 幅調整 */
 }
 img.ui-datepicker-trigger {
     cursor: pointer;
     vertical-align: middle;
     position: relative;
     padding: 4px;
+}
+.ui-datepicker-title {
+    display: flex;
+    justify-content: center;
+    -webkit-justify-content: center;
+}
+.ui-datepicker select.ui-datepicker-year {
+    margin-right: 0.1rem;
+    width: auto;
+}
+.ui-datepicker select.ui-datepicker-month {
+    margin-left: 0.3rem;
+    width: auto;
+}
+.ui-datepicker {
+    font-size: 100%;
 }

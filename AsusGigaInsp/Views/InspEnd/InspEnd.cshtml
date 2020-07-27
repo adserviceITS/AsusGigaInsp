@@ -85,12 +85,18 @@
 
 <audio src="~/Content/audio/OK.mp3" id="auOK"></audio>
 <audio src="~/Content/audio/NG.mp3" id="auNG"></audio>
+<audio src="~/Content/audio/EntryComplete.mp3" id="auEntryComplete"></audio>
 
 <script type="text/javascript">
     $(function () {
 
         $('#MasterCartonSerial').focus();
         $('#MasterCartonSerial').select();
+
+        var CompleteFlg = "@ViewBag.CompleteFlg";
+        if (CompleteFlg == "true") {
+            $("#auEntryComplete")[0].play();
+        };
 
         // 検品完了対象のマスターカートンQRエンターエンター時
         EnterFlg = false;
