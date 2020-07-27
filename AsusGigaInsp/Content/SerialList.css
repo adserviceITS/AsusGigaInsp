@@ -30,3 +30,49 @@
 input:focus, select:focus, textarea:focus {
     background-color: #fff8dc;
 }
+
+.SerialListTable {
+    table-layout: fixed;
+}
+
+    .SerialListTable thead {
+        display: block;
+    }
+
+    .SerialListTable tbody {
+        display: block;
+        height: 500px;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+.PageSearch {
+    color: #0033CC;
+    position: relative;
+    transition: .3s;
+}
+    .PageSearch::before,
+    .PageSearch::after {
+        position: absolute;
+        left: 50%;
+        content: '';
+        width: 0;
+        height: 2px;
+        background-color: #0033CC;
+        transition: .3s;
+        -webkit-transform: translateX(-50%);
+        transform: translateX(-50%);
+    }
+
+    .PageSearch::before {
+        top: 0;
+    }
+
+    .PageSearch::after {
+        bottom: 0;
+    }
+
+    .PageSearch:hover::before,
+    .PageSearch:hover::after {
+        width: 100%;
+    }

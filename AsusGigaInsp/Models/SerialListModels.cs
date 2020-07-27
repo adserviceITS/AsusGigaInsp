@@ -32,6 +32,10 @@ namespace AsusGigaInsp.Models
 
         public string SelectSerialID { get; set; }
 
+        public int PageNum { get; set; }
+        public int SelectPage { get; set; }
+        public int DataCnt { get; set; }
+
         public StringBuilder stbCsvData = new StringBuilder();
 
         public void SetDropDownListInstruction()
@@ -48,10 +52,41 @@ namespace AsusGigaInsp.Models
             DropDownListSerialStatus = ddList.GetDropDownListSerialStatus();
         }
 
+        public void SetPageNum()
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    COUNT(1) AS COUNT ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SERIAL_STATUS TSE ");
+            stbSql.Append(SearchWhere.ToString());
+
+            //Debug.WriteLine(stbSql.ToString());
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            sqlRdr.Read();
+            DataCnt = int.Parse(sqlRdr["COUNT"].ToString());
+
+            // ページ数算出
+            PageNum = DataCnt / ConstDef.PAGE_ROW_SIZE;
+            // 余りがある時
+            if ((DataCnt % ConstDef.PAGE_ROW_SIZE) != 0)
+            {
+                PageNum = PageNum + 1;
+            }
+            dsnLib.DB_Close();
+        }
+
         public void SetRstSerialList()
         {
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder stbSql = new StringBuilder();
+
+            // スキップする行数を算出
+            int SkipRows = ConstDef.PAGE_ROW_SIZE * (SelectPage - 1);
 
             stbSql.Append("SELECT ");
             stbSql.Append("    TSE.ID, ");
@@ -78,8 +113,9 @@ namespace AsusGigaInsp.Models
             stbSql.Append("ORDER BY ");
             stbSql.Append("    TSE.SO_NO, ");
             stbSql.Append("    TSE.SERIAL_NUMBER ");
+            stbSql.Append("OFFSET " + SkipRows + " ROWS ");
+            stbSql.Append("FETCH NEXT " + ConstDef.PAGE_ROW_SIZE + " ROWS ONLY ");
 
-            //stbSql.Append(stbWhere);
             //Debug.WriteLine(stbSql.ToString());
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());

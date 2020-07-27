@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace AsusGigaInsp.Modules
 {
@@ -21,6 +22,7 @@ namespace AsusGigaInsp.Modules
             catch (SqlException ex)
             {
                 DB_Close();
+                Debug.WriteLine(strSql.ToString());
                 Console.WriteLine(ex.Message);
                 throw;
             }

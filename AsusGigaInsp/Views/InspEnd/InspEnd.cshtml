@@ -17,7 +17,7 @@
     <hr style="margin-top:5px;">
     <div class="form-row" style="margin-top:15px;">
         <div class="col-md-5">
-            @Html.TextAreaFor(model => model.MasterCartonSerial, 8, 100, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;",inputmode= "url", placeholder = "マスターカートンQR" })
+            @Html.TextAreaFor(model => model.MasterCartonSerial, 8, 100, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", inputmode = "url", placeholder = "マスターカートンQR" })
         </div>
         <div class="col-md-6">
             <div class="row  align-items-center">
@@ -44,6 +44,7 @@
         <div class="col-md-1">
             <button type="button" class="btn btn-danger btn" name="InspEntryBtn" id="InspEntryBtn">登録</button>
         </div>
+        <label class="col invalid-feedback" id="SubmitErrMsg"></label>
         @Html.ValidationMessageFor(model => model.MasterCartonSerial)
     </div>
     <!-- 結果エリア ------------------------------------------------------------------------------------------>
@@ -66,8 +67,8 @@
             {
                 <tr>
                     @*<td>
-                        <button type="button" class="btn btn-danger btn-sm EditBtn" formaction='/InspEnd/Edit?SerialID=@(item.SerialID)' name="EditBtn" id="EditBtn">編集</button>
-                    </td>*@
+                            <button type="button" class="btn btn-danger btn-sm EditBtn" formaction='/InspEnd/Edit?SerialID=@(item.SerialID)' name="EditBtn" id="EditBtn">編集</button>
+                        </td>*@
                     <td>@Html.DisplayFor(modelItem => item.SONo)</td>
                     <td>@Html.DisplayFor(modelItem => item.n90N)</td>
                     <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
@@ -81,6 +82,9 @@
         </tbody>
     </table>
 }
+
+<audio src="~/Content/audio/OK.mp3" id="auOK"></audio>
+<audio src="~/Content/audio/NG.mp3" id="auNG"></audio>
 
 <script type="text/javascript">
     $(function () {
@@ -149,7 +153,14 @@
                 return false;
             }
             var MasterCartonSerials = $('#MasterCartonSerial').val().split(/\r\n|\r|\n/);
-            var MasterCartonSerialNum = MasterCartonSerials.length - 1;     // 最後のエンターは2回だから
+            //var MasterCartonSerialNum = MasterCartonSerials.length - 1;     // 最後のエンターは2回だから
+            var MasterCartonSerialNum = 0;
+
+            for (var i = 0; i < MasterCartonSerials.length; i++) {
+                if (!isEmpty(MasterCartonSerials[i])) {
+                    MasterCartonSerialNum++;
+                }
+            }
 
             // 入力されたシリアル数算出
             var SerialNos = $('[id^="SerialNo"]').map(function (index, el) {
@@ -170,6 +181,7 @@
         var SerialCheckOK = function (objSerial) {
             objSerial.removeClass("is-invalid");
             objSerial.addClass("is-valid");
+            $("#auOK")[0].play();
             // 次のシリアル入力欄にフォーカスを移す
             if (!isEmpty($('input')[$('input').index(objSerial) + 1])) {
                 $('input')[$('input').index(objSerial) + 1].focus();
@@ -182,6 +194,7 @@
             objSerial.next("label").text(ErrMsg);
             objSerial.removeClass("is-valid")
             objSerial.addClass("is-invalid");
+            $("#auNG")[0].play();
             objSerial.select();
         }
 
@@ -223,12 +236,43 @@
 
         // 登録ボタンを押下時
         $('#InspEntryBtn').on('click', function () {
-            // マスターカートンシリアル数と入力されたシリアル数が一致した場合は登録
-            if (SerialNumLenCheck()) {
+            var ErrMsg = "";
+            // マスターカートンシリアル数と入力されたシリアル数が一致するかチェック
+            if (!SerialNumLenCheck()) {
+                ErrMsg = "マスターカートンシリアル数とシリアル数が一致しません！\n"
+            }
+
+             //入力シリアルがマスターカートンシリアルにあるか
+            var MasterCartonSerials = $('#MasterCartonSerial').val().split(/\r\n|\r|\n/);
+            // 入力されたシリアル数算出
+            var SerialNos = $('[id^="SerialNo"]').map(function (index, el) {
+                if (!isEmpty($(this).val())) {
+                    return $(this).val();
+                }
+            });
+
+            for (var t = 0; t < SerialNos.length; t++) {
+                for (var i = 0; i < SerialNos.length; i++) {
+                    if (SerialNos[t] != MasterCartonSerials[i]) {
+                        ErrMsg = ErrMsg + SerialNos[t] + "はマスターカートンにないシリアルです！\n"
+                        break;
+                    }
+                }
+            }
+
+            if (isEmpty(ErrMsg)) {
                 $(this).parents('form').attr('action', '/InspEnd/Entry');
                 $('form')[0].submit();
+                return true;
             }
-            alert("マスターカートンシリアル数とシリアル数が一致しません！")
+
+            //$("#SubmitErrMsg").text(ErrMsg);
+            //$("#SubmitErrMsg").removeClass("is-valid")
+            //$("#SubmitErrMsg").addClass("is-invalid");
+            alert(ErrMsg);
+            $('#MasterCartonSerial').focus();
+            $('#MasterCartonSerial').select();
+
             return false;
         });
 

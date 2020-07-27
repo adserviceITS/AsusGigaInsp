@@ -30,11 +30,15 @@ namespace AsusGigaInsp
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/jquery-ui.css",
+                      "~/Content/theme.default.min.css",
                       "~/Content/site.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/cmnlib").Include(
                         "~/Scripts/common.js",
                         "~/Scripts/pace.min.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/tablesorter").Include(
+                        "~/Scripts/jquery.tablesorter.min.js"));
         }
     }
 }

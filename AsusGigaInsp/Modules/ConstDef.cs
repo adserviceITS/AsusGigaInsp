@@ -29,5 +29,8 @@ namespace AsusGigaInsp.Modules
                                                  + @"User ID=" + DB_USER_ID + ";"
                                                  + @"Password=" + DB_PASSWORD;
 
+        // 1画面に表示する行数
+        public const int PAGE_ROW_SIZE = 300;
+
     }
 }

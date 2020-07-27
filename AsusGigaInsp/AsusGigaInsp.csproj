@@ -165,6 +165,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\audio\NG.mp3" />
+    <Content Include="Content\audio\OK.mp3" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
@@ -179,6 +181,7 @@
     <Content Include="Content\UserSearch.css" />
     <Content Include="Content\SOList.css" />
     <Content Include="Content\SerialList.css" />
+    <Content Include="Content\theme.default.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -228,6 +231,7 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery.tablesorter.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -344,6 +348,7 @@
     <Content Include="Views\Master\UserEntry.cshtml" />
     <Content Include="Views\Master\UserSearch.cshtml" />
     <Content Include="Views\Master\HolidayDataUpLoad.cshtml" />
+    <Content Include="Views\SerialList\SelectPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

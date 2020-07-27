@@ -1,0 +1,33 @@
+﻿@model AsusGigaInsp.Models.SerialListModels
+
+<div style="text-align:center">
+    @Html.HiddenFor(Model => Model.SelectPage)
+    @if (Model.PageNum > 1)
+    {
+        // 1ページ目の時は < は表示しない
+        if (Model.SelectPage > 1)
+        {
+            @Html.ActionLink("＜", "PageSearch", "SerialList", null, new { @class = "PageSearch", style = "margin-right:5px;" });
+        }
+
+        // 数字部分の書き出し
+        for (int i = 1; i <= Model.PageNum; i++)
+        {
+            // 選択したページの数字はアンカーにしない
+            if (Model.SelectPage == i)
+            {
+                <span style="font-weight:bold; margin-right:4px;">@i</span>
+            }
+            else
+            {
+                @Html.ActionLink(i.ToString(), "PageSearch", "SerialList", null, new { @class = "PageSearch", style = "margin-right:4px;" });
+            }
+        }
+
+        // 最終ページの時は > は表示しない
+        if (Model.SelectPage != Model.PageNum)
+        {
+            @Html.ActionLink("＞", "PageSearch", "SerialList", null, new { @class = "PageSearch", style = "margin-left:1px;" });
+        }
+    }
+</div>
