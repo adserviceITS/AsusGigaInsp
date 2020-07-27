@@ -13,6 +13,54 @@
     <div style="color:Red">
         @Html.Encode(TempData["msg"])
     </div>
+    <!-- モーダル部分 -->
+    <div id="Modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    表中の背景色の意味
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <div class="modal-title"><i class="fa fa-info-circle" aria-hidden="true"></i></div>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-bordered table-sm table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>背景色</th>
+                                <th>意味</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="table-primary"></td>
+                                <td>オーダー取り込みで変更が無かった行</td>
+                            </tr>
+                            <tr>
+                                <td class="table-danger"></td>
+                                <td>オーダー取り込みで新規に取り込まれた行</td>
+                            </tr>
+                            <tr>
+                                <td class="table-warning"></td>
+                                <td>オーダー取り込みで変更があった行</td>
+                            </tr>
+                            <tr>
+                                <td class="bg-warning"></td>
+                                <td>オーダー取り込みで変更された列</td>
+                            </tr>
+                            <tr>
+                                <td class="bg-danger"></td>
+                                <td>非稼働日に日程が設定されている列</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- モーダル部分終了 -->
 
     <!------------------------------------------------------------- 検索条件 ------------------------------------------------------------------>
     <div class="form-row">
@@ -59,14 +107,16 @@
          "",
          new { @class = "form-control form-control-sm", style = "max-width:200px;" }
         )
-    </div>
 
+    </div>
+    <!------------------------------------------------------------- 検索条件終了 ------------------------------------------------------------------>
     <div style="float: left; margin-bottom:2px;">
         <input type="button" class="btn btn-danger" onclick="location.href='@Url.Action("SOListUpLoad", "SOList")'" value="オーダー情報取り込み" />
     </div>
     <div style="float: right; margin-bottom:2px;">
         <input type="submit" class="btn btn-primary" formaction="/SOList/SOListSearchResult" name="Search" value="検索">
         <input type="button" class="btn btn-primary" name="Clear" id="ClearBtn" value="クリア">
+        <input type="button" class="btn btn-info" data-toggle="modal" data-target="#Modal" name="Search" value="凡例">
     </div>
 
     <!------------------------------------------------------ ここから検索結果 ------------------------------------------------------------------>
@@ -309,4 +359,5 @@
             }
         }
     };
+
 </script>

@@ -102,7 +102,8 @@ namespace AsusGigaInsp.Controllers
                         if (mdlUserEnt.ChkUserList())
                         {
                             // ユーザー重複無し
-                            mdlUserEnt.AddUser(Session["UserID"].ToString());
+                            mdlUserEnt.AddUser(Session["ID"].ToString());
+                            TempData["msg"] = String.Format("ユーザーID「{0}」の登録に成功しました。", mdlUserEnt.EntUserID);
                             return RedirectToAction("UserSearch", "Master");
                         }
                         else

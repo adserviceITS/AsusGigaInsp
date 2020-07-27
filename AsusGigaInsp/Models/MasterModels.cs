@@ -213,7 +213,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("FROM ");
             stbSql.Append("    M_USER ");
             stbSql.Append("WHERE ");
-            stbSql.Append("   ID = '" + UserID + "' ");
+            stbSql.Append("   ID = N'" + UserID + "' ");
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
@@ -244,7 +244,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("FROM ");
             stbSql.Append("    M_USER ");
             stbSql.Append("WHERE ");
-            stbSql.Append("    ID = '" + EntUserID + "' ");
+            stbSql.Append("    ID = N'" + EntUserID + "' ");
 
             Debug.WriteLine(stbSql.ToString());
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
@@ -312,9 +312,9 @@ namespace AsusGigaInsp.Models
             strSql.Append("    N'" + EntAuthorityKBN + "', ");
             strSql.Append("    N'" + EntDelFLG + "', ");
             strSql.Append("    GETDATE(), ");
-            strSql.Append("    N" + strUpdUID + ", ");
+            strSql.Append("    N'" + strUpdUID + "', ");
             strSql.Append("    GETDATE(), ");
-            strSql.Append("    N" + strUpdUID + ")");
+            strSql.Append("    N'" + strUpdUID + "') ");
 
             Debug.WriteLine(strSql.ToString());
             dsnLib.ExecSQLUpdate(strSql.ToString());
@@ -400,9 +400,9 @@ namespace AsusGigaInsp.Models
                 strSql.Append(") ");
                 strSql.Append("VALUES ");
                 strSql.Append("( ");
-                strSql.Append("    '" + HolidayData[RowCounter, 0] + "', ");
+                strSql.Append("    N'" + HolidayData[RowCounter, 0] + "', ");
                 strSql.Append("    '" + DTNow + "', ");
-                strSql.Append("    '" + StrUpdUID + "' ");
+                strSql.Append("    N'" + StrUpdUID + "' ");
                 strSql.Append(") ");
 
                 dsnLib.ExecSQLUpdate(strSql.ToString());
