@@ -13,7 +13,11 @@
     <div style="color:Red">
         @Html.Encode(TempData["msg"])
     </div>
-    <!-- モーダル部分 -->
+
+    <!-- 追従ボタン -->
+    <input type="button" class="btn btn-info btn-sm fixed_btn1" name="TopBtn" id="TopBtn" value="TOPに戻る">
+    <input type="button" class="btn btn-info btn-sm fixed_btn2" data-toggle="modal" data-target="#Modal" name="Usage" value="凡例">
+
     <div id="Modal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -61,13 +65,11 @@
         </div>
     </div>
     <!-- モーダル部分終了 -->
-
     <!------------------------------------------------------------- 検索条件 ------------------------------------------------------------------>
+    <div style="font-size:12px; text-align:right;">データ更新日：@Html.DisplayFor(modelItem => Model.DispInsertDate)</div>
     <div class="form-row">
         <label for="SrchSONO" class="col-form-label-sm">SO#</label>
         @Html.TextBoxFor(model => model.SrchSONO, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
-        <label for="Srch90N" class="col-form-label-sm">90N</label>
-        @Html.TextBoxFor(model => model.Srch90N, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
         <label for="SrchModelName" class="col-form-label-sm">ModelName</label>
         @Html.TextBoxFor(model => model.SrchModelName, null, new { @class = "form-control form-control-sm", style = "max-width:150px;", placeholder = "" })
         <label for="SrchN01NO" class="col-form-label-sm">N01#</label>
@@ -98,7 +100,6 @@
             new { @class= "form-control form-control-sm", style="max-width:200px;" }
         )
     </div>
-
     <div class="form-row">
         <label for="SrchStatusID" class="col-form-label-sm">日付チェック</label>
         @Html.DropDownListFor(
@@ -107,8 +108,8 @@
          "",
          new { @class = "form-control form-control-sm", style = "max-width:200px;" }
         )
-
     </div>
+
     <!------------------------------------------------------------- 検索条件終了 ------------------------------------------------------------------>
     <div style="float: left; margin-bottom:2px;">
         <input type="button" class="btn btn-danger" onclick="location.href='@Url.Action("SOListUpLoad", "SOList")'" value="オーダー情報取り込み" />
@@ -116,17 +117,14 @@
     <div style="float: right; margin-bottom:2px;">
         <input type="submit" class="btn btn-primary" formaction="/SOList/SOListSearchResult" name="Search" value="検索">
         <input type="button" class="btn btn-primary" name="Clear" id="ClearBtn" value="クリア">
-        <input type="button" class="btn btn-info" data-toggle="modal" data-target="#Modal" name="Search" value="凡例">
     </div>
-
     <!------------------------------------------------------ ここから検索結果 ------------------------------------------------------------------>
-    <table id="So-List" class="table table-striped table-bordered table-sm table-hover">
+    <table id="So-List" class="table table-striped table-bordered table-sm table-hover sticky_table">
         <thead class="thead-light">
             <tr>
                 <th></th>
                 <th></th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().SONO)</th>
-                <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().n90N)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().ModelName)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().ShippingQuantity)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().FixedShippingQuantity)</th>
@@ -134,6 +132,7 @@
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().PrefReportingDate)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().SiTekEstArrivalDate)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().DeliveryLocation)</th>
+                <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().InputUnit)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().CompleteWorkUnit)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().DOAUnit)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().HoldUnit)</th>
@@ -155,7 +154,14 @@
                     }
                     else if (item.RecordKBN == "2")
                     {
-                        StrClass = "table-warning";
+                        if ((item.CHGModelNameFLG == "1") || (item.CHGShippingQuantityFLG == "1") || (item.CHGEstArrivalDateFLG == "1") || (item.CHGPrefReportingDateFLG == "1") || (item.CHGSiTekEstArrivalDateFLG == "1") || (item.CHGDeliveryLocationFLG == "1"))
+                        {
+                            StrClass = "table-warning";
+                        }
+                        else
+                        {
+                            StrClass = "table-primary";
+                        }
                     }
                     else
                     {
@@ -172,15 +178,9 @@
                                 <input type="button" class="btn btn-success btn-sm" onclick="location.href='@Url.Action("Export", "SOList", new { SONO =  item.SONO })'" value="レポート" />
                             }
                         </td>
-                        <td>@Html.DisplayFor(modelItem => item.SONO)</td>
-                        @if (item.CHGn90NFLG == "1")
-                        {
-                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.n90N)</td>
-                        }
-                        else
-                        {
-                            <td>@Html.DisplayFor(modelItem => item.n90N)</td>
-                        }
+
+                        <td>@Html.ActionLink(String.Format("{0:#,0}", item.SONO), "SearchFromOutSide", "SerialList", new { SearchKey = item.SONO }, null)</td>
+
                         @if (item.CHGModelNameFLG == "1")
                         {
                             <td class="bg-warning">@Html.DisplayFor(modelItem => item.ModelName)</td>
@@ -189,6 +189,7 @@
                         {
                             <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
                         }
+
                         @if (item.CHGShippingQuantityFLG == "1")
                         {
                             <td class="bg-warning">@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
@@ -197,7 +198,14 @@
                         {
                             <td>@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
                         }
-                        <td>@Html.DisplayFor(modelItem => item.FixedShippingQuantity)</td>
+
+                        <td>
+                            @if (string.Compare("6010", item.SOStatusID) <= 0)
+                            {
+                                @Html.DisplayFor(modelItem => item.FixedShippingQuantity)
+                            }
+                        </td>
+
                         @if (item.EstArrivalDateWarningFLG == "1")
                         {
                             <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
@@ -213,6 +221,7 @@
                                 <td>@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
                             }
                         }
+
                         @if (item.PrefReportingDateWarningFLG == "1")
                         {
                             <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
@@ -251,6 +260,7 @@
                         {
                             <td>@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
                         }
+                        <td>@Html.DisplayFor(modelItem => item.InputUnit)</td>
                         <td>@Html.DisplayFor(modelItem => item.CompleteWorkUnit)</td>
                         <td>@Html.DisplayFor(modelItem => item.DOAUnit)</td>
                         <td>@Html.DisplayFor(modelItem => item.HoldUnit)</td>
@@ -345,19 +355,26 @@
         showOtherMonths: true
     });
 
+    // TOPへ戻るボタンクリック処理
+    $(function () {
+        $("#TopBtn").on("click", function () {
+            $("html, body").animate({ scrollTop: 0 }, 500, "swing");
+        });
+    });
+
     // CSSを無効にする
-    window.onload = function () {
-        var disableFileName = "theme.default.min.css"; // 無効にするcssのファイル名
-        for (var i = 0; i < document.styleSheets.length; i++) {
-            // ファイルパス（フルパス）
-            var styleSheetPath = document.styleSheets[i].href;
-            // フルパスからファイル名を抽出
-            var fileName = styleSheetPath.substring(styleSheetPath.lastIndexOf('/') + 1, styleSheetPath.length);
-            if (fileName === disableFileName) {
-                // 無効にするファイル名なので無効にする
-                document.styleSheets[i].disabled = true;
-            }
-        }
-    };
+    //window.onload = function () {
+    //    var disableFileName = "theme.default.min.css"; // 無効にするcssのファイル名
+    //    for (var i = 0; i < document.styleSheets.length; i++) {
+    //        // ファイルパス（フルパス）
+    //        var styleSheetPath = document.styleSheets[i].href;
+    //        // フルパスからファイル名を抽出
+    //        var fileName = styleSheetPath.substring(styleSheetPath.lastIndexOf('/') + 1, styleSheetPath.length);
+    //        if (fileName === disableFileName) {
+    //            // 無効にするファイル名なので無効にする
+    //            document.styleSheets[i].disabled = true;
+    //        }
+    //    }
+    //};
 
 </script>

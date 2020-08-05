@@ -351,6 +351,8 @@
     <Content Include="Views\Master\UserSearch.cshtml" />
     <Content Include="Views\Master\HolidayDataUpLoad.cshtml" />
     <Content Include="Views\SerialList\SelectPage.cshtml" />
+    <Content Include="Views\WhiteBoard\ProgressBoard_A.cshtml" />
+    <Content Include="Views\WhiteBoard\WhiteBoard_A.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

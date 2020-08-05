@@ -279,5 +279,34 @@ namespace AsusGigaInsp.Controllers
 
             return View("SerialList", models);
         }
+
+        // POST: SerialList/Search
+        public ActionResult SearchFromOutSide(string SearchKey)
+        {
+            SerialListModels models = new SerialListModels();
+
+            models.SelectPage = 1;
+            if (!string.IsNullOrEmpty(SearchKey))
+            {
+                int IntLen = SearchKey.Length;
+
+                if (IntLen > 4)
+                {
+                    models.SearchSONo = SearchKey;
+                }
+                else
+                {
+                    models.SearchSerialStatus = SearchKey;
+                }
+            }
+            models.SetSearchWhere();
+            models.SetPageNum();
+            models.SetRstSerialList();
+            models.SetDropDownListSerialStatus();
+            models.SetDropDownListInstruction();
+
+            return View("SerialList", models);
+        }
+
     }
 }

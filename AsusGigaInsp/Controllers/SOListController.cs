@@ -19,7 +19,8 @@ namespace AsusGigaInsp.Controllers
             // 検索条件をセット
             SOListModels models = new SOListModels();
 
-            //models.SetSrchRstOrderList();
+            // 最終取り込み日をセット
+            models.SetInsertDate();
 
             // ステータスコンボBOXをセット
             models.SetDropDownListStatusName();
@@ -41,6 +42,9 @@ namespace AsusGigaInsp.Controllers
         {
             // 選択された表示方法を元にWhere句を作成
             models.SetWhere();
+
+            // 最終取り込み日をセット
+            models.SetInsertDate();
 
             // モデルにオーダーリストをセット
             models.SetSrchRstOrderList();
@@ -396,26 +400,27 @@ namespace AsusGigaInsp.Controllers
 
             }
 
-            // 集計欄
-            WorkSheet.Cell(Counter + 3, 13).Value = "検品数";
-            WorkSheet.Cell(Counter + 4, 13).Value = "出荷数";
-            WorkSheet.Cell(Counter + 5, 13).Value = "DOA";
+            //// 集計欄
+            //WorkSheet.Cell(Counter + 3, 13).Value = "検品数";
+            //WorkSheet.Cell(Counter + 4, 13).Value = "出荷数";
+            //WorkSheet.Cell(Counter + 5, 13).Value = "DOA";
 
-            if (Counter > 0)
-            {
-                WorkSheet.Cell(Counter + 3, 14).Value = InspectionQuantity + "台";
-                WorkSheet.Cell(Counter + 4, 14).Value = ShipmentQuantity + "台";
-                WorkSheet.Cell(Counter + 5, 14).Value = DOAQuantity + "台";
-            }
-            else
-            {
-                WorkSheet.Cell(Counter + 3, 14).Value = 0 + "台";
-                WorkSheet.Cell(Counter + 4, 14).Value = 0 + "台";
-                WorkSheet.Cell(Counter + 5, 14).Value = 0 + "台";
-            }
-
+            //if (Counter > 0)
+            //{
+            //    WorkSheet.Cell(Counter + 3, 14).Value = InspectionQuantity + "台";
+            //    WorkSheet.Cell(Counter + 4, 14).Value = ShipmentQuantity + "台";
+            //    WorkSheet.Cell(Counter + 5, 14).Value = DOAQuantity + "台";
+            //}
+            //else
+            //{
+            //    WorkSheet.Cell(Counter + 3, 14).Value = 0 + "台";
+            //    WorkSheet.Cell(Counter + 4, 14).Value = 0 + "台";
+            //    WorkSheet.Cell(Counter + 5, 14).Value = 0 + "台";
+            //}
+            WorkSheet.RangeUsed().SetAutoFilter();
             WorkSheet.Columns().AdjustToContents();
             WorkSheet.Columns("C:H").Hide();
+            WorkSheet.Column("J").Width = 62;
 
             // ファイル名
             OutputFileName = DateTime.Now.ToString("yyyy年MM月dd日")

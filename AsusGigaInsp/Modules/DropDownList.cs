@@ -81,6 +81,10 @@ namespace AsusGigaInsp.Modules
             stbSql.Append("    M_SERIAL_STATUS.SERIAL_STATUS_NAME ");
             stbSql.Append("FROM ");
             stbSql.Append("    M_SERIAL_STATUS ");
+            //----------- 2020/07/29 UPDATE START E.KOSHIKAWA -------------
+            stbSql.Append("WHERE ");
+            stbSql.Append("    M_SERIAL_STATUS.DEL_FLG = '0' ");
+            //----------- 2020/07/29 UPDATE  END  E.KOSHIKAWA -------------
             stbSql.Append("ORDER BY ");
             stbSql.Append("    M_SERIAL_STATUS.SERIAL_STATUS_ID ");
 

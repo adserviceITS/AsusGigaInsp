@@ -26,18 +26,24 @@
                     @*管理者用のメニューを生成*@
                     if (userInfo.AuthorityKbn == "1")
                     {
-                        <li>@Html.ActionLink("ホワイトボード", "WhiteBoard", "WhiteBoard")</li>
-                        <li>@Html.ActionLink("進捗ボード", "ProgressBoard", "WhiteBoard")</li>
+                        <li class="dropdown">
+                            <a href="#" class="trigger-drop">進捗確認<i class="arrow"></i></a>
+                            <ul class="drop" style="padding-left:10px;">
+                                <li style="margin-right:150px;">@Html.ActionLink("ホワイトボード", "WhiteBoard", "WhiteBoard")</li>
+                                <li>@Html.ActionLink("進捗ボード", "ProgressBoard", "WhiteBoard")</li>
+                                <li>@Html.ActionLink("自動切換え", "WhiteBoard_A", "WhiteBoard")</li>
+                            </ul>
+                        </li>
+
                         <li>@Html.ActionLink("オーダーリスト", "SOListSearch", "SOList")</li>
                         <li>@Html.ActionLink("シリアルリスト", "Index", "SerialList")</li>
-                        @*
-                        <li class="dropdown">
-                            <a href="#" class="trigger-drop">工程用<i class="arrow"></i></a>
-                            <ul class="drop" style="padding-left:10px;">
-                                <li style="margin-right:70px;">@Html.ActionLink("検査開始", "Index", "InspStart")</li>
-                                <li>@Html.ActionLink("検査完了", "Index", "InspEnd")</li>
-                            </ul>
-                        </li>*@
+                @*<li class="dropdown">
+                    <a href="#" class="trigger-drop">工程用<i class="arrow"></i></a>
+                    <ul class="drop" style="padding-left:10px;">
+                        <li style="margin-right:70px;">@Html.ActionLink("検査開始", "Index", "InspStart")</li>
+                        <li>@Html.ActionLink("検査完了", "Index", "InspEnd")</li>
+                    </ul>
+                </li>*@
                         <li class="dropdown">
                             <a href="#" class="trigger-drop">マスタメンテ<i class="arrow"></i></a>
                             <ul class="drop" style="padding-left:10px;">

@@ -23,6 +23,7 @@ namespace AsusGigaInsp.Models
         public string SrchSiTekEstArrivalDate_E { get; set; }
         public string SrchStatusID { get; set; }
         public string SrchDateError { get; set; }
+        public string DispInsertDate { get; set; }
 
         public IEnumerable<SrchRstOrder> SrchRstOrderList { get; set; }
         private StringBuilder stbWhere = new StringBuilder();
@@ -61,6 +62,26 @@ namespace AsusGigaInsp.Models
             DropDownListStatusName = lstDropDownStatusName;
         }
 
+        public void SetInsertDate()
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    MIN(INSERT_DATE) AS INSERT_DATE ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SO_CHANGE_CONTROL ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            while (sqlRdr.Read())
+            {
+                DispInsertDate = sqlRdr["INSERT_DATE"].ToString();
+            }
+
+            dsnLib.DB_Close();
+        }
+
         public void SetSrchRstOrderList()
         {
             DSNLibrary dsnLib = new DSNLibrary();
@@ -80,6 +101,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    M_SO_STATUS.SO_STATUS_NAME, ");
             stbSql.Append("    T_SO_STATUS.ST_CHANGE_DATE, ");
             stbSql.Append("    T_SO_STATUS.RECORD_KBN, ");
+            stbSql.Append("    IsNull(TBL4.INPUT_UNIT, 0) AS INPUT_UNIT, ");
             stbSql.Append("    IsNull(TBL1.COMPLETE_WORK_UNIT, 0) AS COMPLETE_WORK_UNIT, ");
             stbSql.Append("    IsNull(TBL2.DOA_UNIT, 0) AS DOA_UNIT, ");
             stbSql.Append("    IsNull(TBL3.HOLD_UNIT, 0) AS HOLD_UNIT, ");
@@ -94,7 +116,8 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_N01_NO_FLG, '0') AS CHG_N01_NO_FLG, ");
             stbSql.Append("    T_SO_CHANGE_CONTROL.EST_ARRIVAL_DATE_WARNING_FLG, ");
             stbSql.Append("    T_SO_CHANGE_CONTROL.PREF_REPORTING_DATE_WARNING_FLG, ");
-            stbSql.Append("    T_SO_CHANGE_CONTROL.SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG ");
+            stbSql.Append("    T_SO_CHANGE_CONTROL.SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG, ");
+            stbSql.Append("    T_SO_CHANGE_CONTROL.INSERT_DATE ");
             stbSql.Append("FROM ");
             stbSql.Append("    T_SO_STATUS ");
             stbSql.Append("    INNER JOIN M_SO_STATUS ");
@@ -106,7 +129,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("        FROM ");
             stbSql.Append("            T_SERIAL_STATUS ");
             stbSql.Append("        WHERE ");
-            stbSql.Append("            T_SERIAL_STATUS.SERIAL_STATUS_ID = '4010' ");
+            stbSql.Append("            T_SERIAL_STATUS.SERIAL_STATUS_ID >= '4010' ");
             stbSql.Append("        GROUP BY ");
             stbSql.Append("            T_SERIAL_STATUS.SO_NO ");
             stbSql.Append("    ) TBL1 ");
@@ -135,6 +158,18 @@ namespace AsusGigaInsp.Models
             stbSql.Append("            T_SERIAL_STATUS.SO_NO ");
             stbSql.Append("    ) TBL3 ");
             stbSql.Append("        ON T_SO_STATUS.SO_NO = TBL3.SO_NO ");
+            stbSql.Append("    LEFT JOIN ( ");
+            stbSql.Append("        SELECT ");
+            stbSql.Append("            T_SERIAL_STATUS.SO_NO, ");
+            stbSql.Append("            Count(*) AS INPUT_UNIT ");
+            stbSql.Append("        FROM ");
+            stbSql.Append("            T_SERIAL_STATUS ");
+            stbSql.Append("        WHERE ");
+            stbSql.Append("            T_SERIAL_STATUS.SERIAL_STATUS_ID >= '3010' ");
+            stbSql.Append("        GROUP BY ");
+            stbSql.Append("            T_SERIAL_STATUS.SO_NO ");
+            stbSql.Append("    ) TBL4 ");
+            stbSql.Append("        ON T_SO_STATUS.SO_NO = TBL4.SO_NO ");
             stbSql.Append("    LEFT JOIN T_SO_CHANGE_CONTROL ");
             stbSql.Append("        ON T_SO_STATUS.SO_NO = T_SO_CHANGE_CONTROL.SO_NO ");
             stbSql.Append(stbWhere);
@@ -156,6 +191,7 @@ namespace AsusGigaInsp.Models
                     PrefReportingDate = sqlRdr["PREF_REPORTING_DATE"].ToString(),
                     SiTekEstArrivalDate = sqlRdr["SI_TEK_EST_ARRIVAL_DATE"].ToString(),
                     DeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString(),
+                    InputUnit = sqlRdr["INPUT_UNIT"].ToString(),
                     CompleteWorkUnit = sqlRdr["COMPLETE_WORK_UNIT"].ToString(),
                     DOAUnit = sqlRdr["DOA_UNIT"].ToString(),
                     HoldUnit = sqlRdr["HOLD_UNIT"].ToString(),
@@ -174,7 +210,8 @@ namespace AsusGigaInsp.Models
                     CHGN01NoFLG = sqlRdr["CHG_N01_NO_FLG"].ToString(),
                     EstArrivalDateWarningFLG = sqlRdr["EST_ARRIVAL_DATE_WARNING_FLG"].ToString(),
                     PrefReportingDateWarningFLG = sqlRdr["PREF_REPORTING_DATE_WARNING_FLG"].ToString(),
-                    SiTekEstArrivalDateWarningFLG = sqlRdr["SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG"].ToString()
+                    SiTekEstArrivalDateWarningFLG = sqlRdr["SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG"].ToString(),
+                    InsertDate = sqlRdr["INSERT_DATE"].ToString()
                 });
             }
             dsnLib.DB_Close();
@@ -283,6 +320,8 @@ namespace AsusGigaInsp.Models
         public string SiTekEstArrivalDate { get; set; }
         [DisplayName("納品地")]
         public string DeliveryLocation { get; set; }
+        [DisplayName("投入数")]
+        public string InputUnit { get; set; }
         [DisplayName("作業完了数")]
         public string CompleteWorkUnit { get; set; }
         [DisplayName("ASUS確認後DOA数")]
@@ -309,6 +348,7 @@ namespace AsusGigaInsp.Models
         public string EstArrivalDateWarningFLG { get; set; }
         public string PrefReportingDateWarningFLG { get; set; }
         public string SiTekEstArrivalDateWarningFLG { get; set; }
+        public string InsertDate { get; set; }
     }
 
     public class DropDownStatusName

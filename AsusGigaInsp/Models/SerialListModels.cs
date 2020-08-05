@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text;
 using System.Web;
-using System.Web.Mvc;
 using AsusGigaInsp.Modules;
 
 namespace AsusGigaInsp.Models
@@ -175,7 +174,34 @@ namespace AsusGigaInsp.Models
                 SearchWhere.Append("AND TSE.NG_FLG = '1' ");
 
             if (!string.IsNullOrEmpty(SearchSerialStatus))
-                SearchWhere.Append("AND TSE.SERIAL_STATUS_ID = '" + SearchSerialStatus + "' ");
+                //-------------- 2020/07/29 UPDATE START E.KOSHIKAWA ----------------
+                // ホワイトボードから特定の項目をクリックして本画面を呼び出す際に使用
+                // 0000：拠点内総仕掛から来た場合
+                // 0001：完了の投入から来た場合
+                // 0002：完了の新品検品作業完了から来た場合
+                //SearchWhere.Append("AND TSE.SERIAL_STATUS_ID = '" + SearchSerialStatus + "' ");
+                if (SearchSerialStatus == "0000")
+                {
+                    SearchWhere.Append("AND ((TSE.SERIAL_STATUS_ID = '2010') ");
+                    SearchWhere.Append("OR  (TSE.SERIAL_STATUS_ID = '3010') ");
+                    SearchWhere.Append("OR  (TSE.SERIAL_STATUS_ID = '4010') ");
+                    SearchWhere.Append("OR  (TSE.SERIAL_STATUS_ID = '6010')) ");
+                }
+                else if (SearchSerialStatus == "0001")
+                {
+                    SearchWhere.Append("AND TSE.WORKDAY >= '" + DateTime.Now.ToString("yyyy/MM/dd") + "' ");
+                    SearchWhere.Append("AND TSE.SERIAL_STATUS_ID >= '3010' ");
+                }
+                else if (SearchSerialStatus == "0002")
+                {
+                    SearchWhere.Append("AND TSE.WORKDAY >= '" + DateTime.Now.ToString("yyyy/MM/dd") + "' ");
+                    SearchWhere.Append("AND TSE.SERIAL_STATUS_ID >= '4010' ");
+                }
+                else
+                {
+                    SearchWhere.Append("AND TSE.SERIAL_STATUS_ID = '" + SearchSerialStatus + "' ");
+                }
+                //----------- 2020/07/29 UPDATE  END  E.KOSHIKAWA -------------
         }
 
         public void UpdateNgFlg ()

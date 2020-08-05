@@ -17,6 +17,7 @@
     margin: 3px 20px 3px 5px;
 }
 
+/* ソート前の状態 */
 .tablesorter-headerUnSorted {
     background-image: url('../img/sort.png');
     background-repeat: no-repeat;
@@ -24,6 +25,7 @@
     background-size: 15px;
 }
 
+/* 昇順ソート後の状態 */
 .tablesorter-headerAsc {
     background-image: url('../img/sort_asc.png');
     background-repeat: no-repeat;
@@ -32,6 +34,7 @@
     background-size: 13px;
 }
 
+/* 降順ソート後の状態 */
 .tablesorter-headerDesc {
     background-image: url('../img/sort_desc.png');
     background-repeat: no-repeat;
@@ -40,6 +43,7 @@
     background-size: 13px;
 }
 
+/* ソート無効列 */
 .sorter-false {
     background-image: none;
 }
@@ -64,22 +68,36 @@
     font-size: 100%;
 }
 
+/* 凡例モーダルの設定 */
 .modal {
-    position: absolute;
+    position:fixed;
     width: 100%;
     height: 100vh;
     top: 0;
     left: 0;
     display: none;
 }
-
-/* オーバーレイのスタイル */
-.overLay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: rgba(200,200,200,0.9);
-    width: 100%;
-    height: 100vh;
-    z-index: 10;
+.sticky_table thead th {
+    /* スクロール時に固定する */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 48px;
+    /* tbody内のセルより手前に表示する */
+    z-index: 1;
 }
+
+.fixed_btn1 {
+    position: fixed;
+    bottom: 10px;
+    right: 130px;
+    padding: 6px 40px;
+}
+
+.fixed_btn2 {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 6px 40px;
+}
+
+

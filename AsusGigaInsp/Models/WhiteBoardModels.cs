@@ -230,11 +230,11 @@ namespace AsusGigaInsp.Models
                     {
                         if (ColCounter != IntColumnCount)
                         {
-                            strSql.Append("    '" + PlanData[RowCounter, ColCounter] + "', ");
+                            strSql.Append("    " + Math.Ceiling(decimal.Parse(PlanData[RowCounter, ColCounter])) + ", ");
                         }
                         else
                         {
-                            strSql.Append("    '" + PlanData[RowCounter, ColCounter] + "' ");
+                            strSql.Append("    " + Math.Ceiling(decimal.Parse(PlanData[RowCounter, ColCounter])) + " ");
                         }
                     }
                     else
@@ -325,6 +325,7 @@ namespace AsusGigaInsp.Models
             });
 
             SrchRstDisplayTime = LstDisplayTime;
+
             //------------------------------------------------------
             // ライン情報を取り込む。
             //------------------------------------------------------
@@ -447,8 +448,9 @@ namespace AsusGigaInsp.Models
                 strSql.Append("FROM ");
                 strSql.Append("    T_SERIAL_STATUS_HYSTORY ");
                 strSql.Append("WHERE ");
-                strSql.Append("    UPDATE_DATE >= '" + StrDT + " " + SRTT.StartTime + "'");
-                strSql.Append("    AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "'");
+                strSql.Append("    UPDATE_DATE >= '2020/07/28 " + SRTT.StartTime + "'");
+                //strSql.Append("    UPDATE_DATE >= '" + StrDT + "' ");
+                strSql.Append("    AND UPDATE_DATE < '2020/07/28 " + SRTT.EndTime + "' ");
                 strSql.Append("    AND STATUS = '4010' ");
                 strSql.Append("GROUP BY ");
                 strSql.Append("    LINE_ID ");
@@ -463,7 +465,14 @@ namespace AsusGigaInsp.Models
                     {
                         if (StrPerformanceReader[IntY, 0] == sqlRdr["LINE_ID"].ToString())
                         {
-                            StrPerformanceReader[IntY, IntX] = int.Parse(sqlRdr["COUNT"].ToString()).ToString();
+                            if (IntX > 1)
+                            {
+                                StrPerformanceReader[IntY, IntX] = (int.Parse(StrPerformanceReader[IntY, IntX - 1]) + int.Parse(sqlRdr["COUNT"].ToString())).ToString();
+                            }
+                            else
+                            {
+                                StrPerformanceReader[IntY, IntX] = int.Parse(sqlRdr["COUNT"].ToString()).ToString();
+                            }
                         }
                     }
                 }
