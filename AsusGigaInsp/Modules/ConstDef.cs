@@ -32,5 +32,7 @@ namespace AsusGigaInsp.Modules
         // 1画面に表示する行数
         public const int PAGE_ROW_SIZE = 300;
 
+        // NG写真のパス
+        public const string NG_PICT_PATH = @"../../img/photos_giga";
     }
 }

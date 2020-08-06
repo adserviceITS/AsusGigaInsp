@@ -17,7 +17,10 @@
     <hr style="margin-top:5px;">
     <div class="form-row" style="margin-top:15px;">
         @Html.TextAreaFor(model => model.MasterCartonSerial, 6, 100, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", inputmode = "url", placeholder = "マスターカートンQR" })
-        <button type="button" class="btn btn-danger btn" style="margin-left:20px;" name="InspEntryBtn" id="InspEntryBtn">登録</button>
+        <div class="row">
+            <button type="button" class="btn btn-danger btn" style="margin-left:20px;" name="InspEntryBtn" id="InspEntryBtn">登録</button>
+            <button type="button" class="btn btn-danger btn" style="margin-left:3px;" name="Clear" id="ClearBtn">クリア</button>
+        </div>
     </div>
     <div id="MasterCartonSerialErr"></div>
     @Html.ValidationMessageFor(model => model.MasterCartonSerial)
@@ -133,6 +136,11 @@
                 return true;
             }
             return false;
+        });
+
+        // クリアボタンクリック処理
+        $("#ClearBtn").on("click", function () {
+            clearForm(this.form);
         });
 
     });

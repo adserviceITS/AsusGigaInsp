@@ -42,7 +42,8 @@
             </div>
         </div>
         <div class="col-md-1">
-            <button type="button" class="btn btn-danger btn" name="InspEntryBtn" id="InspEntryBtn">登録</button>
+            <button type="button" class="btn btn-danger btn" name="InspEntryBtn"  style="margin:3px;" id="InspEntryBtn">登録</button>
+            <button type="button" class="btn btn-danger btn" style="margin:3px;" name="Clear" id="ClearBtn">クリア</button>
         </div>
         @Html.ValidationMessageFor(model => model.MasterCartonSerial)
     </div>
@@ -330,6 +331,11 @@
             $('#MasterCartonSerial').select();
 
             return false;
+        });
+
+        // クリアボタンクリック処理
+        $("#ClearBtn").on("click", function () {
+            clearForm(this.form);
         });
 
     });

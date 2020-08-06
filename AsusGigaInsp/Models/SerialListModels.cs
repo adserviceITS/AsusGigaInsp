@@ -94,6 +94,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSE.MODEL_NAME, ");
             stbSql.Append("    TSE.SERIAL_NUMBER, ");
             stbSql.Append("    TSE.NG_FLG, ");
+            stbSql.Append("    TPH.FILENAME, ");
             stbSql.Append("    TSE.NG_REASON, ");
             stbSql.Append("    TSE.WORKDAY, ");
             stbSql.Append("    MIN.INSTRUCTION, ");
@@ -108,6 +109,8 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSE.SERIAL_STATUS_ID = MSS.SERIAL_STATUS_ID ");
             stbSql.Append("    LEFT JOIN M_INSTRUCTION MIN ON ");
             stbSql.Append("    TSE.INSTRUCTION = MIN.INSTRUCTION_ID ");
+            stbSql.Append("    LEFT JOIN T_PHOTO TPH ON ");
+            stbSql.Append("    TSE.SERIAL_NUMBER = TPH.QR ");
             stbSql.Append(SearchWhere.ToString());
             stbSql.Append("ORDER BY ");
             stbSql.Append("    TSE.SO_NO, ");
@@ -131,6 +134,7 @@ namespace AsusGigaInsp.Models
                     ModelName = sqlRdr["MODEL_NAME"].ToString(),
                     SerialNumber = sqlRdr["SERIAL_NUMBER"].ToString(),
                     NGFlg = sqlRdr["NG_FLG"].ToString(),
+                    NGPictLink = ConstDef.NG_PICT_PATH + @"/" + sqlRdr["FILENAME"].ToString(),
                     NGReason = sqlRdr["NG_REASON"].ToString(),
                     WorkDay = string.IsNullOrEmpty(sqlRdr["WORKDAY"].ToString()) ? "" : sqlRdr["WORKDAY"].ToString().Substring(0, 10),
                     Instruction = sqlRdr["INSTRUCTION"].ToString(),
@@ -311,6 +315,8 @@ namespace AsusGigaInsp.Models
         public string SerialNumber { get; set; }
         [DisplayName("NG状況")]
         public string NGFlg { get; set; }
+        [DisplayName("写真")]
+        public string NGPictLink { get; set; }
         [DisplayName("NG理由")]
         public string NGReason { get; set; }
         [DisplayName("作業日")]

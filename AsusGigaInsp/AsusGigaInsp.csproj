@@ -189,6 +189,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="img\calendar-icon.png" />
+    <Content Include="img\photos_giga\20200727_38513.jpg" />
     <Content Include="img\sort.png" />
     <Content Include="img\sort_asc.png" />
     <Content Include="img\sort_desc.png" />

@@ -16,12 +16,13 @@ namespace AsusGigaInsp.Controllers
         public ActionResult Index()
         {
             InspEndModels ieModels = new InspEndModels();
-            ieModels.SetInspEndSerialLists();
             ieModels.SetDropDownListLine();
 
             // セッションのラインをセット。ラインがなかったらまた選ばせる。管理者はログイン時にライン選択しないから。
             if (Session["LineID"] != null)
                 ieModels.LineID = Session["LineID"].ToString();
+
+            ieModels.SetInspEndSerialLists();
 
             return View("InspEnd", ieModels);
         }
