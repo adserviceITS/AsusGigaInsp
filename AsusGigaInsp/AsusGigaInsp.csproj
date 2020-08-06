@@ -165,7 +165,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\audio\EntryComplete.mp3" />
+    <Content Include="Content\audio\EntryComplete_F.mp3" />
+    <Content Include="Content\audio\EntryComplete_M.mp3" />
     <Content Include="Content\audio\NG.mp3" />
     <Content Include="Content\audio\OK.mp3" />
     <Content Include="Content\bootstrap-grid.css" />

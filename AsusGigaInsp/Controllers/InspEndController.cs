@@ -17,6 +17,11 @@ namespace AsusGigaInsp.Controllers
         {
             InspEndModels ieModels = new InspEndModels();
             ieModels.SetInspEndSerialLists();
+            ieModels.SetDropDownListLine();
+
+            // セッションのラインをセット。ラインがなかったらまた選ばせる。管理者はログイン時にライン選択しないから。
+            if (Session["LineID"] != null)
+                ieModels.LineID = Session["LineID"].ToString();
 
             return View("InspEnd", ieModels);
         }
@@ -29,6 +34,7 @@ namespace AsusGigaInsp.Controllers
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder stbSql = new StringBuilder();
             string[] SerialNOs = models.MasterCartonSerial.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            models.LineID = Session["LineID"].ToString();
 
             // シリアルの登録がなければエラー
             StringBuilder SerialErrMsg = new StringBuilder();
@@ -142,6 +148,15 @@ namespace AsusGigaInsp.Controllers
             ViewBag.CompleteFlg = "true";
 
             return View("InspEnd", models);
+        }
+
+        [HttpPost]
+        public ActionResult SelectLine(InspEndModels model)
+        {
+            // セッションにラインをセット
+            Session["LineID"] = model.LineID;
+
+            return Index();
         }
     }
 }

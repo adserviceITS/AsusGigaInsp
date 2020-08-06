@@ -11,7 +11,7 @@
             <h4 style="margin-top:10px;">検査完了</h4>
         </div>
         <div class="col-md-3">
-            <h5 class="text-primary font-weight-bold">選択ライン：@Session["LineID"].ToString()</h5>
+            <h5 class="text-primary font-weight-bold" id="dispLineID"></h5>
         </div>
     </div>
     <hr style="margin-top:5px;">
@@ -44,7 +44,6 @@
         <div class="col-md-1">
             <button type="button" class="btn btn-danger btn" name="InspEntryBtn" id="InspEntryBtn">登録</button>
         </div>
-        <label class="col invalid-feedback" id="SubmitErrMsg"></label>
         @Html.ValidationMessageFor(model => model.MasterCartonSerial)
     </div>
     <!-- 結果エリア ------------------------------------------------------------------------------------------>
@@ -82,16 +81,56 @@
         </tbody>
     </table>
 }
-
 <audio src="~/Content/audio/OK.mp3" id="auOK"></audio>
 <audio src="~/Content/audio/NG.mp3" id="auNG"></audio>
-<audio src="~/Content/audio/EntryComplete.mp3" id="auEntryComplete"></audio>
+<audio src="~/Content/audio/EntryComplete_M.mp3" id="auEntryComplete"></audio>
 
-<script type="text/javascript">
+<!-- ライン選択 ------------------------------------------------------------>
+@if (string.IsNullOrEmpty(Model.LineID))
+{
+    <div class="modal fade" tabindex="-1" role="dialog" id="LineSelectModal" aria-labelledby="label1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ライン選択</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form role="form" id="modalForm" action="/InspEnd/SelectLine" method="POST">
+                    <!-- Modal ボディー -->
+                    <div class="modal-body">
+                        <div class="form-row" style="margin-bottom: 10px;">
+                            @Html.DropDownListFor(
+                                 model => model.LineID, // プロパティ
+                                 new SelectList(Model.DropDownListLine, "LineID", "LineName"),
+                                 new { @class = "form-control form-control-sm", style = "max-width:100px;" }
+                             )
+                        </div>
+                    </div>
+                    <!-- Modal フッター -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="chgDateSub" value="dateup">選択</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+    <script type="text/javascript">
     $(function () {
 
         $('#MasterCartonSerial').focus();
         $('#MasterCartonSerial').select();
+
+        // ライン選択モーダル表示処理
+        var strLineID = "@Model.LineID";
+        if (isEmpty(strLineID)) {
+            $('#LineSelectModal').modal();
+        } else {
+            $("#dispLineID").text("選択ライン：" + strLineID);
+        }
 
         var CompleteFlg = "@ViewBag.CompleteFlg";
         if (CompleteFlg == "true") {
@@ -266,6 +305,17 @@
                 }
             }
 
+            // 入力シリアルが他の入力されたシリアルと重複していないか
+            for (var t = 0; t < SerialNos.length; t++) {
+                for (var i = 0; i < SerialNos.length; i++) {
+                    if (t > i && SerialNos[t] == SerialNos[i]) {
+                        ErrMsg = ErrMsg + SerialNos[i] + "は重複しています！\n"
+                        break;
+                    }
+                }
+            }
+
+
             if (isEmpty(ErrMsg)) {
                 $(this).parents('form').attr('action', '/InspEnd/Entry');
                 $('form')[0].submit();
@@ -283,4 +333,4 @@
         });
 
     });
-</script>
+    </script>

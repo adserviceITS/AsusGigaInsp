@@ -3,7 +3,7 @@
     ViewBag.Title = "検査開始";
 }
 <link href="~/Content/InspStart.css" rel="stylesheet" />
-@using (Html.BeginForm())
+@using (Html.BeginForm("Entry", "InspStart", "", FormMethod.Post, new { id = "EntryForm" }))
 {
     <!-- TOPエリア ------------------------------------------------------------------------------------------->
     <div class="row d-flex align-items-end">
@@ -11,7 +11,7 @@
             <h4 style="margin-top:10px;">検査開始</h4>
         </div>
         <div class="col-md-3">
-            <h5 class="text-primary font-weight-bold">選択ライン：@Session["LineID"].ToString()</h5>
+            <h5 class="text-primary font-weight-bold" id="dispLineID"></h5>
         </div>
     </div>
     <hr style="margin-top:5px;">
@@ -56,12 +56,53 @@
         </tbody>
     </table>
 }
-<audio src="~/Content/audio/EntryComplete.mp3" id="auEntryComplete"></audio>
+<audio src="~/Content/audio/EntryComplete_F.mp3" id="auEntryComplete"></audio>
+
+<!-- ライン選択 ------------------------------------------------------------>
+@if (string.IsNullOrEmpty(Model.LineID)) {
+    <div class="modal fade" tabindex="-1" role="dialog" id="LineSelectModal" aria-labelledby="label1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ライン選択</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form role="form" id="modalForm" action="/InspStart/SelectLine" method="POST">
+                    <!-- Modal ボディー -->
+                    <div class="modal-body">
+                        <div class="form-row" style="margin-bottom: 10px;">
+                            @Html.DropDownListFor(
+                                 model => model.LineID, // プロパティ
+                                 new SelectList(Model.DropDownListLine, "LineID", "LineName"),
+                                 new { @class = "form-control form-control-sm", style = "max-width:100px;" }
+                             )
+                        </div>
+                    </div>
+                    <!-- Modal フッター -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="chgDateSub" value="dateup">選択</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
 <script type="text/javascript">
     $(function () {
 
         $('#MasterCartonSerial').focus();
         $('#MasterCartonSerial').select();
+
+        // ライン選択モーダル表示処理
+        var strLineID = "@Model.LineID";
+        if (isEmpty(strLineID)) {
+            $('#LineSelectModal').modal();
+        } else {
+            $("#dispLineID").text("選択ライン：" + strLineID);
+        }
 
         var CompleteFlg = "@ViewBag.CompleteFlg";
         if (CompleteFlg == "true") {
@@ -88,8 +129,7 @@
         // 登録ボタンを押下時
         $('#InspEntryBtn').on('click', function () {
             if (!isEmpty($('#MasterCartonSerial').val())) {
-                $('form').attr('action', '/InspStart/Entry');
-                $('form').submit();
+                $('#EntryForm').submit();
                 return true;
             }
             return false;

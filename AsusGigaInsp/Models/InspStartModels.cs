@@ -10,8 +10,17 @@ namespace AsusGigaInsp.Models
 {
     public class InspStartModels
     {
+        public IEnumerable<CombLine> DropDownListLine { get; set; }
+        public string LineID { get; set; }
         public string MasterCartonSerial { get; set; }
         public IEnumerable<InspStartSerialList> InspStartSerialLists { get; set; }
+
+        public void SetDropDownListLine()
+        {
+            // ラインドロップダウンリストを取得
+            DropDownList ddList = new DropDownList();
+            DropDownListLine = ddList.GetDropDownListLine();
+        }
 
         public void SetInspStartSerialLists()
         {
@@ -37,7 +46,8 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    USR.ID = TSH.UPDATE_ID ");
             stbSql.Append("WHERE ");
             stbSql.Append("    TSH.STATUS = '3010' AND ");
-            stbSql.Append("    CONVERT(VARCHAR(30), TSH.UPDATE_DATE, 112) = CONVERT(VARCHAR(30), GETDATE(), 112) ");
+            stbSql.Append("    CONVERT(VARCHAR(30), TSH.UPDATE_DATE, 112) = CONVERT(VARCHAR(30), GETDATE(), 112) AND ");
+            stbSql.Append("    TSH.LINE_ID = '" + LineID + "' ");
             stbSql.Append("ORDER BY ");
             stbSql.Append("    TSH.UPDATE_DATE DESC, ");
             stbSql.Append("    TSH.SERIAL_NUMBER ");
@@ -121,13 +131,11 @@ namespace AsusGigaInsp.Models
 
             stbSql.Clear();
 
-            string strLineID = HttpContext.Current.Session["LineID"].ToString();
-
             stbSql.Append("INSERT INTO T_SERIAL_STATUS_HYSTORY ");
             stbSql.Append("SELECT ");
             stbSql.Append("    T_SERIAL_STATUS.ID, ");
             stbSql.Append("    T_SERIAL_STATUS.SERIAL_NUMBER, ");
-            stbSql.Append("    '" + strLineID + "', ");
+            stbSql.Append("    '" + LineID + "', ");
             stbSql.Append("    T_SERIAL_STATUS.SO_NO, ");
             stbSql.Append("    T_SERIAL_STATUS.SERIAL_STATUS_ID, ");
             stbSql.Append("    GETDATE(), ");
