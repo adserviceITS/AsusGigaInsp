@@ -15,7 +15,7 @@
 <body>
     <div class='fixed-top'>
         <nav id="navigation" class="navbar">
-            <a href="../Auth/Login" class="logo">SIVA</a>
+            @Html.ActionLink("SIVA", "WhiteBoard", "WhiteBoard", null, new { @class = "logo" })
             <ul class="links">
                 @using AsusGigaInsp.Modules
                 @if (User.Identity.IsAuthenticated && Session["ID"] != null)

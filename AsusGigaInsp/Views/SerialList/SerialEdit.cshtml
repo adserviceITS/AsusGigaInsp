@@ -34,11 +34,11 @@
                 </div>
             </div>
             <div class="row">
-                @Html.TextAreaFor(model => model.NGReason, 8, 100, new { @class = "form-control form-control-sm", style = "max-width:400px; margin-left:15px;", placeholder = "NG理由" })
+                @Html.TextAreaFor(model => model.NGReason, 5, 100, new { @class = "form-control form-control-sm", style = "max-width:400px; margin-left:15px;", placeholder = "NG理由" })
                 <label class="col invalid-feedback"></label>
             </div>
-            <div class="row" style="margin-top:15px;">
-                <label for="Instruction" class="col-form-label-sm col-md-3">ASUS様指示</label>
+            <div class="row" style="margin-top:15px;margin-left:initial;">
+                <label for="Instruction" class="col-form-label-sm" style="margin-right:3px;">ASUS様指示</label>
                 @Html.DropDownListFor(
                     model => model.Instruction, // プロパティ
                     new SelectList(Model.DropDownListInstruction, "InstructionID", "Instruction"),
@@ -47,10 +47,19 @@
                 )
             </div>
             <div class="row">
-                <label for="DescriptionAds" class="col-form-label-sm col-md-2" style="margin-bottom:initial;">備考</label>
+                <div class="form-check" style="padding-left:15px;">
+                    <label for="SidewaysFlg" class="form-check-label col-form-label-sm">横持ち</label>
+                    @Html.CheckBoxFor(
+                        model => model.SidewaysFlg,  // プロパティ
+                        new { @class="form-check-input", style="margin-left:41px;margin-top:9px;" }      // その他の属性
+                    )
+                </div>
             </div>
             <div class="row">
-                @Html.TextAreaFor(model => model.DescriptionAds, 8, 100, new { @class = "form-control form-control-sm", style = "max-width:400px;margin-left:15px", placeholder = "備考" })
+                <label for="DescriptionAds" class="col-form-label-sm col-md-2" style="margin-top:9px;margin-bottom:initial;">備考</label>
+            </div>
+            <div class="row">
+                @Html.TextAreaFor(model => model.DescriptionAds, 5, 100, new { @class = "form-control form-control-sm", style = "max-width:400px;margin-left:15px", placeholder = "備考" })
                 <label class="col invalid-feedback"></label>
             </div>
             <div class="row">
@@ -58,7 +67,7 @@
             </div>
             <div class="col-md-10" style="margin-top:10px;">
                 <div class="row">
-                    @Html.ActionLink("戻る", "BackSerialList", "SerialList", new { @class = "btn btn-danger btn" ,style = "margin:5px;" })
+                    @Html.ActionLink("戻る", "BackSerialList", "SerialList", new { @class = "btn btn-danger btn", style = "margin:5px;" })
                     <button class="btn btn-danger btn" formaction="/SerialList/Delete" name="DeleteBtn" id="DeleteBtn" style="margin:5px;">削除</button>
                     <button class="btn btn-danger btn" formaction="/SerialList/EditEntry" name="EditEntryBtn" id="EditEntryBtn" style="margin:5px;">登録</button>
                 </div>

@@ -98,6 +98,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSE.NG_REASON, ");
             stbSql.Append("    TSE.WORKDAY, ");
             stbSql.Append("    MIN.INSTRUCTION, ");
+            stbSql.Append("    TSE.SIDEWAYS_FLG, ");
             stbSql.Append("    TSO.DELIVERY_LOCATION, ");
             stbSql.Append("    TSE.DESCRIPTION_ADS, ");
             stbSql.Append("    MSS.SERIAL_STATUS_NAME, ");
@@ -138,6 +139,7 @@ namespace AsusGigaInsp.Models
                     NGReason = sqlRdr["NG_REASON"].ToString(),
                     WorkDay = string.IsNullOrEmpty(sqlRdr["WORKDAY"].ToString()) ? "" : sqlRdr["WORKDAY"].ToString().Substring(0, 10),
                     Instruction = sqlRdr["INSTRUCTION"].ToString(),
+                    SidewaysFlg = sqlRdr["SIDEWAYS_FLG"].ToString(),
                     ShippingAddress = sqlRdr["DELIVERY_LOCATION"].ToString(),
                     DescriptionAds = sqlRdr["DESCRIPTION_ADS"].ToString(),
                     StatusName = sqlRdr["SERIAL_STATUS_NAME"].ToString(),
@@ -248,14 +250,21 @@ namespace AsusGigaInsp.Models
             stbSql.Append("       WHEN TSE.NG_FLG = '0' THEN '' ");
             stbSql.Append("       WHEN TSE.NG_FLG = '1' THEN 'NG' ");
             stbSql.Append("       ELSE 'システムエラー' ");
-            stbSql.Append("    END + ', ' + ");
+            stbSql.Append("    END + ',' + ");
             stbSql.Append("    IsNull(TSE.NG_REASON, '') + ',' + ");
             stbSql.Append("    CASE ");
             stbSql.Append("       WHEN TSE.WORKDAY IS NULL THEN '' ");
             stbSql.Append("       WHEN TSE.WORKDAY = '' THEN '' ");
             stbSql.Append("       ELSE CONVERT(nvarchar, TSE.WORKDAY, 111) ");
-            stbSql.Append("    END + ', ' + ");
+            stbSql.Append("    END + ',' + ");
             stbSql.Append("    IsNull(MIN.INSTRUCTION, '') + ',' + ");
+            stbSql.Append("    CASE ");
+            stbSql.Append("       WHEN TSE.SIDEWAYS_FLG IS NULL THEN '' ");
+            stbSql.Append("       WHEN TSE.SIDEWAYS_FLG = '' THEN '' ");
+            stbSql.Append("       WHEN TSE.SIDEWAYS_FLG = '0' THEN '' ");
+            stbSql.Append("       WHEN TSE.SIDEWAYS_FLG = '1' THEN '済' ");
+            stbSql.Append("       ELSE 'システムエラー' ");
+            stbSql.Append("    END + ',' + ");
             stbSql.Append("    IsNull(TSO.DELIVERY_LOCATION, '') + ',' +  ");
             stbSql.Append("    IsNull(TSE.DESCRIPTION_ADS, '') + ',' +  ");
             stbSql.Append("    IsNull(MSS.SERIAL_STATUS_NAME, '') + ',' +  ");
@@ -287,6 +296,7 @@ namespace AsusGigaInsp.Models
             stbCsvData.Append("NG理由,");
             stbCsvData.Append("作業日,");
             stbCsvData.Append("ASUS様指示,");
+            stbCsvData.Append("横持ち,");
             stbCsvData.Append("発送先,");
             stbCsvData.Append("備考,");
             stbCsvData.Append("ステータス,");
@@ -323,6 +333,8 @@ namespace AsusGigaInsp.Models
         public string WorkDay { get; set; }
         [DisplayName("ASUS様指示")]
         public string Instruction { get; set; }
+        [DisplayName("横持ち")]
+        public string SidewaysFlg { get; set; }
         [DisplayName("発送先")]
         public string ShippingAddress { get; set; }
         [DisplayName("備考")]

@@ -18,6 +18,7 @@ namespace AsusGigaInsp.Models
         public bool NGFlg { get; set; }
         public string NGReason { get; set; }
         public string Instruction { get; set; }
+        public bool SidewaysFlg { get; set; }
         public string DescriptionAds { get; set; }
         public string INSERT_DATE { get; set; }
         public string INSERT_NAME { get; set; }
@@ -67,6 +68,14 @@ namespace AsusGigaInsp.Models
                 }
                 NGReason = sqlRdr["NG_REASON"].ToString();
                 Instruction = sqlRdr["INSTRUCTION"].ToString();
+                if (sqlRdr["SIDEWAYS_FLG"].ToString() == "1")
+                {
+                    SidewaysFlg = true;
+                }
+                else
+                {
+                    SidewaysFlg = false;
+                }
                 DescriptionAds = sqlRdr["DESCRIPTION_ADS"].ToString();
                 INSERT_DATE = sqlRdr["INSERT_DATE"].ToString();
                 INSERT_NAME = sqlRdr["INSERT_NAME"].ToString();
@@ -87,6 +96,8 @@ namespace AsusGigaInsp.Models
             // NGFlgの変換
             string strNGFlg = NGFlg ? "1" : "0";
 
+            // SidewaysFlgの変換
+            string strSidewaysFlg = SidewaysFlg ? "1" : "0";
 
             // シリアルステータス更新
             stbSql.Append("UPDATE T_SERIAL_STATUS ");
@@ -96,6 +107,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    T_SERIAL_STATUS.NG_FLG = '" + strNGFlg + "', ");
             stbSql.Append("    T_SERIAL_STATUS.NG_REASON = '" + NGReason + "', ");
             stbSql.Append("    T_SERIAL_STATUS.INSTRUCTION = '" + Instruction + "', ");
+            stbSql.Append("    T_SERIAL_STATUS.SIDEWAYS_FLG = '" + strSidewaysFlg + "', ");
             stbSql.Append("    T_SERIAL_STATUS.DESCRIPTION_ADS = '" + DescriptionAds + "', ");
             stbSql.Append("    T_SERIAL_STATUS.UPDATE_DATE = GETDATE(), ");
             stbSql.Append("    T_SERIAL_STATUS.UPDATE_ID = '" + strUID + "' ");

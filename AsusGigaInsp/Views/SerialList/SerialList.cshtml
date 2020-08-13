@@ -66,17 +66,18 @@
         <thead class="thead-light">
             <tr>
                 <th style="display:none;"></th>
-                <th style="text-align:center; width:41px;"></th>
-                <th style="text-align:center; width:108px;">@Html.DisplayNameFor(model => model.RstSerialList.First().SONo)</th>
+                <th style="text-align:center; width:35px;"></th>
+                <th style="text-align:center; width:109px;">@Html.DisplayNameFor(model => model.RstSerialList.First().SONo)</th>
                 <th style="text-align:center; width:70px;">@Html.DisplayNameFor(model => model.RstSerialList.First().n90N)</th>
                 <th style="text-align:center; width:60px;">@Html.DisplayNameFor(model => model.RstSerialList.First().ModelName)</th>
-                <th style="text-align:center; width:120px;">@Html.DisplayNameFor(model => model.RstSerialList.First().SerialNumber)</th>
+                <th style="text-align:center; width:121px;">@Html.DisplayNameFor(model => model.RstSerialList.First().SerialNumber)</th>
                 <th style="text-align:center; width:50px;">@Html.DisplayNameFor(model => model.RstSerialList.First().NGFlg)</th>
-                <th style="text-align:center; width:120px;">@Html.DisplayNameFor(model => model.RstSerialList.First().NGReason)</th>
+                <th style="text-align:center; width:90px;">@Html.DisplayNameFor(model => model.RstSerialList.First().NGReason)</th>
                 <th style="text-align:center; width:70px;">@Html.DisplayNameFor(model => model.RstSerialList.First().WorkDay)</th>
                 <th style="text-align:center; width:65px;">@Html.DisplayNameFor(model => model.RstSerialList.First().Instruction)</th>
-                <th style="text-align:center; width:70px;">@Html.DisplayNameFor(model => model.RstSerialList.First().ShippingAddress)</th>
-                <th style="text-align:center; width:120px;">@Html.DisplayNameFor(model => model.RstSerialList.First().DescriptionAds)</th>
+                <th style="text-align:center; width:50px;">@Html.DisplayNameFor(model => model.RstSerialList.First().SidewaysFlg)</th>
+                <th style="text-align:center; width:60px;">@Html.DisplayNameFor(model => model.RstSerialList.First().ShippingAddress)</th>
+                <th style="text-align:center; width:115px;">@Html.DisplayNameFor(model => model.RstSerialList.First().DescriptionAds)</th>
                 <th style="text-align:center; width:110px;">@Html.DisplayNameFor(model => model.RstSerialList.First().StatusName)</th>
                 <th style="text-align:center; width:85px;">@Html.DisplayNameFor(model => model.RstSerialList.First().StatusUpdateDate)</th>
             </tr>
@@ -86,36 +87,42 @@
             {
                 foreach (var item in Model.RstSerialList)
                 {
-                    <tr>
-                        <td style="display:none;">@Html.DisplayFor(modelItem => item.SerialID)</td>
-                        <td style="text-align:center; width:41px;">
-                            <button class="btn btn-danger btn-sm EditBtn" formaction='/SerialList/Edit' name="EditBtn" id="EditBtn">修</button>
-                        </td>
-                        <!-- 2020/7/20 廃止
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm NGBtn" name="NGBtn" id="NGBtn">NG</button>
-                        </td>
-                        -->
-                        <td style="text-align:center; width:108px;">@Html.DisplayFor(modelItem => item.SONo)</td>
-                        <td style="text-align:center; width:70px;">@Html.DisplayFor(modelItem => item.n90N)</td>
-                        <td style="text-align:center; width:60px;">@Html.DisplayFor(modelItem => item.ModelName)</td>
-                        <td style="text-align:center; width:120px;">@Html.DisplayFor(modelItem => item.SerialNumber)</td>
-                        <td style="text-align:center; width:50px;">
-                            @if (item.NGFlg == "1")
-                            {
-                                <span class="text-danger font-weight-bold">NG</span>
-                                <button type="button" class="btn btn-danger btn-sm w-5 h-5 NGPictBtn" style="font-size:11px;padding:1px 3px 1px;" name="NGPictBtn" id="NGPictBtn">写真</button>
-                                @Html.HiddenFor(modelItem => item.NGPictLink)
-                            }
-                        </td>
-                        <td style="width:120px;">@Html.DisplayFor(modelItem => item.NGReason)</td>
-                        <td style="text-align:center; width:70px;">@Html.DisplayFor(modelItem => item.WorkDay)</td>
-                        <td style="text-align:center; width:65px;">@Html.DisplayFor(modelItem => item.Instruction)</td>
-                        <td style="text-align:center; width:70px;">@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
-                        <td style="width:120px;">@Html.DisplayFor(modelItem => item.DescriptionAds)</td>
-                        <td style="text-align:center; width:110px;">@Html.DisplayFor(modelItem => item.StatusName)</td>
-                        <td style="text-align:center; width:85px;">@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
-                    </tr>
+            <tr>
+                <td style="display:none;">@Html.DisplayFor(modelItem => item.SerialID)</td>
+                <td style="text-align:center; vertical-align:middle; width:35px;">
+                    <button class="btn btn-danger btn-sm EditBtn" style="padding:3px 5px 3px;" formaction='/SerialList/Edit' name="EditBtn" id="EditBtn">修</button>
+                </td>
+                <!-- 2020/7/20 廃止
+    <td>
+        <button type="button" class="btn btn-danger btn-sm NGBtn" name="NGBtn" id="NGBtn">NG</button>
+    </td>
+    -->
+                <td style="text-align:center; width:108px;">@Html.DisplayFor(modelItem => item.SONo)</td>
+                <td style="text-align:center; width:70px;">@Html.DisplayFor(modelItem => item.n90N)</td>
+                <td style="text-align:center; width:60px;">@Html.DisplayFor(modelItem => item.ModelName)</td>
+                <td style="text-align:center; width:120px;">@Html.DisplayFor(modelItem => item.SerialNumber)</td>
+                <td style="text-align:center; width:50px;">
+                    @if (item.NGFlg == "1")
+                    {
+                        <span class="text-danger font-weight-bold">NG</span>
+                        <button type="button" class="btn btn-danger btn-sm w-5 h-5 NGPictBtn" style="font-size:11px;padding:1px 3px 1px;" name="NGPictBtn" id="NGPictBtn">写真</button>
+                        @Html.HiddenFor(modelItem => item.NGPictLink)
+                    }
+                </td>
+                <td style="width:90px;">@Html.DisplayFor(modelItem => item.NGReason)</td>
+                <td style="text-align:center; width:70px;">@Html.DisplayFor(modelItem => item.WorkDay)</td>
+                <td style="text-align:center; width:65px;">@Html.DisplayFor(modelItem => item.Instruction)</td>
+                <td style="text-align:center; width:50px;">
+                    @if (item.SidewaysFlg == "1")
+                    {
+                        <span>済</span>
+                    }
+                </td>
+                <td style="text-align:center; width:60px;">@Html.DisplayFor(modelItem => item.ShippingAddress)</td>
+                <td style="width:115px;">@Html.DisplayFor(modelItem => item.DescriptionAds)</td>
+                <td style="text-align:center; width:110px;">@Html.DisplayFor(modelItem => item.StatusName)</td>
+                <td style="text-align:center; width:85px;">@Html.DisplayFor(modelItem => item.StatusUpdateDate)</td>
+            </tr>
                 }
             }
         </tbody>
