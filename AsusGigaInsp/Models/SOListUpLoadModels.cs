@@ -645,14 +645,14 @@ namespace AsusGigaInsp.Models
             int IntRowCount = SOList.GetLength(0);
             int IntColumnCount = SOList.GetLength(1);
             //------------------------------------------------------
-            // ExcelデータをT_SO_STATUS_HYSTORYに保存する。
+            // ExcelデータをT_SO_STATUS_HISTORYに保存する。
             // 存在しなければ追加。
             //------------------------------------------------------
             for (int RowCounter = 2; RowCounter < IntRowCount; RowCounter++)
             {
 
                 stbSql.Append("INSERT ");
-                stbSql.Append("INTO T_SO_STATUS_HYSTORY ");
+                stbSql.Append("INTO T_SO_STATUS_HISTORY ");
                 stbSql.Append("( ");
                 stbSql.Append("    SO_NO, ");
                 stbSql.Append("    SEQ, ");
@@ -677,7 +677,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append("        SELECT ");
                 stbSql.Append("            TOP 1 1 ");
                 stbSql.Append("        FROM ");
-                stbSql.Append("            T_SO_STATUS_HYSTORY ");
+                stbSql.Append("            T_SO_STATUS_HISTORY ");
                 stbSql.Append("        WHERE ");
                 stbSql.Append("             SO_NO = '" + SOList[RowCounter, 1] + "' ");
                 stbSql.Append("    ) ");

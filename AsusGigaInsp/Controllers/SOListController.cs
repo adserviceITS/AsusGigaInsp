@@ -464,12 +464,11 @@ namespace AsusGigaInsp.Controllers
             // エラーがなければ処理継続
             if (ModelState.IsValid)
             {
-                // オーダー情報（T_SO_STATUS）更新
-                DateTime DTNow = DateTime.Now;
-
                 // ステータスが変更されていればデータ更新
                 if (mdlSOListUpdate.EntStatusID != mdlSOListUpdate.CompStatusID)
                 {
+                    DateTime DTNow = DateTime.Now;
+
                     // オーダーリスト更新
                     mdlSOListUpdate.UpdateSOList(Session["ID"].ToString(), DTNow, mdlSOListUpdate.EntStatusID, mdlSOListUpdate.EntSONO);
 

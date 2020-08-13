@@ -18,7 +18,7 @@ namespace AsusGigaInsp.Models
             //　Excel取得用変数
             int IntRowCount = 1;
             int IntColumnCount = 1;
-            
+
             //------------------------------------------------------
             // Excel取込処理
             //------------------------------------------------------
@@ -285,7 +285,7 @@ namespace AsusGigaInsp.Models
             string StrUpdUID = HttpContext.Current.Session["ID"].ToString();
 
             stbSql.Append("INSERT ");
-            stbSql.Append("INTO T_SERIAL_STATUS_HYSTORY ");
+            stbSql.Append("INTO T_SERIAL_STATUS_HISTORY ");
             stbSql.Append("( ");
             stbSql.Append("    SERIAL_ID, ");
             stbSql.Append("    SERIAL_NUMBER, ");
@@ -308,7 +308,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    '" + DTImportTime + "', ");
             stbSql.Append("    '" + StrUpdUID + "' ");
             stbSql.Append("FROM ");
-            stbSql.Append("    T_SERIAL_STATUS SES LEFT JOIN T_SERIAL_STATUS_HYSTORY SSH ON ");
+            stbSql.Append("    T_SERIAL_STATUS SES LEFT JOIN T_SERIAL_STATUS_HISTORY SSH ON ");
             stbSql.Append("    SES.ID = SSH.SERIAL_ID ");
             stbSql.Append("WHERE ");
             stbSql.Append("    SSH.SERIAL_ID IS NULL ");

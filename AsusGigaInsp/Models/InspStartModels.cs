@@ -13,6 +13,9 @@ namespace AsusGigaInsp.Models
         public IEnumerable<CombLine> DropDownListLine { get; set; }
         public string LineID { get; set; }
         public string MasterCartonSerial { get; set; }
+        public string SrchSerialNo { get; set; }
+        public string OldLineID { get; set; }
+        public string EntLineID { get; set; }
         public IEnumerable<InspStartSerialList> InspStartSerialLists { get; set; }
 
         public void SetDropDownListLine()
@@ -38,7 +41,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSH.UPDATE_DATE, ");
             stbSql.Append("    USR.USER_NAME ");
             stbSql.Append("FROM ");
-            stbSql.Append("    T_SERIAL_STATUS_HYSTORY TSH LEFT JOIN T_SO_STATUS TSO ON ");
+            stbSql.Append("    T_SERIAL_STATUS_HISTORY TSH LEFT JOIN T_SO_STATUS TSO ON ");
             stbSql.Append("    TSH.SO_NO = TSO.SO_NO ");
             stbSql.Append("    LEFT JOIN M_SERIAL_STATUS MSS ON ");
             stbSql.Append("    TSH.STATUS = MSS.SERIAL_STATUS_ID ");
@@ -131,7 +134,7 @@ namespace AsusGigaInsp.Models
 
             stbSql.Clear();
 
-            stbSql.Append("INSERT INTO T_SERIAL_STATUS_HYSTORY ");
+            stbSql.Append("INSERT INTO T_SERIAL_STATUS_HISTORY ");
             stbSql.Append("SELECT ");
             stbSql.Append("    T_SERIAL_STATUS.ID, ");
             stbSql.Append("    T_SERIAL_STATUS.SERIAL_NUMBER, ");
@@ -150,27 +153,52 @@ namespace AsusGigaInsp.Models
 
             stbSql.Clear();
 
-            stbSql.Append("INSERT INTO T_SO_STATUS_HYSTORY ");
+            stbSql.Append("INSERT INTO T_SO_STATUS_HISTORY ");
             stbSql.Append("SELECT ");
-            stbSql.Append("    T_SO_STATUS_HYSTORY.SO_NO, ");
-            stbSql.Append("    MAX(T_SO_STATUS_HYSTORY.SEQ) + 1, ");
-            stbSql.Append("    MAX(T_SO_STATUS_HYSTORY.NOW_STATUS), ");
+            stbSql.Append("    T_SO_STATUS_HISTORY.SO_NO, ");
+            stbSql.Append("    MAX(T_SO_STATUS_HISTORY.SEQ) + 1, ");
+            stbSql.Append("    MAX(T_SO_STATUS_HISTORY.NOW_STATUS), ");
             stbSql.Append("    '3010', ");
             stbSql.Append("    GETDATE(), ");
             stbSql.Append("    '" + strID + "', ");
             stbSql.Append("    GETDATE(), ");
             stbSql.Append("    '" + strID + "' ");
-            stbSql.Append("FROM T_SO_STATUS_HYSTORY LEFT JOIN T_SERIAL_STATUS ON ");
-            stbSql.Append("     T_SO_STATUS_HYSTORY.SO_NO = T_SERIAL_STATUS.SO_NO ");
+            stbSql.Append("FROM T_SO_STATUS_HISTORY LEFT JOIN T_SERIAL_STATUS ON ");
+            stbSql.Append("     T_SO_STATUS_HISTORY.SO_NO = T_SERIAL_STATUS.SO_NO ");
             stbSql.Append("WHERE ");
             stbSql.Append(stbWhere.ToString());
             stbSql.Append("GROUP BY  ");
-            stbSql.Append("     T_SO_STATUS_HYSTORY.SO_NO  ");
+            stbSql.Append("     T_SO_STATUS_HISTORY.SO_NO  ");
 
             dsnLib.ExecSQLUpdate(stbSql.ToString());
 
             dsnLib.DB_Close();
         }
+
+        public void InspStartLineChange()
+        {
+            StringBuilder stbWhere = new StringBuilder();
+
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            string strID = HttpContext.Current.Session["ID"].ToString();
+
+            // シリアルステータス履歴更新
+            stbSql.Append("UPDATE ");
+            stbSql.Append("    T_SERIAL_STATUS_HISTORY ");
+            stbSql.Append("SET ");
+            stbSql.Append("    LINE_ID = '" + EntLineID + "', ");
+            stbSql.Append("    UPDATE_DATE = GETDATE(), ");
+            stbSql.Append("    UPDATE_ID = '" + strID + "' ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    SERIAL_NUMBER = '" + SrchSerialNo + "' ");
+            stbSql.Append("AND STATUS = '3010' ");
+
+            dsnLib.ExecSQLUpdate(stbSql.ToString());
+
+        }
+
     }
 
     public class InspStartSerialList

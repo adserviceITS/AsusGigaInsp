@@ -6,14 +6,14 @@
 <head>
     <meta http-equiv="Content-Language" content="ja">
     <meta name="google" content="notranslate">
-    <meta http-equiv="Refresh" content="30;../WhiteBoard/ProgressBoard_B">
+    <meta http-equiv="Refresh" content="30;../WhiteBoard/WhiteBoard_A">
     <link href="~/Content/ProgressBoard.css" rel="stylesheet" />
 </head>
 @Html.ValidationSummary()
 @using (Html.BeginForm())
 {
     <h2>
-        <u>ASUS新品検品　進捗管理ボード１</u>
+        <u>ASUS新品検品　進捗管理ボード２</u>
         <span class="small text-muted"id="view_today"></span>
     </h2>
     <!-- ここから検索結果 ------------------------------------------------------------------>
@@ -48,7 +48,7 @@
             {
                 foreach (var item in Model.SrchRstProgressBoard)
                 {
-                    if ((item.LineName == "合計") || (item.LineName == "A-Line") || (item.LineName == "B-Line") || (item.LineName == "C-Line") || (item.LineName == "D-Line") || (item.LineName == "E-Line"))
+                    if ((item.LineName == "合計") || (item.LineName == "F-Line") || (item.LineName == "G-Line") || (item.LineName == "H-Line") || (item.LineName == "I-Line") || (item.LineName == "J-Line"))
                     {
                         string StrClass = null;
                         string StrStyle = null;

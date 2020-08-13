@@ -28,7 +28,7 @@
     <table class="table table-striped table-bordered table-sm table-hover" style="margin-top:20px;">
         <thead class="thead-light">
             <tr>
-                @*<th></th>*@
+                <th></th>
                 <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().SONo)</th>
                 <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().n90N)</th>
                 <th>@Html.DisplayNameFor(model => model.InspStartSerialLists.First().ModelName)</th>
@@ -43,9 +43,9 @@
             @foreach (var item in Model.InspStartSerialLists)
             {
                 <tr>
-                    @*<td>
-                            <button type="button" class="btn btn-danger btn-sm EditBtn" formaction='/InspStart/Edit?SerialID=@(item.SerialID)' name="EditBtn" id="EditBtn">編集</button>
-                        </td>*@
+                    <td align="center">
+                        <input type="button" class="btn btn-info btn-sm w-5 h-5 fixed_btn2" style="font-size:11px; padding:1px;" data-toggle="modal" data-target="#LineChangeModal" data-recipient=@(item.SerialNumber) name="Usage" value="ライン修正">
+                    </td>
                     <td>@Html.DisplayFor(modelItem => item.SONo)</td>
                     <td>@Html.DisplayFor(modelItem => item.n90N)</td>
                     <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
@@ -60,9 +60,9 @@
     </table>
 }
 <audio src="~/Content/audio/EntryComplete_F.mp3" id="auEntryComplete"></audio>
-
 <!-- ライン選択 ------------------------------------------------------------>
-@if (string.IsNullOrEmpty(Model.LineID)) {
+@if (string.IsNullOrEmpty(Model.LineID))
+{
     <div class="modal fade" tabindex="-1" role="dialog" id="LineSelectModal" aria-labelledby="label1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -92,6 +92,41 @@
         </div>
     </div>
 }
+<!-- ライン修正 ------------------------------------------------------------>
+<div class="modal fade" tabindex="-1" role="dialog" id="LineChangeModal" aria-labelledby="label1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">ライン修正</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="閉じる">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form role="form" id="modalFormLineChange" action="/InspStart/LineChange" method="POST">
+                <!-- Modal ボディー -->
+                <div class="modal-body">
+                    @Html.HiddenFor(modelItem => Model.LineID)
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="control-label">変更対象シリアルナンバー:</label>
+                        @Html.TextBoxFor(modelItem => Model.SrchSerialNo, new { @readonly = "readonly", @class = "form-control", id = "recipient-name" })
+                    </div>
+                    <div class="form-row" style="margin-bottom: 10px;">
+                        @Html.DropDownListFor(
+                             model => model.EntLineID, // プロパティ
+                             new SelectList(Model.DropDownListLine, "LineID", "LineName"),
+                             new { @class = "form-control form-control-sm", style = "max-width:100px;" }
+                         )
+                    </div>
+                </div>
+                <!-- Modal フッター -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="chgLineSub" value="test">修正</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
     $(function () {
@@ -111,6 +146,14 @@
         if (CompleteFlg == "true") {
             $("#auEntryComplete")[0].play();
         };
+
+        // ライン修正モーダル表示処理
+        $('#LineChangeModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var recipient = button.data('recipient');
+            var modal = $(this);
+            modal.find('.modal-body input#recipient-name').val(recipient);
+        });
 
         // マスターカートンQRエンターエンター時
         EnterFlg = false;

@@ -180,7 +180,7 @@ namespace AsusGigaInsp.Models
             StringBuilder stbSql = new StringBuilder();
 
             stbSql.Append("INSERT ");
-            stbSql.Append("INTO T_SO_STATUS_HYSTORY ");
+            stbSql.Append("INTO T_SO_STATUS_HISTORY ");
             stbSql.Append("( ");
             stbSql.Append("    SO_NO, ");
             stbSql.Append("    SEQ, ");
@@ -201,7 +201,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    '" + DTNow + "', ");
             stbSql.Append("    '" + strUpdUID + "' ");
             stbSql.Append("FROM ");
-            stbSql.Append("    T_SO_STATUS_HYSTORY ");
+            stbSql.Append("    T_SO_STATUS_HISTORY ");
             stbSql.Append("WHERE ");
             stbSql.Append("    SO_NO = N'" + strSONO + "' ");
             stbSql.Append("GROUP BY ");
@@ -237,7 +237,7 @@ namespace AsusGigaInsp.Models
             StringBuilder stbSql = new StringBuilder();
 
             stbSql.Append("INSERT ");
-            stbSql.Append("INTO T_SERIAL_STATUS_HYSTORY ");
+            stbSql.Append("INTO T_SERIAL_STATUS_HISTORY ");
             stbSql.Append("( ");
             stbSql.Append("    SERIAL_ID, ");
             stbSql.Append("    SERIAL_NUMBER, ");

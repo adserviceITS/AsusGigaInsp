@@ -355,6 +355,7 @@
     <Content Include="Views\SerialList\SelectPage.cshtml" />
     <Content Include="Views\WhiteBoard\ProgressBoard_A.cshtml" />
     <Content Include="Views\WhiteBoard\WhiteBoard_A.cshtml" />
+    <Content Include="Views\WhiteBoard\ProgressBoard_B.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

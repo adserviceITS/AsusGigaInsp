@@ -53,7 +53,7 @@ namespace AsusGigaInsp.Models
             strSql.Append("        SELECT ");
             strSql.Append("            STATUS ");
             strSql.Append("        FROM ");
-            strSql.Append("            T_SERIAL_STATUS_HYSTORY ");
+            strSql.Append("            T_SERIAL_STATUS_HISTORY ");
             strSql.Append("        WHERE ");
             strSql.Append("            UPDATE_DATE >= '" + DateTime.Today + "' ");
             strSql.Append("            AND (STATUS = '3010' OR STATUS = '4010') ");
@@ -446,11 +446,10 @@ namespace AsusGigaInsp.Models
                 strSql.Append("    " + IntTimeIndex + " AS TIME_ID, ");
                 strSql.Append("    COUNT(*) AS COUNT ");
                 strSql.Append("FROM ");
-                strSql.Append("    T_SERIAL_STATUS_HYSTORY ");
+                strSql.Append("    T_SERIAL_STATUS_HISTORY ");
                 strSql.Append("WHERE ");
-                strSql.Append("    UPDATE_DATE >= '2020/07/28 " + SRTT.StartTime + "'");
-                //strSql.Append("    UPDATE_DATE >= '" + StrDT + "' ");
-                strSql.Append("    AND UPDATE_DATE < '2020/07/28 " + SRTT.EndTime + "' ");
+                strSql.Append("    UPDATE_DATE >= '" + StrDT + " " + SRTT.StartTime + "'");
+                strSql.Append("    AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "' ");
                 strSql.Append("    AND STATUS = '4010' ");
                 strSql.Append("GROUP BY ");
                 strSql.Append("    LINE_ID ");

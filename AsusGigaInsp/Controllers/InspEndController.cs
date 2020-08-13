@@ -142,6 +142,7 @@ namespace AsusGigaInsp.Controllers
 
             // バリデーションチェック END ****************************************************************************
 
+            models.SetDropDownListLine();
             models.UpdateStatus();
             models.SetInspEndSerialLists();
 
@@ -159,5 +160,18 @@ namespace AsusGigaInsp.Controllers
 
             return Index();
         }
+
+        [HttpPost]
+        public ActionResult LineChange(InspEndModels model)
+        {
+            // オーダーリスト更新
+            model.InspEndLineChange();
+
+            // セッションにラインをセット
+            Session["LineID"] = model.LineID;
+
+            return Index();
+        }
+
     }
 }

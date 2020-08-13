@@ -19,7 +19,8 @@ namespace AsusGigaInsp.Modules
         public const string DB_PASSWORD = "takota";
 
         /* 本番機用 */
-        //public const string DB_DATA_SOURCE = "192.168.0.1";
+        //public const string DB_DATA_SOURCE = "192.168.121.181";
+        //public const string DB_DATA_BASE = "SIVA";
         //public const string DB_USER_ID = "sa";
         //public const string DB_PASSWORD = "takota";
 
