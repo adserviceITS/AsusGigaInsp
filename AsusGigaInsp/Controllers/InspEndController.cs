@@ -23,6 +23,7 @@ namespace AsusGigaInsp.Controllers
                 ieModels.LineID = Session["LineID"].ToString();
 
             ieModels.SetInspEndSerialLists();
+            ieModels.SetLineCompCnt();
 
             return View("InspEnd", ieModels);
         }
@@ -145,6 +146,7 @@ namespace AsusGigaInsp.Controllers
             models.SetDropDownListLine();
             models.UpdateStatus();
             models.SetInspEndSerialLists();
+            models.SetLineCompCnt();
 
             // 更新完了フラグをセット
             ViewBag.CompleteFlg = "true";

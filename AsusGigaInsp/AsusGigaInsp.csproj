@@ -166,6 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\audio\EntryComplete_F.mp3" />
+    <Content Include="Content\audio\EntryComplete_F2.mp3" />
     <Content Include="Content\audio\EntryComplete_M.mp3" />
     <Content Include="Content\audio\NG.mp3" />
     <Content Include="Content\audio\OK.mp3" />

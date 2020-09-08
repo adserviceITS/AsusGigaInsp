@@ -7,11 +7,20 @@
 {
     <!-- TOPエリア ------------------------------------------------------------------------------------------->
     <div class="row d-flex align-items-end">
-        <div class="col-md-9">
+        <div class="col-md-4">
             <h4 style="margin-top:10px;">検査完了</h4>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
+            <h5 class="text-muted" id="view_today"></h5>
+        </div>
+        <div class="col-md-2">
             <h5 class="text-primary font-weight-bold" id="dispLineID"></h5>
+        </div>
+        <div class="col-md-2" style="padding-right:50px;">
+            <div class="box26">
+                <span class="box-title">本日の検査完了数</span>
+                <p>@Model.LineCompCnt</p>
+            </div>
         </div>
     </div>
     <hr style="margin-top:5px;">
@@ -84,7 +93,7 @@
 }
 <audio src="~/Content/audio/OK.mp3" id="auOK"></audio>
 <audio src="~/Content/audio/NG.mp3" id="auNG"></audio>
-<audio src="~/Content/audio/EntryComplete_M.mp3" id="auEntryComplete"></audio>
+<audio src="~/Content/audio/EntryComplete_F2.mp3" id="auEntryComplete"></audio>
 <!-- ライン選択 ------------------------------------------------------------>
 @if (string.IsNullOrEmpty(Model.LineID))
 {
@@ -171,6 +180,22 @@
         if (CompleteFlg == "true") {
             $("#auEntryComplete")[0].play();
         };
+
+        // 日付表示
+        var now = new Date();
+        var year = now.getFullYear();
+        var mon = now.getMonth() + 1; //１を足すこと
+        var day = now.getDate();
+        var you = now.getDay(); //曜日(0～6=日～土)
+        var hour = now.getHours();
+        var min = now.getMinutes();
+        var sec = now.getSeconds();
+
+        //曜日の選択肢
+        var youbi = new Array("日", "月", "火", "水", "木", "金", "土");
+        //出力用
+        var s = year + "年" + mon + "月" + day + "日 (" + youbi[you] + ")" + "　" + hour + "時" + min + "分" + sec + "秒";
+        $("#view_today").text(s);
 
         // ライン修正モーダル表示処理
         $('#LineChangeModal').on('show.bs.modal', function (event) {

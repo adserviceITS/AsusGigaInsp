@@ -9,6 +9,10 @@ function clearForm(form) {
         ;
 
     $(form).find(":radio").filter("[data-default]").prop("checked", true);
+
+    $(".input-validation-error").removeClass("input-validation-error");
+    $(".is-invalid").removeClass("is-invalid");
+    $(".field-validation-error").hide();
 }
 
 // 空判定（true：undefined, null, ""）

@@ -17,6 +17,7 @@ namespace AsusGigaInsp.Models
         public string OldLineID { get; set; }
         public string EntLineID { get; set; }
         public IEnumerable<InspEndSerialList> InspEndSerialLists { get; set; }
+        public string LineCompCnt { get; set; } = "0";
 
         public void SetDropDownListLine()
         {
@@ -220,6 +221,30 @@ namespace AsusGigaInsp.Models
 
             dsnLib.ExecSQLUpdate(stbSql.ToString());
 
+        }
+
+        public void SetLineCompCnt()
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    COUNT(*) AS CNT ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SERIAL_STATUS_HISTORY ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    STATUS = '4010' AND ");
+            stbSql.Append("    LINE_ID = '" + LineID + "' AND ");
+            stbSql.Append("    CONVERT(VARCHAR, UPDATE_DATE, 112) = CONVERT(VARCHAR, GETDATE(), 112) ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            sqlRdr.Read();
+
+            LineCompCnt = sqlRdr["CNT"].ToString();
+
+            sqlRdr.Close();
+            dsnLib.DB_Close();
         }
 
     }
