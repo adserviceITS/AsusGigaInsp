@@ -379,7 +379,9 @@ namespace AsusGigaInsp.Models
 
             sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
             sqlRdr.Read();
+
             int IntTimeID = int.Parse(sqlRdr["ID"].ToString()) + 1;
+
             dsnLib.DB_Close();
             strSql.Clear();
 
@@ -501,6 +503,8 @@ namespace AsusGigaInsp.Models
             }
 
             DataRow[] DrPerformanceRows = null;
+            DataRow[] DrPerformanceRows1 = null;
+            DataRow[] DrPerformanceRows2 = null;
             DataRow DrDataRow = null;
 
             // 差異計算
@@ -537,34 +541,34 @@ namespace AsusGigaInsp.Models
             }
             DTPerformanceReader.Rows.Add(DrDataRow);
 
-            // 合計欄の作成（実績）
+            // 合計欄の作成（累計実績）
             DrPerformanceRows = DTPerformanceReader.Select("Col0 LIKE '%2'", "");
             DrDataRow = DTPerformanceReader.NewRow();
             DrDataRow[0] = "02";
 
+            int IntTotalCum = 0;
             for (int IntColumnCounter = 1; IntColumnCounter < IntTimeID; IntColumnCounter++)
             {
-                int IntTotal = 0;
                 for (int IntRowCounter = 0; IntRowCounter < DrPerformanceRows.Count(); IntRowCounter++)
                 {
-                    IntTotal = IntTotal + int.Parse(DrPerformanceRows[IntRowCounter][IntColumnCounter].ToString());
+                    IntTotalCum = IntTotalCum + int.Parse(DrPerformanceRows[IntRowCounter][IntColumnCounter].ToString());
                 }
 
-                DrDataRow[IntColumnCounter] = IntTotal.ToString();
+                DrDataRow[IntColumnCounter] = IntTotalCum.ToString();
             }
             DTPerformanceReader.Rows.Add(DrDataRow);
 
-            // 合計欄の作成（差異）
-            DrPerformanceRows = DTPerformanceReader.Select("Col0 LIKE '%3'", "");
+            // 合計欄の作成（累計差異）
+            DrPerformanceRows1 = DTPerformanceReader.Select("Col0 LIKE '%1'", "");
+            DrPerformanceRows2 = DTPerformanceReader.Select("Col0 LIKE '%2'", "");
             DrDataRow = DTPerformanceReader.NewRow();
             DrDataRow[0] = "03";
 
             for (int IntColumnCounter = 1; IntColumnCounter < IntTimeID; IntColumnCounter++)
             {
                 int IntTotal = 0;
-                for (int IntRowCounter = 0; IntRowCounter < DrPerformanceRows.Count(); IntRowCounter++)
                 {
-                    IntTotal = IntTotal + int.Parse(DrPerformanceRows[IntRowCounter][IntColumnCounter].ToString());
+                    IntTotal = int.Parse(DrPerformanceRows2[0][IntColumnCounter].ToString()) - int.Parse(DrPerformanceRows1[0][IntColumnCounter].ToString());
                 }
 
                 DrDataRow[IntColumnCounter] = IntTotal.ToString();
