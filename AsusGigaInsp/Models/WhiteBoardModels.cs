@@ -444,35 +444,46 @@ namespace AsusGigaInsp.Models
             foreach (SrchRstTimeTable SRTT in lstSrchRstTimeTable)
             {
                 strSql.Append("SELECT ");
-                strSql.Append("    LINE_ID + '2' AS LINE_ID, ");
+                strSql.Append("    M_LINE.LINE_ID + '2' AS LINE_ID, ");
                 strSql.Append("    " + IntTimeIndex + " AS TIME_ID, ");
-                strSql.Append("    COUNT(*) AS COUNT ");
+                strSql.Append("    IsNull(TBL1.COUNT, 0) AS COUNT ");
                 strSql.Append("FROM ");
-                strSql.Append("    T_SERIAL_STATUS_HISTORY ");
-                strSql.Append("WHERE ");
-                strSql.Append("    UPDATE_DATE >= '" + StrDT + " " + SRTT.StartTime + "'");
-                strSql.Append("    AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "' ");
-                strSql.Append("    AND STATUS = '4010' ");
-                strSql.Append("GROUP BY ");
-                strSql.Append("    LINE_ID ");
+                strSql.Append("    M_LINE ");
+                strSql.Append("    LEFT JOIN (");
+                strSql.Append("        SELECT ");
+                strSql.Append("            LINE_ID, ");
+                strSql.Append("            COUNT(*) AS COUNT ");
+                strSql.Append("        FROM ");
+                strSql.Append("            T_SERIAL_STATUS_HISTORY ");
+                strSql.Append("        WHERE ");
+                strSql.Append("            UPDATE_DATE >= '" + StrDT + " " + SRTT.StartTime + "'");
+                strSql.Append("            AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "' ");
+                strSql.Append("            AND STATUS = '4010' ");
+                strSql.Append("        GROUP BY ");
+                strSql.Append("            LINE_ID ");
+                strSql.Append("    ) TBL1 ");
+                strSql.Append("        ON M_LINE.LINE_ID = TBL1.LINE_ID ");
 
                 sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
 
                 while (sqlRdr.Read())
                 {
-                    int IntX = int.Parse(sqlRdr["TIME_ID"].ToString());
-
-                    for (int IntY = 0; IntY < IntCounter; IntY++)
+                    if (IntTimeID > int.Parse(sqlRdr["TIME_ID"].ToString()))
                     {
-                        if (StrPerformanceReader[IntY, 0] == sqlRdr["LINE_ID"].ToString())
+                        int IntX = int.Parse(sqlRdr["TIME_ID"].ToString());
+
+                        for (int IntY = 0; IntY < IntCounter; IntY++)
                         {
-                            if (IntX > 1)
+                            if (StrPerformanceReader[IntY, 0] == sqlRdr["LINE_ID"].ToString())
                             {
-                                StrPerformanceReader[IntY, IntX] = (int.Parse(StrPerformanceReader[IntY, IntX - 1]) + int.Parse(sqlRdr["COUNT"].ToString())).ToString();
-                            }
-                            else
-                            {
-                                StrPerformanceReader[IntY, IntX] = int.Parse(sqlRdr["COUNT"].ToString()).ToString();
+                                if (IntX > 1)
+                                {
+                                    StrPerformanceReader[IntY, IntX] = (int.Parse(StrPerformanceReader[IntY, IntX - 1]) + int.Parse(sqlRdr["COUNT"].ToString())).ToString();
+                                }
+                                else
+                                {
+                                    StrPerformanceReader[IntY, IntX] = int.Parse(sqlRdr["COUNT"].ToString()).ToString();
+                                }
                             }
                         }
                     }
@@ -546,9 +557,10 @@ namespace AsusGigaInsp.Models
             DrDataRow = DTPerformanceReader.NewRow();
             DrDataRow[0] = "02";
 
-            int IntTotalCum = 0;
             for (int IntColumnCounter = 1; IntColumnCounter < IntTimeID; IntColumnCounter++)
             {
+                int IntTotalCum = 0;
+
                 for (int IntRowCounter = 0; IntRowCounter < DrPerformanceRows.Count(); IntRowCounter++)
                 {
                     IntTotalCum = IntTotalCum + int.Parse(DrPerformanceRows[IntRowCounter][IntColumnCounter].ToString());
