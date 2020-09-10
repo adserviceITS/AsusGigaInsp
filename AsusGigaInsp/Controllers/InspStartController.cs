@@ -69,39 +69,39 @@ namespace AsusGigaInsp.Controllers
             if (!ModelState.IsValid)
                 return Index();
 
-            // まだ入荷前の場合はエラー
-            SerialErrMsg.Clear();
-            SerialErrMsg.Append("シリアル番号：");
-            for (int i = 0; i < SerialNOs.Length; i++)
-            {
-                if (!String.IsNullOrEmpty(SerialNOs[i]))
-                {
-                    stbSql.Append("SELECT ");
-                    stbSql.Append("   * ");
-                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
-                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
-                    stbSql.Append("      AND SERIAL_STATUS_ID < '2010' ");
+            // まだ入荷前の場合はエラー ⇒ 未入荷以前は全てOKとする。
+            //SerialErrMsg.Clear();
+            //SerialErrMsg.Append("シリアル番号：");
+            //for (int i = 0; i < SerialNOs.Length; i++)
+            //{
+            //    if (!String.IsNullOrEmpty(SerialNOs[i]))
+            //    {
+            //        stbSql.Append("SELECT ");
+            //        stbSql.Append("   * ");
+            //        stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
+            //        stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
+            //        stbSql.Append("      AND SERIAL_STATUS_ID < '2010' ");
 
-                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+            //        SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
-                    if (sqlRdr.HasRows)
-                    {
-                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
-                        ExistErr = true;
-                    }
-                    stbSql.Clear();
-                    sqlRdr.Close();
-                }
-            }
-            SerialErrMsg.Append("はまだ入荷されていません。");
+            //        if (sqlRdr.HasRows)
+            //        {
+            //            SerialErrMsg.Append("【" + SerialNOs[i] + "】");
+            //            ExistErr = true;
+            //        }
+            //        stbSql.Clear();
+            //        sqlRdr.Close();
+            //    }
+            //}
+            //SerialErrMsg.Append("はまだ入荷されていません。");
 
-            dsnLib.DB_Close();
+            //dsnLib.DB_Close();
 
-            if (ExistErr)
-                ModelState.AddModelError("MasterCartonSerial", SerialErrMsg.ToString());
+            //if (ExistErr)
+            //    ModelState.AddModelError("MasterCartonSerial", SerialErrMsg.ToString());
 
-            if (!ModelState.IsValid)
-                return Index();
+            //if (!ModelState.IsValid)
+            //    return Index();
 
             // 既に作業開始されていた場合はエラー
             SerialErrMsg.Clear();

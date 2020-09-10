@@ -127,14 +127,30 @@ namespace AsusGigaInsp.Models
 
             string strUID = HttpContext.Current.Session["ID"].ToString();
 
-            // シリアルステータス更新
-            stbSql.Append("UPDATE T_SERIAL_STATUS ");
-            stbSql.Append("SET ");
-            stbSql.Append("    T_SERIAL_STATUS.DEL_FLG = '1', ");
-            stbSql.Append("    T_SERIAL_STATUS.UPDATE_DATE = GETDATE(), ");
-            stbSql.Append("    T_SERIAL_STATUS.UPDATE_ID = '" + strUID + "' ");
+            // シリアルステータス更新 ⇒ 物理削除に変更
+            //stbSql.Append("UPDATE T_SERIAL_STATUS ");
+            //stbSql.Append("SET ");
+            //stbSql.Append("    T_SERIAL_STATUS.DEL_FLG = '1', ");
+            //stbSql.Append("    T_SERIAL_STATUS.UPDATE_DATE = GETDATE(), ");
+            //stbSql.Append("    T_SERIAL_STATUS.UPDATE_ID = '" + strUID + "' ");
+            //stbSql.Append("WHERE ");
+            //stbSql.Append("    T_SERIAL_STATUS.ID = '" + SerialID + "' ");
+
+            stbSql.Append("DELETE FROM T_SERIAL_LIST ");
             stbSql.Append("WHERE ");
-            stbSql.Append("    T_SERIAL_STATUS.ID = '" + SerialID + "' ");
+            stbSql.Append("   SERIAL_NUMBER = '" + SerialNumber + "' ");
+
+            dsnLib.ExecSQLUpdate(stbSql.ToString());
+
+            stbSql.Append("DELETE FROM T_SERIAL_STATUS ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("   SERIAL_NUMBER = '" + SerialNumber + "' ");
+
+            dsnLib.ExecSQLUpdate(stbSql.ToString());
+
+            stbSql.Append("DELETE FROM T_SERIAL_STATUS_HISTORY ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("   SERIAL_NUMBER = '" + SerialNumber + "' ");
 
             dsnLib.ExecSQLUpdate(stbSql.ToString());
 

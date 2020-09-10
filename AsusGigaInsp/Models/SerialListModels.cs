@@ -110,7 +110,12 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSE.SERIAL_STATUS_ID = MSS.SERIAL_STATUS_ID ");
             stbSql.Append("    LEFT JOIN M_INSTRUCTION MIN ON ");
             stbSql.Append("    TSE.INSTRUCTION = MIN.INSTRUCTION_ID ");
-            stbSql.Append("    LEFT JOIN T_PHOTO TPH ON ");
+            stbSql.Append("    LEFT JOIN ( ");
+            stbSql.Append("       SELECT TPH2.FILENAME, TPH2.QR FROM T_PHOTO TPH2 INNER JOIN (");
+            stbSql.Append("         SELECT QR, MIN(DATETIME) MIN_DATETIME FROM T_PHOTO GROUP BY QR ");
+            stbSql.Append("       ) MIN_TPH ON ");
+            stbSql.Append("       TPH2.QR = MIN_TPH.QR AND TPH2.DATETIME = MIN_TPH.MIN_DATETIME ");
+            stbSql.Append("    ) TPH ON ");
             stbSql.Append("    TSE.SERIAL_NUMBER = TPH.QR ");
             stbSql.Append(SearchWhere.ToString());
             stbSql.Append("ORDER BY ");
