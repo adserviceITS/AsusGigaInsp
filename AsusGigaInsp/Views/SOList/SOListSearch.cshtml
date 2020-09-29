@@ -132,6 +132,12 @@
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().PrefReportingDate)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().SiTekEstArrivalDate)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().DeliveryLocation)</th>
+
+                <!-- 2020/9/28 Add K.Kikuchi -->
+                <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().CapExist)</th>
+                <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().HoldFlg)</th>
+                <!-- Add End -->
+
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().InputUnit)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().CompleteWorkUnit)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().DOAUnit)</th>
@@ -170,13 +176,14 @@
 
                     <tr class="@StrClass">
                         <td>
-                            <input type="submit" class="btn btn-primary btn-sm" name="SOListUpdateLink" formaction="/SOList/SOListUpdate?SONO=@(item.SONO)" value="編集" />
+                            <input type="submit" class="btn btn-primary btn-sm" style="padding-left:5px; padding-right:5px;" name="SOListUpdateLink" formaction="/SOList/SOListUpdate?SONO=@(item.SONO)" value="編集" />
                         </td>
                         <td>
                             @if (string.Compare("4010", item.SOStatusID) <= 0)
                             {
-                                <input type="button" class="btn btn-success btn-sm" onclick="location.href='@Url.Action("Export", "SOList", new { SONO =  item.SONO })'" value="レポート" />
+                                <input type="button" class="btn btn-success btn-sm" style="margin-bottom:5px; padding-left:5px; padding-right:5px;" onclick="location.href='@Url.Action("Export", "SOList", new { SONO =  item.SONO })'" value="レポート" />
                             }
+                            <input type="button" class="btn btn-success btn-sm" style="font-size:12px; padding-left:5px; padding-right:5px; height: 31px;"  onclick="location.href='@Url.Action("PalletSheet", "SOList", new { SONO =  item.SONO })'" value="パレットシート" />
                         </td>
 
                         <td>@Html.ActionLink(String.Format("{0:#,0}", item.SONO), "SearchFromOutSide", "SerialList", new { SearchKey = item.SONO }, null)</td>
@@ -260,6 +267,19 @@
                         {
                             <td>@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
                         }
+
+                        <!-- 2020/9/28 Add K.Kikuchi -->
+                        <td>@Html.DisplayFor(modelItem => item.CapExist)</td>
+                        @if (item.HoldFlg == "1")
+                        {
+                            <td>保留</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        <!-- Add End -->
+
                         <td>@Html.DisplayFor(modelItem => item.InputUnit)</td>
                         <td>@Html.DisplayFor(modelItem => item.CompleteWorkUnit)</td>
                         <td>@Html.DisplayFor(modelItem => item.DOAUnit)</td>

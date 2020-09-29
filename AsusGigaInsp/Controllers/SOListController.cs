@@ -442,6 +442,107 @@ namespace AsusGigaInsp.Controllers
             }
         }
 
+        public FileResult PalletSheet()
+        {
+            // ファイル名作成用変数
+            string SOListSONO = "123456789018102";
+            string OutputFileName = "";
+
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            //----------------------------------------------------------------------------
+            // ここからExcelの内容
+            //----------------------------------------------------------------------------
+
+
+            //----------------------------------------------------------------------------
+            // ここからExcel設定
+            //----------------------------------------------------------------------------
+            var WorkBook = new XLWorkbook();
+            // Bookの書式設定
+            WorkBook.Style.Font.FontName = "游ゴシック";
+            WorkBook.Style.Font.FontSize = 36;
+
+            var WorkSheet = WorkBook.Worksheets.Add("パレットシート");
+            // Sheet書式設定
+            WorkSheet.Row(1).Height = 115.5;
+            WorkSheet.Row(2).Height = 115.5;
+            WorkSheet.Row(3).Height = 115.5;
+            WorkSheet.Row(4).Height = 115.5;
+            WorkSheet.Row(5).Height = 119.25;
+
+            WorkSheet.Column("A").Width = 25.57;
+            WorkSheet.Column("B").Width = 44.43;
+            WorkSheet.Column("C").Width = 21.57;
+            WorkSheet.Column("D").Width = 49.14;
+
+            WorkSheet.Range("A1:D5").Style.Font.Bold = true;
+            WorkSheet.Range("A1:D5").Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+            WorkSheet.Range("A1:D5").Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+            WorkSheet.Range("B5:C5").Merge();
+            WorkSheet.Range("A1:D5").Style
+                    .Border.SetTopBorder(XLBorderStyleValues.Thin)
+                    .Border.SetBottomBorder(XLBorderStyleValues.Thin)
+                    .Border.SetLeftBorder(XLBorderStyleValues.Thin)
+                    .Border.SetRightBorder(XLBorderStyleValues.Thin);
+            WorkSheet.Range("B5:D5").Style.Alignment.WrapText = true;
+
+            WorkSheet.Cell("B1").Style.NumberFormat.Format = "M月d日";
+            WorkSheet.Cell("B2").Style.NumberFormat.Format = "@";
+            WorkSheet.Cell("B4").Style.NumberFormat.Format = "M月d日";
+            WorkSheet.Cell("D1").Style.NumberFormat.Format = "M月d日";
+            WorkSheet.Cell("D2").Style.NumberFormat.Format = "@";
+            WorkSheet.Cell("D4").Style.NumberFormat.Format = "@";
+
+            WorkSheet.Cell("B2").Style.Font.FontSize = 72;
+            WorkSheet.Cell("B3").Style.Font.FontSize = 22;
+            WorkSheet.Cell("D5").Style.Font.FontSize = 24;
+
+            WorkSheet.Cell("B3").Style.Font.FontName = "Calibri";
+
+            WorkSheet.Cell("C3").Style.Alignment.WrapText = true;
+
+            // 見出し
+            WorkSheet.Cell("A1").Value = "入荷日";
+            WorkSheet.Cell("A2").Value = "SO#";
+            WorkSheet.Cell("A3").Value = "Model";
+            WorkSheet.Cell("A4").Value = "出荷日";
+            WorkSheet.Cell("A5").Value = "出荷先";
+            WorkSheet.Cell("C1").Value = "横持日";
+            WorkSheet.Cell("C2").Value = "N01#";
+            WorkSheet.Cell("C3").Value = "1PL" + Environment.NewLine + "数量";
+            WorkSheet.Cell("C4").Value = "PL";
+
+            // 固定値
+            WorkSheet.Cell("D1").Value = "";
+            WorkSheet.Cell("D3").Value = "135";
+            WorkSheet.Cell("D4").Value = "8/8";
+            WorkSheet.Cell("D5").Value = "□NG処理待ち" + Environment.NewLine +
+                                         "□レポート回答待ち" + Environment.NewLine +
+                                         "□ 発送処理完了";
+
+            // 内容
+            WorkSheet.Cell("B1").Value = "2020/9/29";
+            WorkSheet.Cell("B2").Value = "8102";
+            WorkSheet.Cell("B3").Value = "C214MA-BU0029";
+            WorkSheet.Cell("B4").Value = "2020/9/29";
+            WorkSheet.Cell("B5").Value = "DAIWABO";
+            WorkSheet.Cell("D2").Value = "070279";
+
+            // ファイル名
+            OutputFileName = DateTime.Now.ToString("yyyy年MM月dd日 hh時mm分ss秒")
+                            + "_パレットシート_"
+                            + SOListSONO
+                            + ".xlsx";
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                WorkBook.SaveAs(stream);
+                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", OutputFileName);
+            }
+        }
+
         //GET: SOList/SOListUpdate
         public ActionResult SOListUpdate()
         {

@@ -27,6 +27,7 @@ namespace AsusGigaInsp.Models
         public string EntModelName { get; set; }
 
         public int EntShippingQuantity{ get; set; }
+        public bool HoldFlg { get; set; }   // 2020/9/28 Add K.Kikuchi
 
         public string EntEstArrivalDate { get; set; }
 

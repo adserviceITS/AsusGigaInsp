@@ -172,7 +172,15 @@ namespace AsusGigaInsp.Models
             stbSql.Append("        ON T_SO_STATUS.SO_NO = TBL4.SO_NO ");
             stbSql.Append("    LEFT JOIN T_SO_CHANGE_CONTROL ");
             stbSql.Append("        ON T_SO_STATUS.SO_NO = T_SO_CHANGE_CONTROL.SO_NO ");
+            stbSql.Append("    LEFT JOIN M_DESTINATION ");
+            stbSql.Append("        ON T_SO_STATUS.DELIVERY_LOCATION = M_DESTINATION.DESTINATION_NAME ");
             stbSql.Append(stbWhere);
+            stbSql.Append("ORDER BY ");
+            //stbSql.Append("    T_SO_STATUS, ");
+            stbSql.Append("    PREF_REPORTING_DATE, ");
+            stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE, ");
+            stbSql.Append("    SORT_ORDER, ");
+            stbSql.Append("    SO_NO ");
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
@@ -191,6 +199,12 @@ namespace AsusGigaInsp.Models
                     PrefReportingDate = sqlRdr["PREF_REPORTING_DATE"].ToString(),
                     SiTekEstArrivalDate = sqlRdr["SI_TEK_EST_ARRIVAL_DATE"].ToString(),
                     DeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString(),
+
+                    // 2020/9/28 Add K.Kikuchi
+                    CapExist = "有り",
+                    HoldFlg = "0",
+                    // Add End
+
                     InputUnit = sqlRdr["INPUT_UNIT"].ToString(),
                     CompleteWorkUnit = sqlRdr["COMPLETE_WORK_UNIT"].ToString(),
                     DOAUnit = sqlRdr["DOA_UNIT"].ToString(),
@@ -320,6 +334,14 @@ namespace AsusGigaInsp.Models
         public string SiTekEstArrivalDate { get; set; }
         [DisplayName("納品地")]
         public string DeliveryLocation { get; set; }
+
+        // 2020/9/28 Add K.Kikuchi
+        [DisplayName("キャップ有無")]
+        public string CapExist { get; set; }
+        [DisplayName("保留")]
+        public string HoldFlg { get; set; }
+        // add End
+
         [DisplayName("投入数")]
         public string InputUnit { get; set; }
         [DisplayName("作業完了数")]

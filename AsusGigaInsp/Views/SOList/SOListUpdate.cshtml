@@ -98,7 +98,32 @@
                             <div class="col-sm-1"></div>
                         </div>
                     </td>
-                    <td rowspan="4" style="width:50%; vertical-align:bottom;">
+                    <td>
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">保留</label>
+                            <div class="col-sm-6">
+                                @Html.CheckBoxFor(
+                                    model => model.HoldFlg,  // プロパティ
+                                    new { @class="form-check-input", style="margin-left:unset;margin-top:9px;" }      // その他の属性
+                                )
+                            </div>
+                            <div class="col-sm-1"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group row">
+                            <div class="col-sm-1"></div>
+                            <label class="col-sm-4 col-form-label">レポート提出希望日</label>
+                            <div class="col-sm-6">
+                                @Html.TextBoxFor(model => model.EntPrefReportingDate, new { @class = "form-control", @readonly = "readonly" })
+                                <div class="col-sm-1"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td rowspan="3" style="width:50%; vertical-align:bottom;">
                         <table class="table table-bordered">
                             <tr>
                                 <td>
@@ -121,18 +146,6 @@
                                 </td>
                             </tr>
                         </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="form-group row">
-                            <div class="col-sm-1"></div>
-                            <label class="col-sm-4 col-form-label">レポート提出希望日</label>
-                            <div class="col-sm-6">
-                                @Html.TextBoxFor(model => model.EntPrefReportingDate, new { @class = "form-control", @readonly = "readonly" })
-                                <div class="col-sm-1"></div>
-                            </div>
-                        </div>
                     </td>
                 </tr>
                 <tr>
