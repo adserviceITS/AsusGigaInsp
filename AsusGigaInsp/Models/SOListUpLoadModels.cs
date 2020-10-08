@@ -108,7 +108,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append("    EST_ARRIVAL_DATE, ");
                 stbSql.Append("    PREF_REPORTING_DATE, ");
                 stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE, ");
-                stbSql.Append("    EXP_RELEASE_DATE, ");
+                stbSql.Append("    CAP, ");
                 stbSql.Append("    SCH_RELEASE_DATE, ");
                 stbSql.Append("    DELIVERY_LOCATION, ");
                 stbSql.Append("    NG_COUNT, ");
@@ -198,7 +198,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    EST_ARRIVAL_DATE, ");
             stbSql.Append("    PREF_REPORTING_DATE, ");
             stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE, ");
-            stbSql.Append("    EXP_RELEASE_DATE, ");
+            stbSql.Append("    CAP, ");
             stbSql.Append("    SCH_RELEASE_DATE, ");
             stbSql.Append("    DELIVERY_LOCATION, ");
             stbSql.Append("    NG_COUNT, ");
@@ -212,6 +212,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    SO_STATUS_ID, ");
             stbSql.Append("    ST_CHANGE_DATE, ");
             stbSql.Append("    N01_NO, ");
+            stbSql.Append("    HOLD_FLG, ");
             stbSql.Append("    DEL_FLG, ");
             stbSql.Append("    INSERT_DATE, ");
             stbSql.Append("    INSERT_ID, ");
@@ -226,7 +227,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    EST_ARRIVAL_DATE, ");
             stbSql.Append("    PREF_REPORTING_DATE, ");
             stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE, ");
-            stbSql.Append("    EXP_RELEASE_DATE, ");
+            stbSql.Append("    CAP, ");
             stbSql.Append("    SCH_RELEASE_DATE, ");
             stbSql.Append("    DELIVERY_LOCATION, ");
             stbSql.Append("    NG_COUNT, ");
@@ -240,6 +241,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    SO_STATUS_ID, ");
             stbSql.Append("    ST_CHANGE_DATE, ");
             stbSql.Append("    N01_NO, ");
+            stbSql.Append("    HOLD_FLG, ");
             stbSql.Append("    DEL_FLG, ");
             stbSql.Append("    INSERT_DATE, ");
             stbSql.Append("    INSERT_ID, ");
@@ -281,7 +283,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append(StrSQLText("EST_ARRIVAL_DATE", SOList[RowCounter, 5]));
                 stbSql.Append(StrSQLText("PREF_REPORTING_DATE", SOList[RowCounter, 6]));
                 stbSql.Append(StrSQLText("SI_TEK_EST_ARRIVAL_DATE", SOList[RowCounter, 7]));
-                stbSql.Append(StrSQLText("EXP_RELEASE_DATE", SOList[RowCounter, 8]));
+                stbSql.Append(StrSQLText("CAP", SOList[RowCounter, 8]));
                 stbSql.Append(StrSQLText("SCH_RELEASE_DATE", SOList[RowCounter, 9]));
                 stbSql.Append(StrSQLText("DELIVERY_LOCATION", SOList[RowCounter, 10]));
                 stbSql.Append(StrSQLText("NG_COUNT", SOList[RowCounter, 11]));
@@ -305,7 +307,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append("    OR  EST_ARRIVAL_DATE <> " + StrSQLText("", SOList[RowCounter, 5]) + " ");
                 stbSql.Append("    OR  PREF_REPORTING_DATE <> " + StrSQLText("", SOList[RowCounter, 6]) + " ");
                 stbSql.Append("    OR  SI_TEK_EST_ARRIVAL_DATE <> " + StrSQLText("", SOList[RowCounter, 7]) + " ");
-                stbSql.Append("    OR  EXP_RELEASE_DATE <> " + StrSQLText("", SOList[RowCounter, 8]) + " ");
+                stbSql.Append("    OR  CAP <> " + StrSQLText("", SOList[RowCounter, 8]) + " ");
                 stbSql.Append("    OR  SCH_RELEASE_DATE <> " + StrSQLText("", SOList[RowCounter, 9]) + " ");
                 stbSql.Append("    OR  DELIVERY_LOCATION <> " + StrSQLText("", SOList[RowCounter, 10]) + " ");
                 stbSql.Append("    OR  NG_COUNT <> " + StrSQLText("", SOList[RowCounter, 11]) + " ");
@@ -329,7 +331,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append("    EST_ARRIVAL_DATE, ");
                 stbSql.Append("    PREF_REPORTING_DATE, ");
                 stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE, ");
-                stbSql.Append("    EXP_RELEASE_DATE, ");
+                stbSql.Append("    CAP, ");
                 stbSql.Append("    SCH_RELEASE_DATE, ");
                 stbSql.Append("    DELIVERY_LOCATION, ");
                 stbSql.Append("    NG_COUNT, ");
@@ -344,6 +346,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append("    SO_STATUS_ID, ");
                 stbSql.Append("    ST_CHANGE_DATE, ");
                 stbSql.Append("    RECORD_KBN, ");
+                stbSql.Append("    HOLD_FLG, ");
                 stbSql.Append("    DEL_FLG, ");
                 stbSql.Append("    INSERT_DATE, ");
                 stbSql.Append("    INSERT_ID, ");
@@ -372,6 +375,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append("    '1010', ");
                 stbSql.Append("    '" + DTImportTime + "', ");
                 stbSql.Append("    '1', ");　//---　レコード区分（新規）
+                stbSql.Append("    '0', ");　//---　保留フラグ
                 stbSql.Append("    '0', ");
                 stbSql.Append("    '" + DTImportTime + "', ");
                 stbSql.Append("    '" + StrUpdUID + "', ");
@@ -405,6 +409,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    T_SO_STATUS.PREF_REPORTING_DATE AS NEW_PREF_REPORTING_DATE, ");
             stbSql.Append("    T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE AS NEW_SI_TEK_EST_ARRIVAL_DATE, ");
             stbSql.Append("    T_SO_STATUS.DELIVERY_LOCATION AS NEW_DELIVERY_LOCATION, ");
+            stbSql.Append("    T_SO_STATUS.CAP AS NEW_CAP, ");
             stbSql.Append("    T_SO_STATUS.N01_NO AS NEW_N01_NO, ");
             stbSql.Append("    WK_T_SO_STATUS.n90N AS OLD_n90N, ");
             stbSql.Append("    WK_T_SO_STATUS.MODEL_NAME AS OLD_MODEL_NAME, ");
@@ -412,6 +417,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    WK_T_SO_STATUS.EST_ARRIVAL_DATE AS OLD_EST_ARRIVAL_DATE, ");
             stbSql.Append("    WK_T_SO_STATUS.PREF_REPORTING_DATE AS OLD_PREF_REPORTING_DATE, ");
             stbSql.Append("    WK_T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE AS OLD_SI_TEK_EST_ARRIVAL_DATE, ");
+            stbSql.Append("    WK_T_SO_STATUS.CAP AS OLD_CAP, ");
             stbSql.Append("    WK_T_SO_STATUS.DELIVERY_LOCATION AS OLD_DELIVERY_LOCATION, ");
             stbSql.Append("    WK_T_SO_STATUS.N01_NO AS OLD_N01_NO, ");
             stbSql.Append("    IsNull(TBL1.EST_ARRIVAL_DATE_WARNING_FLG, '0') AS EST_ARRIVAL_DATE_WARNING_FLG, ");
@@ -469,6 +475,7 @@ namespace AsusGigaInsp.Models
             DTDataTable.Columns.Add("CHG_EST_ARRIVAL_DATE_FLG");
             DTDataTable.Columns.Add("CHG_PREF_REPORTING_DATE_FLG");
             DTDataTable.Columns.Add("CHG_SI_TEK_EST_ARRIVAL_DATE_FLG");
+            DTDataTable.Columns.Add("CHG_CAP_FLG");
             DTDataTable.Columns.Add("CHG_DELIVERY_LOCATION_FLG");
             DTDataTable.Columns.Add("CHG_N01_NO_FLG");
             DTDataTable.Columns.Add("EST_ARRIVAL_DATE_WARNING_FLG");
@@ -541,6 +548,15 @@ namespace AsusGigaInsp.Models
                         DRDataRow["CHG_SI_TEK_EST_ARRIVAL_DATE_FLG"] = "0";
                     }
 
+                    if (sqlRdr["NEW_CAP"].ToString() != sqlRdr["OLD_CAP"].ToString())
+                    {
+                        DRDataRow["CHG_CAP_FLG"] = "1";
+                    }
+                    else
+                    {
+                        DRDataRow["CHG_CAP_FLG"] = "0";
+                    }
+
                     if (sqlRdr["NEW_DELIVERY_LOCATION"].ToString() != sqlRdr["OLD_DELIVERY_LOCATION"].ToString())
                     {
                         DRDataRow["CHG_DELIVERY_LOCATION_FLG"] = "1";
@@ -592,6 +608,7 @@ namespace AsusGigaInsp.Models
                 stbSql.Append("    CHG_EST_ARRIVAL_DATE_FLG, ");
                 stbSql.Append("    CHG_PREF_REPORTING_DATE_FLG, ");
                 stbSql.Append("    CHG_SI_TEK_EST_ARRIVAL_DATE_FLG, ");
+                stbSql.Append("    CHG_CAP_FLG, ");
                 stbSql.Append("    CHG_DELIVERY_LOCATION_FLG, ");
                 stbSql.Append("    CHG_N01_NO_FLG, ");
                 stbSql.Append("    EST_ARRIVAL_DATE_WARNING_FLG, ");
@@ -749,7 +766,7 @@ namespace AsusGigaInsp.Models
         public string EstArrivalDate { get; set; }
         public string PrefReportingDate { get; set; }
         public string SiTekEstArrivalDate { get; set; }
-        public string ExpReleaseDate { get; set; }
+        public string Cap { get; set; }
         public string SchReleaseDate { get; set; }
         public string DeliveryLocation { get; set; }
         public string N01NO { get; set; }
@@ -761,6 +778,7 @@ namespace AsusGigaInsp.Models
         public string AcjIssueDoaNoToSI { get; set; }
         public string AsusCnIssueDate { get; set; }
         public string ADSRemark { get; set; }
+        public string HoldFlg { get; set; }
         public string DEL_FLG { get; set; }
     }
 }

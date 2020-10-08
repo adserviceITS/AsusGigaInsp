@@ -7,6 +7,7 @@
     <link href="~/Content/SOList.css" rel="stylesheet" />
     <style type="text/css">
 
+
         .row {
             margin-right: -15px;
             margin-left: -15px;
@@ -21,6 +22,7 @@
 {
     @Html.ValidationSummary()
     @Html.HiddenFor(model => model.CompStatusID)
+    @Html.HiddenFor(model => model.CompHoldFlg)
     <div class="container-fluid">
         <div>
             <div class="form-group row">
@@ -104,7 +106,7 @@
                             <label class="col-sm-4 col-form-label">保留</label>
                             <div class="col-sm-6">
                                 @Html.CheckBoxFor(
-                                    model => model.HoldFlg,  // プロパティ
+                                    model => model.EntHoldFlg,  // プロパティ
                                     new { @class="form-check-input", style="margin-left:unset;margin-top:9px;" }      // その他の属性
                                 )
                             </div>
@@ -173,8 +175,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                    </td>
+                    <td></td>
                     <td>
                         <div style="float: right">
                             <input type="button" class="btn btn-primary btn-lg" onclick="history.back()" name="Back" value="戻る">

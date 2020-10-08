@@ -173,10 +173,10 @@ namespace AsusGigaInsp.Models
                 SearchWhere.Append("AND TSE.MODEL_NAME = '" + SearchModelName + "' ");
 
             if (!string.IsNullOrEmpty(SearchWorkDayFrom))
-                SearchWhere.Append("AND TSE.WORKDAY >= '" + SearchWorkDayFrom + "' ");
+                SearchWhere.Append("AND FORMAT(TSE.WORKDAY, 'yyyy/MM/dd') >= '" + SearchWorkDayFrom + "' ");
 
             if (!string.IsNullOrEmpty(SearchWorkDayTo))
-                SearchWhere.Append("AND TSE.WORKDAY <= '" + SearchWorkDayTo + "' ");
+                SearchWhere.Append("AND FORMAT(TSE.WORKDAY, 'yyyy/MM/dd') <= '" + SearchWorkDayTo + "' ");
 
             if (!string.IsNullOrEmpty(SearchInstruction))
                 SearchWhere.Append("AND TSE.INSTRUCTION = '" + SearchInstruction + "' ");
@@ -200,12 +200,12 @@ namespace AsusGigaInsp.Models
                 }
                 else if (SearchSerialStatus == "0001")
                 {
-                    SearchWhere.Append("AND TSE.WORKDAY >= '" + DateTime.Now.ToString("yyyy/MM/dd") + "' ");
+                    SearchWhere.Append("AND FORMAT(TSE.WORKDAY, 'yyyy/MM/dd') >= '" + DateTime.Now.ToString("yyyy/MM/dd") + "' ");
                     SearchWhere.Append("AND TSE.SERIAL_STATUS_ID >= '3010' ");
                 }
                 else if (SearchSerialStatus == "0002")
                 {
-                    SearchWhere.Append("AND TSE.WORKDAY >= '" + DateTime.Now.ToString("yyyy/MM/dd") + "' ");
+                    SearchWhere.Append("AND FORMAT(TSE.WORKDAY, 'yyyy/MM/dd') >= '" + DateTime.Now.ToString("yyyy/MM/dd") + "' ");
                     SearchWhere.Append("AND TSE.SERIAL_STATUS_ID >= '4010' ");
                 }
                 else

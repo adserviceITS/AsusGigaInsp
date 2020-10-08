@@ -211,9 +211,44 @@
             if (EnterFlg && e.keyCode == 13) {
                 if (!isEmpty($('#MasterCartonSerial').val())) {
                     EnterFlg = false;
-                    // シリアル１にフォーカスを移す
-                    $('#SerialNo1').focus();
-                    $('#SerialNo1').select();
+
+                    // 2020/9/29 マスターカートンチェック追加
+                    var param = {
+                        prmMasterCartonSerial: $("#MasterCartonSerial").val()
+                    }
+                    $.ajax({
+                        url: '@Url.Action("CheckMasterCartonSerial", "InspEnd")',
+                        type: "POST",
+                        data: param
+                    }).done(function (data, status, xhr) {
+                        // 正常時
+                        var ErrMsg = data["ErrMsg"];
+
+                        if (isEmpty(ErrMsg)) {
+                            $("#auOK")[0].play();
+                            var validationMessageElement = $('span[data-valmsg-for="MasterCartonSerial"]');
+                            validationMessageElement.removeClass('field-validation-error');
+                            validationMessageElement.addClass('field-validation-valid');
+                            validationMessageElement.text("");
+                            $("#MasterCartonSerial").removeClass("input-validation-error");
+                            // シリアル１にフォーカスを移す
+                            $('#SerialNo1').focus();
+                            $('#SerialNo1').select();
+                        } else {
+                            $("#auNG")[0].play();
+                            var validationMessageElement = $('span[data-valmsg-for="MasterCartonSerial"]');
+                            validationMessageElement.removeClass('field-validation-valid');
+                            validationMessageElement.addClass('field-validation-error');
+                            validationMessageElement.text(ErrMsg);
+                            $("#MasterCartonSerial").addClass("input-validation-error");
+                            $('#MasterCartonSerial').focus();
+                            $('#MasterCartonSerial').select();
+                        }
+
+                    }).fail(function (xhr, status, error) {
+                        // 異常時
+                        alert(error);
+                    });
                 }
             } else if (e.keyCode == 13) {
                 EnterFlg = true;

@@ -34,6 +34,10 @@ namespace AsusGigaInsp.Models
         public string EntPrefReportingDate { get; set; }
         public string EntSiTekEstArrivalDate { get; set; }
 
+        public string EntCap { get; set; }
+        public bool EntHoldFlg { get; set; }
+        public bool CompHoldFlg { get; set; }
+
         public string EntDeliveryLocation { get; set; }
 
         public string EntN01 { get; set; }
@@ -143,6 +147,9 @@ namespace AsusGigaInsp.Models
                 EntEstArrivalDate = sqlRdr["EST_ARRIVAL_DATE"].ToString();
                 EntPrefReportingDate = sqlRdr["PREF_REPORTING_DATE"].ToString();
                 EntSiTekEstArrivalDate = sqlRdr["SI_TEK_EST_ARRIVAL_DATE"].ToString();
+                EntCap = sqlRdr["CAP"].ToString();
+                EntHoldFlg = (bool)sqlRdr["HOLD_FLG"];
+                CompHoldFlg = (bool)sqlRdr["HOLD_FLG"];
                 EntDeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString();
                 EntN01 = sqlRdr["N01_NO"].ToString();
                 AddUser = sqlRdr["USER_NAME1"].ToString();
@@ -161,9 +168,13 @@ namespace AsusGigaInsp.Models
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder stbSql = new StringBuilder();
 
+            // 保留フラグ設定
+            string strHoldFlg = EntHoldFlg ? "1" : "0";
+
             stbSql.Append("UPDATE T_SO_STATUS ");
             stbSql.Append("SET ");
             stbSql.Append("    SO_STATUS_ID = N'" + strStatusID + "', ");
+            stbSql.Append("    HOLD_FLG = '" + strHoldFlg + "', ");
             stbSql.Append("    ST_CHANGE_DATE = '" + DTNow + "', ");
             stbSql.Append("    UPDATE_DATE = '" + DTNow + "', ");
             stbSql.Append("    UPDATE_ID = N'" + strUpdUID + "' ");

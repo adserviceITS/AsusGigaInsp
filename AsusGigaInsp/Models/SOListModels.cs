@@ -95,12 +95,14 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    T_SO_STATUS.EST_ARRIVAL_DATE, ");
             stbSql.Append("    T_SO_STATUS.PREF_REPORTING_DATE, ");
             stbSql.Append("    T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE, ");
+            stbSql.Append("    T_SO_STATUS.CAP, ");
             stbSql.Append("    T_SO_STATUS.DELIVERY_LOCATION, ");
             stbSql.Append("    T_SO_STATUS.N01_NO, ");
             stbSql.Append("    T_SO_STATUS.SO_STATUS_ID, ");
             stbSql.Append("    M_SO_STATUS.SO_STATUS_NAME, ");
             stbSql.Append("    T_SO_STATUS.ST_CHANGE_DATE, ");
             stbSql.Append("    T_SO_STATUS.RECORD_KBN, ");
+            stbSql.Append("    T_SO_STATUS.HOLD_FLG, ");
             stbSql.Append("    IsNull(TBL4.INPUT_UNIT, 0) AS INPUT_UNIT, ");
             stbSql.Append("    IsNull(TBL1.COMPLETE_WORK_UNIT, 0) AS COMPLETE_WORK_UNIT, ");
             stbSql.Append("    IsNull(TBL2.DOA_UNIT, 0) AS DOA_UNIT, ");
@@ -112,6 +114,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_EST_ARRIVAL_DATE_FLG, '0') AS CHG_EST_ARRIVAL_DATE_FLG, ");
             stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_PREF_REPORTING_DATE_FLG, '0') AS CHG_PREF_REPORTING_DATE_FLG, ");
             stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_SI_TEK_EST_ARRIVAL_DATE_FLG, '0') AS CHG_SI_TEK_EST_ARRIVAL_DATE_FLG, ");
+            stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_CAP_FLG, '0') AS CHG_CAP_FLG, ");
             stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_DELIVERY_LOCATION_FLG, '0') AS CHG_DELIVERY_LOCATION_FLG, ");
             stbSql.Append("    IsNull(T_SO_CHANGE_CONTROL.CHG_N01_NO_FLG, '0') AS CHG_N01_NO_FLG, ");
             stbSql.Append("    T_SO_CHANGE_CONTROL.EST_ARRIVAL_DATE_WARNING_FLG, ");
@@ -177,6 +180,7 @@ namespace AsusGigaInsp.Models
             stbSql.Append(stbWhere);
             stbSql.Append("ORDER BY ");
             //stbSql.Append("    T_SO_STATUS, ");
+            stbSql.Append("    HOLD_FLG, ");
             stbSql.Append("    PREF_REPORTING_DATE, ");
             stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE, ");
             stbSql.Append("    SORT_ORDER, ");
@@ -199,12 +203,8 @@ namespace AsusGigaInsp.Models
                     PrefReportingDate = sqlRdr["PREF_REPORTING_DATE"].ToString(),
                     SiTekEstArrivalDate = sqlRdr["SI_TEK_EST_ARRIVAL_DATE"].ToString(),
                     DeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString(),
-
-                    // 2020/9/28 Add K.Kikuchi
-                    CapExist = "有り",
-                    HoldFlg = "0",
-                    // Add End
-
+                    Cap = sqlRdr["CAP"].ToString(),
+                    HoldFlg = (bool)sqlRdr["HOLD_FLG"],
                     InputUnit = sqlRdr["INPUT_UNIT"].ToString(),
                     CompleteWorkUnit = sqlRdr["COMPLETE_WORK_UNIT"].ToString(),
                     DOAUnit = sqlRdr["DOA_UNIT"].ToString(),
@@ -220,6 +220,7 @@ namespace AsusGigaInsp.Models
                     CHGEstArrivalDateFLG = sqlRdr["CHG_EST_ARRIVAL_DATE_FLG"].ToString(),
                     CHGPrefReportingDateFLG = sqlRdr["CHG_PREF_REPORTING_DATE_FLG"].ToString(),
                     CHGSiTekEstArrivalDateFLG = sqlRdr["CHG_SI_TEK_EST_ARRIVAL_DATE_FLG"].ToString(),
+                    CHGNCapFLG = sqlRdr["CHG_CAP_FLG"].ToString(),
                     CHGDeliveryLocationFLG = sqlRdr["CHG_DELIVERY_LOCATION_FLG"].ToString(),
                     CHGN01NoFLG = sqlRdr["CHG_N01_NO_FLG"].ToString(),
                     EstArrivalDateWarningFLG = sqlRdr["EST_ARRIVAL_DATE_WARNING_FLG"].ToString(),
@@ -262,32 +263,32 @@ namespace AsusGigaInsp.Models
 
                 if (!string.IsNullOrEmpty(SrchEstArrivalDate_S))
                 {
-                    stbWhere.Append("AND T_SO_STATUS.EST_ARRIVAL_DATE >= '" + SrchEstArrivalDate_S + "' ");
+                    stbWhere.Append("AND LEFT(T_SO_STATUS.EST_ARRIVAL_DATE, 10) >= '" + SrchEstArrivalDate_S + "' ");
                 }
 
                 if (!string.IsNullOrEmpty(SrchEstArrivalDate_E))
                 {
-                    stbWhere.Append("AND T_SO_STATUS.EST_ARRIVAL_DATE <= '" + SrchEstArrivalDate_E + "' ");
+                    stbWhere.Append("AND LEFT (T_SO_STATUS.EST_ARRIVAL_DATE, 10) <= '" + SrchEstArrivalDate_E + "' ");
                 }
 
                 if (!string.IsNullOrEmpty(SrchPrefReportingDate_S))
                 {
-                    stbWhere.Append("AND T_SO_STATUS.PREF_REPORTING_DATE >= '" + SrchPrefReportingDate_S + "' ");
+                    stbWhere.Append("AND LEFT(T_SO_STATUS.PREF_REPORTING_DATE, 10) >= '" + SrchPrefReportingDate_S + "' ");
                 }
 
                 if (!string.IsNullOrEmpty(SrchPrefReportingDate_E))
                 {
-                    stbWhere.Append("AND T_SO_STATUS.PREF_REPORTING_DATE <= '" + SrchPrefReportingDate_E + "' ");
+                    stbWhere.Append("AND LEFT(T_SO_STATUS.PREF_REPORTING_DATE, 10) <= '" + SrchPrefReportingDate_E + "' ");
                 }
 
                 if (!string.IsNullOrEmpty(SrchSiTekEstArrivalDate_S))
                 {
-                    stbWhere.Append("AND T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE >= '" + SrchSiTekEstArrivalDate_S + "' ");
+                    stbWhere.Append("AND LEFT(T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE, 10) >= '" + SrchSiTekEstArrivalDate_S + "' ");
                 }
 
                 if (!string.IsNullOrEmpty(SrchSiTekEstArrivalDate_E))
                 {
-                    stbWhere.Append("AND T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE <= '" + SrchSiTekEstArrivalDate_E + "' ");
+                    stbWhere.Append("AND LEFT(T_SO_STATUS.SI_TEK_EST_ARRIVAL_DATE, 10) <= '" + SrchSiTekEstArrivalDate_E + "' ");
                 }
 
                 if (!string.IsNullOrEmpty(SrchStatusID))
@@ -337,9 +338,9 @@ namespace AsusGigaInsp.Models
 
         // 2020/9/28 Add K.Kikuchi
         [DisplayName("キャップ有無")]
-        public string CapExist { get; set; }
+        public string Cap { get; set; }
         [DisplayName("保留")]
-        public string HoldFlg { get; set; }
+        public bool HoldFlg { get; set; }
         // add End
 
         [DisplayName("投入数")]
@@ -365,6 +366,7 @@ namespace AsusGigaInsp.Models
         public string CHGEstArrivalDateFLG { get; set; }
         public string CHGPrefReportingDateFLG { get; set; }
         public string CHGSiTekEstArrivalDateFLG { get; set; }
+        public string CHGNCapFLG { get; set; }
         public string CHGDeliveryLocationFLG { get; set; }
         public string CHGN01NoFLG { get; set; }
         public string EstArrivalDateWarningFLG { get; set; }

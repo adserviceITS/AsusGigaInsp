@@ -134,7 +134,7 @@
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().DeliveryLocation)</th>
 
                 <!-- 2020/9/28 Add K.Kikuchi -->
-                <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().CapExist)</th>
+                <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().Cap)</th>
                 <th>@Html.DisplayNameFor(model => model.SrchRstOrderList.First().HoldFlg)</th>
                 <!-- Add End -->
 
@@ -160,7 +160,7 @@
                     }
                     else if (item.RecordKBN == "2")
                     {
-                        if ((item.CHGModelNameFLG == "1") || (item.CHGShippingQuantityFLG == "1") || (item.CHGEstArrivalDateFLG == "1") || (item.CHGPrefReportingDateFLG == "1") || (item.CHGSiTekEstArrivalDateFLG == "1") || (item.CHGDeliveryLocationFLG == "1"))
+                        if ((item.CHGModelNameFLG == "1") || (item.CHGShippingQuantityFLG == "1") || (item.CHGEstArrivalDateFLG == "1") || (item.CHGPrefReportingDateFLG == "1") || (item.CHGSiTekEstArrivalDateFLG == "1") || (item.CHGNCapFLG == "1") || (item.CHGDeliveryLocationFLG == "1"))
                         {
                             StrClass = "table-warning";
                         }
@@ -174,127 +174,126 @@
                         StrClass = "table-primary";
                     }
 
-                    <tr class="@StrClass">
-                        <td>
-                            <input type="submit" class="btn btn-primary btn-sm" style="padding-left:5px; padding-right:5px;" name="SOListUpdateLink" formaction="/SOList/SOListUpdate?SONO=@(item.SONO)" value="編集" />
-                        </td>
-                        <td>
-                            @if (string.Compare("4010", item.SOStatusID) <= 0)
-                            {
-                                <input type="button" class="btn btn-success btn-sm" style="margin-bottom:5px; padding-left:5px; padding-right:5px;" onclick="location.href='@Url.Action("Export", "SOList", new { SONO =  item.SONO })'" value="レポート" />
-                            }
-                            <input type="button" class="btn btn-success btn-sm" style="font-size:12px; padding-left:5px; padding-right:5px; height: 31px;"  onclick="location.href='@Url.Action("PalletSheet", "SOList", new { SONO =  item.SONO })'" value="パレットシート" />
-                        </td>
-
-                        <td>@Html.ActionLink(String.Format("{0:#,0}", item.SONO), "SearchFromOutSide", "SerialList", new { SearchKey = item.SONO }, null)</td>
-
-                        @if (item.CHGModelNameFLG == "1")
-                        {
-                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.ModelName)</td>
-                        }
-                        else
-                        {
-                            <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
-                        }
-
-                        @if (item.CHGShippingQuantityFLG == "1")
-                        {
-                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
-                        }
-                        else
-                        {
-                            <td>@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
-                        }
-
-                        <td>
-                            @if (string.Compare("6010", item.SOStatusID) <= 0)
-                            {
-                                @Html.DisplayFor(modelItem => item.FixedShippingQuantity)
-                            }
-                        </td>
-
-                        @if (item.EstArrivalDateWarningFLG == "1")
-                        {
-                            <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
-                        }
-                        else
-                        {
-                            if (item.CHGEstArrivalDateFLG == "1")
-                            {
-                                <td class="bg-warning">@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
-                            }
-                            else
-                            {
-                                <td>@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
-                            }
-                        }
-
-                        @if (item.PrefReportingDateWarningFLG == "1")
-                        {
-                            <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
-                        }
-                        else
-                        {
-                            if (item.CHGPrefReportingDateFLG == "1")
-                            {
-                                <td class="bg-warning">@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
-                            }
-                            else
-                            {
-                                <td>@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
-                            }
-                        }
-                        @if (item.SiTekEstArrivalDateWarningFLG == "1")
-                        {
-                            <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
-                        }
-                        else
-                        {
-                            if (item.CHGSiTekEstArrivalDateFLG == "1")
-                            {
-                                <td class="bg-warning">@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
-                            }
-                            else
-                            {
-                                <td>@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
-                            }
-                        }
-                        @if (item.CHGDeliveryLocationFLG == "1")
-                        {
-                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
-                        }
-                        else
-                        {
-                            <td>@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
-                        }
-
-                        <!-- 2020/9/28 Add K.Kikuchi -->
-                        <td>@Html.DisplayFor(modelItem => item.CapExist)</td>
-                        @if (item.HoldFlg == "1")
-                        {
-                            <td>保留</td>
-                        }
-                        else
-                        {
-                            <td></td>
-                        }
-                        <!-- Add End -->
-
-                        <td>@Html.DisplayFor(modelItem => item.InputUnit)</td>
-                        <td>@Html.DisplayFor(modelItem => item.CompleteWorkUnit)</td>
-                        <td>@Html.DisplayFor(modelItem => item.DOAUnit)</td>
-                        <td>@Html.DisplayFor(modelItem => item.HoldUnit)</td>
-                        @if (item.CHGN01NoFLG == "1")
-                        {
-                            <td class="bg-warning">@Html.DisplayFor(modelItem => item.N01NO)</td>
-                        }
-                        else
-                        {
-                            <td>@Html.DisplayFor(modelItem => item.N01NO)</td>
-                        }
-                        <td>@Html.DisplayFor(modelItem => item.SOStatusName)</td>
-                        <td>@Html.DisplayFor(modelItem => item.STChangeDate)</td>
-                    </tr>
+            <tr class="@StrClass">
+                <td>
+                    <input type="submit" class="btn btn-primary btn-sm" style="padding-left:5px; padding-right:5px;" name="SOListUpdateLink" formaction="/SOList/SOListUpdate?SONO=@(item.SONO)" value="編集" />
+                </td>
+                <td>
+                    @if (string.Compare("4010", item.SOStatusID) <= 0)
+                    {
+                        <input type="button" class="btn btn-success btn-sm" style="margin-bottom:5px; padding-left:5px; padding-right:5px;" onclick="location.href='@Url.Action("Export", "SOList", new { SONO =  item.SONO })'" value="レポート" />
+                    }
+                    <input type="button" class="btn btn-success btn-sm" style="font-size:12px; padding-left:5px; padding-right:5px; height: 31px;" onclick="location.href='@Url.Action("PalletSheet", "SOList", new { SONO =  item.SONO })'" value="パレットシート" />
+                </td>
+                <td>@Html.ActionLink(String.Format("{0:#,0}", item.SONO), "SearchFromOutSide", "SerialList", new { SearchKey = item.SONO }, null)</td>
+                @if (item.CHGModelNameFLG == "1")
+                {
+                    <td class="bg-warning">@Html.DisplayFor(modelItem => item.ModelName)</td>
+                }
+                else
+                {
+                    <td>@Html.DisplayFor(modelItem => item.ModelName)</td>
+                }
+                @if (item.CHGShippingQuantityFLG == "1")
+                {
+                    <td class="bg-warning">@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
+                }
+                else
+                {
+                    <td>@Html.DisplayFor(modelItem => item.ShippingQuantity)</td>
+                }
+                <td>
+                    @if (string.Compare("6010", item.SOStatusID) <= 0)
+                    {
+                        @Html.DisplayFor(modelItem => item.FixedShippingQuantity)
+                    }
+                </td>
+                @if (item.EstArrivalDateWarningFLG == "1")
+                {
+                    <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
+                }
+                else
+                {
+                    if (item.CHGEstArrivalDateFLG == "1")
+                    {
+                        <td class="bg-warning">@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.EstArrivalDate)</td>
+                    }
+                }
+                @if (item.PrefReportingDateWarningFLG == "1")
+                {
+                    <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
+                }
+                else
+                {
+                    if (item.CHGPrefReportingDateFLG == "1")
+                    {
+                        <td class="bg-warning">@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.PrefReportingDate)</td>
+                    }
+                }
+                @if (item.SiTekEstArrivalDateWarningFLG == "1")
+                {
+                    <td class="bg-danger" style="color:white">@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
+                }
+                else
+                {
+                    if (item.CHGSiTekEstArrivalDateFLG == "1")
+                    {
+                        <td class="bg-warning">@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.SiTekEstArrivalDate)</td>
+                    }
+                }
+                @if (item.CHGDeliveryLocationFLG == "1")
+                {
+                    <td class="bg-warning">@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
+                }
+                else
+                {
+                    <td>@Html.DisplayFor(modelItem => item.DeliveryLocation)</td>
+                }
+                <!-- 2020/9/28 Add K.Kikuchi -->
+                @if (item.CHGNCapFLG == "1")
+                {
+                    <td class="bg-warning">@Html.DisplayFor(modelItem => item.Cap)</td>
+                }
+                else
+                {
+                    <td>@Html.DisplayFor(modelItem => item.Cap)</td>
+                }
+                @if (item.HoldFlg)
+                {
+                    <td>保留</td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                <!-- Add End -->
+                <td>@Html.DisplayFor(modelItem => item.InputUnit)</td>
+                <td>@Html.DisplayFor(modelItem => item.CompleteWorkUnit)</td>
+                <td>@Html.DisplayFor(modelItem => item.DOAUnit)</td>
+                <td>@Html.DisplayFor(modelItem => item.HoldUnit)</td>
+                @if (item.CHGN01NoFLG == "1")
+                {
+                    <td class="bg-warning">@Html.DisplayFor(modelItem => item.N01NO)</td>
+                }
+                else
+                {
+                    <td>@Html.DisplayFor(modelItem => item.N01NO)</td>
+                }
+                <td>@Html.DisplayFor(modelItem => item.SOStatusName)</td>
+                <td>@Html.DisplayFor(modelItem => item.STChangeDate)</td>
+            </tr>
                 }
             }
         </tbody>

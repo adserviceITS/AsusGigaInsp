@@ -444,17 +444,8 @@ namespace AsusGigaInsp.Controllers
 
         public FileResult PalletSheet()
         {
-            // ファイル名作成用変数
-            string SOListSONO = "123456789018102";
+            string prmSONO = this.Request.QueryString["SONO"];
             string OutputFileName = "";
-
-            DSNLibrary dsnLib = new DSNLibrary();
-            StringBuilder stbSql = new StringBuilder();
-
-            //----------------------------------------------------------------------------
-            // ここからExcelの内容
-            //----------------------------------------------------------------------------
-
 
             //----------------------------------------------------------------------------
             // ここからExcel設定
@@ -522,18 +513,47 @@ namespace AsusGigaInsp.Controllers
                                          "□レポート回答待ち" + Environment.NewLine +
                                          "□ 発送処理完了";
 
-            // 内容
-            WorkSheet.Cell("B1").Value = "2020/9/29";
-            WorkSheet.Cell("B2").Value = "8102";
-            WorkSheet.Cell("B3").Value = "C214MA-BU0029";
-            WorkSheet.Cell("B4").Value = "2020/9/29";
-            WorkSheet.Cell("B5").Value = "DAIWABO";
-            WorkSheet.Cell("D2").Value = "070279";
+            //----------------------------------------------------------------------------
+            // ここからExcel設定
+            //----------------------------------------------------------------------------
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    * ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SO_STATUS ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    T_SO_STATUS.SO_NO = '" + prmSONO + "' ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            string EstArrivalDate = "";
+            string ModelName = "";
+            string SiTekEstArrivalDate = "";
+            string DeliveryLocation = "";
+            string N01NO = "";
+
+            while (sqlRdr.Read())
+            {
+                EstArrivalDate = sqlRdr["EST_ARRIVAL_DATE"].ToString();
+                ModelName = sqlRdr["MODEL_NAME"].ToString();
+                SiTekEstArrivalDate = sqlRdr["SI_TEK_EST_ARRIVAL_DATE"].ToString();
+                DeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString();
+                N01NO = sqlRdr["N01_NO"].ToString();
+            }
+
+            WorkSheet.Cell("B1").Value = EstArrivalDate;
+            WorkSheet.Cell("B2").Value = prmSONO.Substring(prmSONO.Length - 4, 4);
+            WorkSheet.Cell("B3").Value = ModelName;
+            WorkSheet.Cell("B4").Value = SiTekEstArrivalDate;
+            WorkSheet.Cell("B5").Value = DeliveryLocation;
+            WorkSheet.Cell("D2").Value = N01NO.Substring(N01NO.Length - 6, 6);
 
             // ファイル名
             OutputFileName = DateTime.Now.ToString("yyyy年MM月dd日 hh時mm分ss秒")
                             + "_パレットシート_"
-                            + SOListSONO
+                            + prmSONO
                             + ".xlsx";
 
             using (MemoryStream stream = new MemoryStream())
@@ -562,14 +582,14 @@ namespace AsusGigaInsp.Controllers
         [HttpPost]
         public ActionResult SOListUpdateResult(SOListUpdateModels mdlSOListUpdate)
         {
+            DateTime DTNow = DateTime.Now;
+
             // エラーがなければ処理継続
             if (ModelState.IsValid)
             {
                 // ステータスが変更されていればデータ更新
                 if (mdlSOListUpdate.EntStatusID != mdlSOListUpdate.CompStatusID)
                 {
-                    DateTime DTNow = DateTime.Now;
-
                     // オーダーリスト更新
                     mdlSOListUpdate.UpdateSOList(Session["ID"].ToString(), DTNow, mdlSOListUpdate.EntStatusID, mdlSOListUpdate.EntSONO);
 
@@ -581,6 +601,13 @@ namespace AsusGigaInsp.Controllers
 
                     // シリアルリスト履歴更新
                     mdlSOListUpdate.UpdateSerialListHistory(Session["ID"].ToString(), DTNow, mdlSOListUpdate.EntStatusID, mdlSOListUpdate.EntSONO);
+                }
+
+                // 保留フラグが更新されていればデータ更新
+                if (mdlSOListUpdate.EntHoldFlg != mdlSOListUpdate.CompHoldFlg)
+                {
+                    // オーダーリスト更新
+                    mdlSOListUpdate.UpdateSOList(Session["ID"].ToString(), DTNow, mdlSOListUpdate.EntStatusID, mdlSOListUpdate.EntSONO);
                 }
 
                 // 一時データ（成功メッセージ）を保存

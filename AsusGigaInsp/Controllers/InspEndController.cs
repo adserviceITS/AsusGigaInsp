@@ -32,116 +32,15 @@ namespace AsusGigaInsp.Controllers
         [HttpPost]
         public ActionResult Entry(InspEndModels models)
         {
-            // バリデーションチェック START ***************************************************************
-            DSNLibrary dsnLib = new DSNLibrary();
-            StringBuilder stbSql = new StringBuilder();
-            string[] SerialNOs = models.MasterCartonSerial.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
             models.LineID = Session["LineID"].ToString();
 
-            // シリアルの登録がなければエラー
-            StringBuilder SerialErrMsg = new StringBuilder();
-            bool ExistErr = false;
-            SerialErrMsg.Append("シリアル番号：");
-            for (int i = 0; i < SerialNOs.Length; i++)
-            {
-                if (!String.IsNullOrEmpty(SerialNOs[i]))
-                {
-                    stbSql.Append("SELECT ");
-                    stbSql.Append("   * ");
-                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
-                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
+            string ErrMsg = ValidationCheck(models.MasterCartonSerial);
 
-                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
-
-                    if (!sqlRdr.HasRows)
-                    {
-                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
-                        ExistErr = true;
-                    }
-                    stbSql.Clear();
-                    sqlRdr.Close();
-                }
-            }
-            SerialErrMsg.Append("は登録されていません！");
-
-            dsnLib.DB_Close();
-
-            if (ExistErr)
-                ModelState.AddModelError("MasterCartonSerial", SerialErrMsg.ToString());
+            if (!string.IsNullOrEmpty(ErrMsg))
+                ModelState.AddModelError("MasterCartonSerial", ErrMsg);
 
             if (!ModelState.IsValid)
                 return Index();
-
-
-            // 既に作業終了していた場合はエラー
-            SerialErrMsg.Clear();
-            SerialErrMsg.Append("シリアル番号：");
-            for (int i = 0; i < SerialNOs.Length; i++)
-            {
-                if (!String.IsNullOrEmpty(SerialNOs[i]))
-                {
-                    stbSql.Append("SELECT ");
-                    stbSql.Append("   * ");
-                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
-                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
-                    stbSql.Append("      AND SERIAL_STATUS_ID >= '4010' ");
-
-                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
-
-                    if (sqlRdr.HasRows)
-                    {
-                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
-                        ExistErr = true;
-                    }
-                    stbSql.Clear();
-                    sqlRdr.Close();
-                }
-            }
-            SerialErrMsg.Append("は既に作業完了しています。");
-
-            dsnLib.DB_Close();
-
-            if (ExistErr)
-                ModelState.AddModelError("MasterCartonSerial", SerialErrMsg.ToString());
-
-            if (!ModelState.IsValid)
-                return Index();
-
-            // まだ作業開始されていない場合はエラー
-            SerialErrMsg.Clear();
-            SerialErrMsg.Append("シリアル番号：");
-            for (int i = 0; i < SerialNOs.Length; i++)
-            {
-                if (!String.IsNullOrEmpty(SerialNOs[i]))
-                {
-                    stbSql.Append("SELECT ");
-                    stbSql.Append("   * ");
-                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
-                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
-                    stbSql.Append("      AND SERIAL_STATUS_ID < '3010' ");
-
-                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
-
-                    if (sqlRdr.HasRows)
-                    {
-                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
-                        ExistErr = true;
-                    }
-                    stbSql.Clear();
-                    sqlRdr.Close();
-                }
-            }
-            SerialErrMsg.Append("は検査開始登録されていません。");
-
-            dsnLib.DB_Close();
-
-            if (ExistErr)
-                ModelState.AddModelError("MasterCartonSerial", SerialErrMsg.ToString());
-
-            if (!ModelState.IsValid)
-                return Index();
-
-            // バリデーションチェック END ****************************************************************************
 
             models.SetDropDownListLine();
             models.UpdateStatus();
@@ -173,6 +72,120 @@ namespace AsusGigaInsp.Controllers
             Session["LineID"] = model.LineID;
 
             return Index();
+        }
+
+        // 2020/9/29 マスターカートンチェック追加
+        [HttpPost]
+        public ActionResult CheckMasterCartonSerial(string prmMasterCartonSerial)
+        {
+            string ErrMsg = ValidationCheck(prmMasterCartonSerial);
+
+            return Json(new { ErrMsg = ErrMsg }, JsonRequestBehavior.AllowGet);
+        }
+
+        private string ValidationCheck (string MasterCartonSerial)
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+            string[] SerialNOs = MasterCartonSerial.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            // シリアルの登録がなければエラー
+            StringBuilder SerialErrMsg = new StringBuilder();
+            bool ExistErr = false;
+            SerialErrMsg.Append("シリアル番号：");
+            for (int i = 0; i < SerialNOs.Length; i++)
+            {
+                if (!String.IsNullOrEmpty(SerialNOs[i]))
+                {
+                    stbSql.Append("SELECT ");
+                    stbSql.Append("   * ");
+                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
+                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
+
+                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+                    if (!sqlRdr.HasRows)
+                    {
+                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
+                        ExistErr = true;
+                    }
+                    stbSql.Clear();
+                    sqlRdr.Close();
+                }
+            }
+            SerialErrMsg.Append("は登録されていません！");
+
+            dsnLib.DB_Close();
+
+            if (ExistErr)
+                return SerialErrMsg.ToString();
+
+
+            // 既に作業終了していた場合はエラー
+            SerialErrMsg.Clear();
+            SerialErrMsg.Append("シリアル番号：");
+            for (int i = 0; i < SerialNOs.Length; i++)
+            {
+                if (!String.IsNullOrEmpty(SerialNOs[i]))
+                {
+                    stbSql.Append("SELECT ");
+                    stbSql.Append("   * ");
+                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
+                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
+                    stbSql.Append("      AND SERIAL_STATUS_ID >= '4010' ");
+
+                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+                    if (sqlRdr.HasRows)
+                    {
+                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
+                        ExistErr = true;
+                    }
+                    stbSql.Clear();
+                    sqlRdr.Close();
+                }
+            }
+            SerialErrMsg.Append("は既に作業完了しています。");
+
+            dsnLib.DB_Close();
+
+            if (ExistErr)
+                return SerialErrMsg.ToString();
+
+            // まだ作業開始されていない場合はエラー
+            SerialErrMsg.Clear();
+            SerialErrMsg.Append("シリアル番号：");
+            for (int i = 0; i < SerialNOs.Length; i++)
+            {
+                if (!String.IsNullOrEmpty(SerialNOs[i]))
+                {
+                    stbSql.Append("SELECT ");
+                    stbSql.Append("   * ");
+                    stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
+                    stbSql.Append("WHERE SERIAL_NUMBER = '" + SerialNOs[i] + "' ");
+                    stbSql.Append("      AND SERIAL_STATUS_ID < '3010' ");
+
+                    SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+                    if (sqlRdr.HasRows)
+                    {
+                        SerialErrMsg.Append("【" + SerialNOs[i] + "】");
+                        ExistErr = true;
+                    }
+                    stbSql.Clear();
+                    sqlRdr.Close();
+                }
+            }
+            SerialErrMsg.Append("は検査開始登録されていません。");
+
+            dsnLib.DB_Close();
+
+            if (ExistErr)
+                return SerialErrMsg.ToString();
+
+            SerialErrMsg.Clear();
+            return SerialErrMsg.ToString();
+
         }
 
     }
