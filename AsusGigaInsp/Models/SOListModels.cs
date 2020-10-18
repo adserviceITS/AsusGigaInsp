@@ -181,8 +181,8 @@ namespace AsusGigaInsp.Models
             stbSql.Append("ORDER BY ");
             //stbSql.Append("    T_SO_STATUS, ");
             stbSql.Append("    HOLD_FLG, ");
-            stbSql.Append("    PREF_REPORTING_DATE, ");
-            stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE, ");
+            stbSql.Append("    PREF_REPORTING_DATE DESC, ");
+            stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE DESC, ");
             stbSql.Append("    SORT_ORDER, ");
             stbSql.Append("    SO_NO ");
 
