@@ -507,8 +507,11 @@ namespace AsusGigaInsp.Controllers
 
             // 固定値
             WorkSheet.Cell("D1").Value = "";
-            WorkSheet.Cell("D3").Value = "135";
-            WorkSheet.Cell("D4").Value = "8/8";
+            // ----- UPDATE START 2020/10/28 E.KOSHIKAWA -----
+            //WorkSheet.Cell("D3").Value = "135";
+            //WorkSheet.Cell("D4").Value = "8/8";
+            WorkSheet.Cell("D4").Value = "/";
+            // ----- UPDATE  END  2020/10/28 E.KOSHIKAWA -----
             WorkSheet.Cell("D5").Value = "□NG処理待ち" + Environment.NewLine +
                                          "□レポート回答待ち" + Environment.NewLine +
                                          "□ 発送処理完了";
@@ -549,6 +552,15 @@ namespace AsusGigaInsp.Controllers
             WorkSheet.Cell("B4").Value = SiTekEstArrivalDate;
             WorkSheet.Cell("B5").Value = DeliveryLocation;
             WorkSheet.Cell("D2").Value = N01NO.Substring(N01NO.Length - 6, 6);
+
+            // ----- INSERT START 2020/10/28 E.KOSHIKAWA -----
+            WorkSheet.Cell("B1").Style.Alignment.ShrinkToFit = true;
+            WorkSheet.Cell("B2").Style.Alignment.ShrinkToFit = true;
+            WorkSheet.Cell("B3").Style.Alignment.ShrinkToFit = true;
+            WorkSheet.Cell("B4").Style.Alignment.ShrinkToFit = true;
+            WorkSheet.Cell("B5").Style.Alignment.ShrinkToFit = true;
+            WorkSheet.Cell("D2").Style.Alignment.ShrinkToFit = true;
+            // ----- INSERT  END  2020/10/28 E.KOSHIKAWA -----
 
             // ファイル名
             OutputFileName = DateTime.Now.ToString("yyyy年MM月dd日 hh時mm分ss秒")

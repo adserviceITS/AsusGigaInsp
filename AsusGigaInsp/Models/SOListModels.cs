@@ -23,6 +23,7 @@ namespace AsusGigaInsp.Models
         public string SrchSiTekEstArrivalDate_E { get; set; }
         public string SrchStatusID { get; set; }
         public string SrchDateError { get; set; }
+        public bool SrchDispSwitch { get; set; }
         public string DispInsertDate { get; set; }
 
         public IEnumerable<SrchRstOrder> SrchRstOrderList { get; set; }
@@ -181,8 +182,8 @@ namespace AsusGigaInsp.Models
             stbSql.Append("ORDER BY ");
             //stbSql.Append("    T_SO_STATUS, ");
             stbSql.Append("    HOLD_FLG, ");
-            stbSql.Append("    PREF_REPORTING_DATE DESC, ");
-            stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE DESC, ");
+            stbSql.Append("    PREF_REPORTING_DATE, ");
+            stbSql.Append("    SI_TEK_EST_ARRIVAL_DATE, ");
             stbSql.Append("    SORT_ORDER, ");
             stbSql.Append("    SO_NO ");
 
@@ -246,6 +247,11 @@ namespace AsusGigaInsp.Models
             }
             else
             {
+                if (!SrchDispSwitch)
+                {
+                    stbWhere.Append("AND T_SO_STATUS.SO_STATUS_ID < N'5010' ");
+                }
+
                 if (!string.IsNullOrEmpty(Srch90N))
                 {
                     stbWhere.Append("AND T_SO_STATUS.n90N LIKE N'%" + Srch90N + "%' ");
@@ -307,7 +313,6 @@ namespace AsusGigaInsp.Models
                         stbWhere.Append("AND (T_SO_CHANGE_CONTROL.EST_ARRIVAL_DATE_WARNING_FLG = N'1' OR T_SO_CHANGE_CONTROL.PREF_REPORTING_DATE_WARNING_FLG = N'1' OR T_SO_CHANGE_CONTROL.SI_TEK_EST_ARRIVAL_DATE_WARNING_FLG = N'1') ");
                     }
                 }
-
             }
         }
     }

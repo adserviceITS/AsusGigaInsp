@@ -89,6 +89,46 @@ namespace AsusGigaInsp.Controllers
                         DSNLibrary dsnLib = new DSNLibrary();
                         StringBuilder stbSql = new StringBuilder();
 
+                        // ----- INSERT START 2020/10/28 E.KOSHIKAWA -----
+                        // 最初にExcelファイル内のデータをチェックする
+                        // Serial Number、SOの未入力、重複のチェックを行う。
+
+                        // Excelデータの2行目から順次データを読込む。
+                        // (１行目はタイトル行のため、読み込まない。）
+                        for (int RowCounter = 1; RowCounter < IntRowCount; RowCounter++)
+                        {
+                            // Excelのデータチェック **********************************************
+                            string StrCheckSerialNo = models.SerialList[RowCounter, 0];
+                            string StrCheckSO = models.SerialList[RowCounter, 19];
+
+                            if (string.IsNullOrEmpty(StrCheckSerialNo))
+                            {
+                                ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目はSerial Numberが入力されていません。");
+                            }
+
+                            if (string.IsNullOrEmpty(StrCheckSO))
+                            {
+                                ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目はSOが入力されていません。");
+                            }
+
+                            for (int CheckRow = RowCounter + 1; CheckRow < IntRowCount; CheckRow++)
+                            {
+                                if (!string.IsNullOrEmpty(StrCheckSerialNo))
+                                {
+                                    if (StrCheckSerialNo == models.SerialList[CheckRow, 0])
+                                    {
+                                        ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目のSerial Numberは" + (CheckRow + 1) + "行目のSerial Numberと重複しています。");
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!ModelState.IsValid)
+                        {
+                            ModelState.AddModelError(string.Empty, "修正後、再度取込んで下さい。");
+                            return View();
+                        }
+
                         // Excelデータの2行目から順次データを読込む。
                         // (１行目はタイトル行のため、読み込まない。シリアルナンバーは1項目目）
                         for (int RowCounter = 1; RowCounter < IntRowCount; RowCounter++)
