@@ -7,11 +7,18 @@
 {
     <!-- TOPエリア ------------------------------------------------------------------------------------------->
     <div class="row d-flex align-items-end">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <h4 style="margin-top:10px;">検査完了</h4>
         </div>
-        <div class="col-md-4">
-            <h5 class="text-muted" id="view_today"></h5>
+        <div class="col-md-5">
+            @if (Model.SrchTime != null)
+            {
+                <h5 class="text-muted">@DateTime.Parse(Model.SrchTime).ToString("yyyy年MM月dd日 (ddd)　HH時mm分") 現在</h5>
+            }
+            else
+            {
+                <h5 class="text-muted" id="view_today"></h5>
+            }
         </div>
         <div class="col-md-2">
             <h5 class="text-primary font-weight-bold" id="dispLineID"></h5>
@@ -28,7 +35,7 @@
         <div class="col-md-5">
             @Html.TextAreaFor(model => model.MasterCartonSerial, 8, 100, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:400px;", inputmode = "url", placeholder = "マスターカートンQR" })
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3">
             <div class="row  align-items-center">
                 @Html.TextBox("SerialNo1", null, new { @class = "form-control form-control-sm  d-flex align-items-center", style = "max-width:200px;margin:2px;", inputmode = "url", placeholder = "シリアル１" })
                 <label class="col invalid-feedback"></label>
@@ -51,9 +58,17 @@
             </div>
         </div>
         <div class="col-md-1">
-            <button type="button" class="btn btn-danger btn" name="InspEntryBtn" style="margin:3px;" id="InspEntryBtn">登録</button>
-            <button type="button" class="btn btn-danger btn" style="margin:3px;" name="Clear" id="ClearBtn">クリア</button>
+            @if (Model.SrchTime == null)
+            {
+                <button type="button" class="btn btn-danger btn" name="InspEntryBtn" style="margin:3px;" id="InspEntryBtn">登録</button>
+                <button type="button" class="btn btn-danger btn" style="margin:3px;" name="Clear" id="ClearBtn">クリア</button>
+            }
         </div>
+        <!-- ADD START 2020/11/04 E.KOSHIKAWA --------------------->
+        <div class="col-md-3">
+            <TextArea class="form-control form-control-sm  d-flex align-items-center" cols="100" rows="8" readonly="readonly">@Model.SOCompCnt</TextArea>
+        </div>
+        <!-- ADD  END  2020/11/04 E.KOSHIKAWA --------------------->
         @Html.ValidationMessageFor(model => model.MasterCartonSerial)
     </div>
     <!-- 結果エリア ------------------------------------------------------------------------------------------>

@@ -88,6 +88,7 @@ namespace AsusGigaInsp.Controllers
                         int IntRowCount = models.SerialList.GetLength(0);
                         DSNLibrary dsnLib = new DSNLibrary();
                         StringBuilder stbSql = new StringBuilder();
+                        SqlDataReader sqlRdr;
 
                         // ----- INSERT START 2020/10/28 E.KOSHIKAWA -----
                         // 最初にExcelファイル内のデータをチェックする
@@ -101,7 +102,7 @@ namespace AsusGigaInsp.Controllers
                             string StrCheckSerialNo = models.SerialList[RowCounter, 0];
                             string StrCheckSO = models.SerialList[RowCounter, 19];
 
-                            if (string.IsNullOrEmpty(StrCheckSerialNo))
+                           if (string.IsNullOrEmpty(StrCheckSerialNo))
                             {
                                 ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目はSerial Numberが入力されていません。");
                             }
@@ -139,7 +140,7 @@ namespace AsusGigaInsp.Controllers
                             stbSql.Append("FROM dbo.T_SERIAL_STATUS ");
                             stbSql.Append("WHERE SERIAL_NUMBER = '" + models.SerialList[RowCounter,0] + "' ");
 
-                            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+                            sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
                             if (sqlRdr.HasRows)
                                 ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目のシリアル【" + models.SerialList[RowCounter, 0] + "】は既に登録されています。");
@@ -176,8 +177,63 @@ namespace AsusGigaInsp.Controllers
                         // T_SERIAL_STATUSへの取込み
                         models.InsertSerialStatusTBL();
 
-                        // T_SERIAL_STATUSへの取込み
+                        // T_SERIAL_STATUS_HYSTORYへの取込み
                         models.InsertSerialStatusHystoryTBL();
+
+                        // ----- INSERT START 2020/11/05 E.KOSHIKAWA -----
+                        // 取り込んだSO(N01#)を取得
+                        string StrInsertSO = models.SerialList[1, 19];
+
+                        stbSql.Append("SELECT ");
+                        stbSql.Append("    count(*) AS COUNT ");
+                        stbSql.Append("FROM ");
+                        stbSql.Append("    T_SERIAL_STATUS ");
+                        stbSql.Append("WHERE ");
+                        stbSql.Append("    SO = '" + StrInsertSO + "' ");
+
+                        sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+                        sqlRdr.Read();
+
+                        int SerialCnt = int.Parse(sqlRdr["COUNT"].ToString());
+
+                        stbSql.Clear();
+                        sqlRdr.Close();
+                        dsnLib.DB_Close();
+
+                        stbSql.Append("SELECT ");
+                        stbSql.Append("    SHIPPING_QUANTITY ");
+                        stbSql.Append("FROM ");
+                        stbSql.Append("    T_SO_STATUS ");
+                        stbSql.Append("WHERE ");
+                        stbSql.Append("    N01_NO = '" + StrInsertSO + "' ");
+
+                        sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+                        sqlRdr.Read();
+
+                        int SOCnt = int.Parse(sqlRdr["SHIPPING_QUANTITY"].ToString());
+
+                        sqlRdr.Close();
+                        dsnLib.DB_Close();
+
+                        if (SOCnt >= SerialCnt)
+                        {
+                            DateTime DTImportTime = DateTime.Now;
+
+                            // T_SO_STATUSの更新
+                            models.UpdateSoStatusTBL(StrInsertSO, DTImportTime);
+
+                            // T_SO_STATUS_HISTORYに追加
+                            models.InsertSoStatusHistoryTBL(StrInsertSO, DTImportTime);
+
+                            // T_SERIAL_STATUSの更新
+                            models.UpdateSerialStatusTBL(StrInsertSO, DTImportTime);
+
+                            // T_SERIAL_STATUS_HYSTORYに追加
+                            models.InsertSerialStatusHistoryTBL_2010(StrInsertSO, DTImportTime);
+                        }
+
                     }
                     else
                     {

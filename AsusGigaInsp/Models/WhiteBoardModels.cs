@@ -270,6 +270,7 @@ namespace AsusGigaInsp.Models
 
             DateTime DT = DateTime.Today;
             string StrDT = DT.ToString("yyyy/MM/dd");
+            string StrNextDT = DT.AddDays(1).ToString("yyyy/MM/dd");
 
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder strSql = new StringBuilder();
@@ -418,7 +419,6 @@ namespace AsusGigaInsp.Models
             strSql.Append("    LEFT JOIN T_PLANS ");
             strSql.Append("        ON M_LINE.LINE_ID = T_PLANS.LINE_ID ");
 
-            int IntStartRow = IntCounter;
             sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
 
             while (sqlRdr.Read())
@@ -457,7 +457,14 @@ namespace AsusGigaInsp.Models
                 strSql.Append("            T_SERIAL_STATUS_HISTORY ");
                 strSql.Append("        WHERE ");
                 strSql.Append("            UPDATE_DATE >= '" + StrDT + " " + SRTT.StartTime + "'");
-                strSql.Append("            AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "' ");
+                if (SRTT.EndTime == "23:59:59")
+                {
+                    strSql.Append("            AND UPDATE_DATE < '" + StrNextDT + "' ");
+                }
+                else
+                {
+                    strSql.Append("            AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "' ");
+                }
                 strSql.Append("            AND STATUS = '4010' ");
                 strSql.Append("        GROUP BY ");
                 strSql.Append("            LINE_ID ");
@@ -649,6 +656,343 @@ namespace AsusGigaInsp.Models
             }
 
             SrchRstProgressBoard = LstProgressBoard;
+
+            //System.Diagnostics.Debug.WriteLine(a);
+        }
+
+    }
+
+    //---------------------------------------------------------------------------//
+    //                    　　管理者用進捗ボード表示処理                         //
+    //---------------------------------------------------------------------------//
+    public class ProgressBoardAdmModels
+    {
+        public IEnumerable<SrchRst> SrchRstProgressBoardAdm { get; set; }
+        public IEnumerable<SrchTime> SrchRstDisplayTime { get; set; }
+        public IEnumerable<string> SrchRstLine { get; set; }
+
+        public string SrchWorkingDate { get; set; }
+
+        public void SetSrchRstProgressBoardAdm()
+        {
+            int IntPeriodCount = 14;
+
+            string StrDT = SrchWorkingDate;
+            string StrNextDT = DateTime.Parse(SrchWorkingDate).AddDays(1).ToString("yyyy/MM/dd");
+
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder strSql = new StringBuilder();
+
+            //------------------------------------------------------
+            // タイムテーブルを取り込む。
+            //------------------------------------------------------
+            strSql.Append("SELECT ");
+            strSql.Append("    * ");
+            strSql.Append("FROM ");
+            strSql.Append("    M_TIME_TABLE ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
+            sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
+
+            List<SrchRstTimeTable> lstSrchRstTimeTable = new List<SrchRstTimeTable>();
+            string[] StrTimeTableReader = new string[IntPeriodCount];
+            int IntCounter = 1;
+
+            StrTimeTableReader[0] = '0'.ToString();
+            while (sqlRdr.Read())
+            {
+                lstSrchRstTimeTable.Add(new SrchRstTimeTable
+                {
+                    StartTime = sqlRdr["START_TIME"].ToString(),
+                    EndTime = sqlRdr["END_TIME"].ToString()
+                });
+
+                StrTimeTableReader[IntCounter] = "～" + sqlRdr["END_TIME"].ToString();
+                IntCounter++;
+            }
+            dsnLib.DB_Close();
+            strSql.Clear();
+
+            // System.Diagnostics.Debug.WriteLine(StrTimeTable[0]);
+
+            List<SrchTime> LstDisplayTime = new List<SrchTime>();
+            LstDisplayTime.Add(new SrchTime
+            {
+                Period01 = StrTimeTableReader[1],
+                Period02 = StrTimeTableReader[2],
+                Period03 = StrTimeTableReader[3],
+                Period04 = StrTimeTableReader[4],
+                Period05 = StrTimeTableReader[5],
+                Period06 = StrTimeTableReader[6],
+                Period07 = StrTimeTableReader[7],
+                Period08 = StrTimeTableReader[8],
+                Period09 = StrTimeTableReader[9],
+                Period10 = StrTimeTableReader[10],
+                Period11 = StrTimeTableReader[11],
+                Period12 = StrTimeTableReader[12],
+                Period13 = StrTimeTableReader[13]
+            });
+
+            SrchRstDisplayTime = LstDisplayTime;
+
+            //------------------------------------------------------
+            // ライン情報を取り込む。
+            //------------------------------------------------------
+            string[,] StrPerformanceReader = new string[1, IntPeriodCount];
+
+            strSql.Append("SELECT ");
+            strSql.Append("    LINE_ID ");
+            strSql.Append("FROM ");
+            strSql.Append("    M_LINE ");
+
+            sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
+
+            List<string> lstSrchRstLine = new List<string>();
+
+            IntCounter = 0;
+
+            while (sqlRdr.Read())
+            {
+                lstSrchRstLine.Add(sqlRdr["LINE_ID"].ToString());
+            }
+            dsnLib.DB_Close();
+            strSql.Clear();
+
+            SrchRstLine = lstSrchRstLine;
+
+            // ライン数を取得
+            int IntLineCount = (lstSrchRstLine.Count());
+
+            // 配列の行数を算出（LINE数×2）
+            int IntAllRowCount = lstSrchRstLine.Count() * 2;
+
+            StrPerformanceReader = new string[IntAllRowCount, IntPeriodCount];
+
+            // 取得したリストを配列に格納
+            foreach (string StrLineID in lstSrchRstLine)
+            {
+                StrPerformanceReader[IntCounter, 0] = StrLineID + "1";
+                IntCounter++;
+            }
+
+            foreach (string StrLineID in lstSrchRstLine)
+            {
+                StrPerformanceReader[IntCounter, 0] = StrLineID + "2";
+                IntCounter++;
+            }
+
+            //------------------------------------------------------
+            // 配列の実績値を0で埋める。
+            //------------------------------------------------------
+            for (int IntX = 1; IntX < IntPeriodCount; IntX++)
+            {
+                for (int IntY = 0; IntY < IntAllRowCount; IntY++)
+                {
+                    {
+                        StrPerformanceReader[IntY, IntX] = '0'.ToString();
+                    }
+                }
+            }
+
+            //------------------------------------------------------
+            // 投入数、完了数を取り込む。
+            //------------------------------------------------------
+            int IntTimeIndex = 1;
+
+            foreach (SrchRstTimeTable SRTT in lstSrchRstTimeTable)
+            {
+                strSql.Append("SELECT ");
+                strSql.Append("    M_LINE.LINE_ID + '1' AS LINE_ID, ");
+                strSql.Append("    " + IntTimeIndex + " AS TIME_ID, ");
+                strSql.Append("    IsNull(TBL1.COUNT, 0) AS COUNT ");
+                strSql.Append("FROM ");
+                strSql.Append("    M_LINE ");
+                strSql.Append("    LEFT JOIN (");
+                strSql.Append("        SELECT ");
+                strSql.Append("            LINE_ID, ");
+                strSql.Append("            COUNT(*) AS COUNT ");
+                strSql.Append("        FROM ");
+                strSql.Append("            T_SERIAL_STATUS_HISTORY ");
+                strSql.Append("        WHERE ");
+                strSql.Append("            UPDATE_DATE >= '" + StrDT + " " + SRTT.StartTime + "'");
+                if (SRTT.EndTime == "23:59:59")
+                {
+                    strSql.Append("            AND UPDATE_DATE < '" + StrNextDT + "' ");
+                }
+                else
+                {
+                    strSql.Append("            AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "' ");
+                }
+                strSql.Append("            AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "' ");
+                strSql.Append("            AND STATUS = '3010' ");
+                strSql.Append("        GROUP BY ");
+                strSql.Append("            LINE_ID ");
+                strSql.Append("    ) TBL1 ");
+                strSql.Append("        ON M_LINE.LINE_ID = TBL1.LINE_ID ");
+                strSql.Append("UNION ");
+                strSql.Append("SELECT ");
+                strSql.Append("    M_LINE.LINE_ID + '2' AS LINE_ID, ");
+                strSql.Append("    " + IntTimeIndex + " AS TIME_ID, ");
+                strSql.Append("    IsNull(TBL1.COUNT, 0) AS COUNT ");
+                strSql.Append("FROM ");
+                strSql.Append("    M_LINE ");
+                strSql.Append("    LEFT JOIN (");
+                strSql.Append("        SELECT ");
+                strSql.Append("            LINE_ID, ");
+                strSql.Append("            COUNT(*) AS COUNT ");
+                strSql.Append("        FROM ");
+                strSql.Append("            T_SERIAL_STATUS_HISTORY ");
+                strSql.Append("        WHERE ");
+                strSql.Append("            UPDATE_DATE >= '" + StrDT + " " + SRTT.StartTime + "'");
+                strSql.Append("            AND UPDATE_DATE < '" + StrDT + " " + SRTT.EndTime + "' ");
+                strSql.Append("            AND STATUS = '4010' ");
+                strSql.Append("        GROUP BY ");
+                strSql.Append("            LINE_ID ");
+                strSql.Append("    ) TBL1 ");
+                strSql.Append("        ON M_LINE.LINE_ID = TBL1.LINE_ID ");
+                sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
+
+                while (sqlRdr.Read())
+                {
+                    if (IntPeriodCount > int.Parse(sqlRdr["TIME_ID"].ToString()))
+                    {
+                        int IntX = int.Parse(sqlRdr["TIME_ID"].ToString());
+
+                        for (int IntY = 0; IntY < IntAllRowCount; IntY++)
+                        {
+                            if (StrPerformanceReader[IntY, 0] == sqlRdr["LINE_ID"].ToString())
+                            {
+                                if (IntX > 1)
+                                {
+                                    StrPerformanceReader[IntY, IntX] = (int.Parse(StrPerformanceReader[IntY, IntX - 1]) + int.Parse(sqlRdr["COUNT"].ToString())).ToString();
+                                }
+                                else
+                                {
+                                    StrPerformanceReader[IntY, IntX] = int.Parse(sqlRdr["COUNT"].ToString()).ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                dsnLib.DB_Close();
+
+                strSql.Clear();
+                IntTimeIndex++;
+            }
+
+            // 配列をデータテーブルに代入
+            DataTable DTPerformanceReader = new DataTable();
+
+            for (int col = 0; col < StrPerformanceReader.GetLength(1); col++)
+            {
+                DTPerformanceReader.Columns.Add("Col" + col.ToString());
+            }
+
+            for (int rowindex = 0; rowindex < StrPerformanceReader.GetLength(0); rowindex++)
+            {
+                DataRow row = DTPerformanceReader.NewRow();
+                for (int col = 0; col < StrPerformanceReader.GetLength(1); col++)
+                {
+                    row[col] = StrPerformanceReader[rowindex, col];
+                }
+                DTPerformanceReader.Rows.Add(row);
+            }
+
+            DataRow[] DrPerformanceRows = null;
+            DataRow DrDataRow = null;
+
+            // 合計欄の作成（投入数）
+            DrPerformanceRows = DTPerformanceReader.Select("Col0 LIKE '%1'", "");
+            DrDataRow = DTPerformanceReader.NewRow();
+            DrDataRow[0] = "01";
+
+            for (int IntColumnCounter = 1; IntColumnCounter < IntPeriodCount; IntColumnCounter++)
+            {
+                int IntTotal = 0;
+                for (int IntRowCounter = 0; IntRowCounter < DrPerformanceRows.Count(); IntRowCounter++)
+                {
+                    IntTotal = IntTotal + int.Parse(DrPerformanceRows[IntRowCounter][IntColumnCounter].ToString());
+                }
+
+                DrDataRow[IntColumnCounter] = IntTotal.ToString();
+            }
+            DTPerformanceReader.Rows.Add(DrDataRow);
+
+            // 合計欄の作成（完了数）
+            DrPerformanceRows = DTPerformanceReader.Select("Col0 LIKE '%2'", "");
+            DrDataRow = DTPerformanceReader.NewRow();
+            DrDataRow[0] = "02";
+
+            for (int IntColumnCounter = 1; IntColumnCounter < IntPeriodCount; IntColumnCounter++)
+            {
+                int IntTotalCum = 0;
+
+                for (int IntRowCounter = 0; IntRowCounter < DrPerformanceRows.Count(); IntRowCounter++)
+                {
+                    IntTotalCum = IntTotalCum + int.Parse(DrPerformanceRows[IntRowCounter][IntColumnCounter].ToString());
+                }
+
+                DrDataRow[IntColumnCounter] = IntTotalCum.ToString();
+            }
+            DTPerformanceReader.Rows.Add(DrDataRow);
+
+            // データテーブルをソート
+            DataRow[] sortedrows = DTPerformanceReader.Select("", "Col0");
+
+            // データテーブルをリストに追加
+            List<SrchRst> LstProgressBoard = new List<SrchRst>();
+
+            string StrID = null;
+            string StrLineName = null;
+            string StrCheckLine = null;
+            string StrCheckChar = null;
+
+            for (int IntY = 0; IntY < DTPerformanceReader.Rows.Count; IntY++)
+            {
+                StrCheckLine = sortedrows[IntY].Field<string>("Col0").Substring(0, 1);
+
+                if (StrCheckLine == '0'.ToString())
+                {
+                    StrLineName = "合計";
+                }
+                else
+                {
+                    StrLineName = StrCheckLine + "-Line";
+                }
+
+                StrCheckChar = sortedrows[IntY].Field<string>("Col0").Substring(1);
+
+                if (StrCheckChar == '1'.ToString())
+                {
+                    StrID = "投入数";
+                }
+                else if (StrCheckChar == '2'.ToString())
+                {
+                    StrID = "完了数";
+                }
+
+                LstProgressBoard.Add(new SrchRst
+                {
+                    LineName = StrLineName,
+                    Division = StrID,
+                    Period01 = sortedrows[IntY].Field<string>("Col1"),
+                    Period02 = sortedrows[IntY].Field<string>("Col2"),
+                    Period03 = sortedrows[IntY].Field<string>("Col3"),
+                    Period04 = sortedrows[IntY].Field<string>("Col4"),
+                    Period05 = sortedrows[IntY].Field<string>("Col5"),
+                    Period06 = sortedrows[IntY].Field<string>("Col6"),
+                    Period07 = sortedrows[IntY].Field<string>("Col7"),
+                    Period08 = sortedrows[IntY].Field<string>("Col8"),
+                    Period09 = sortedrows[IntY].Field<string>("Col9"),
+                    Period10 = sortedrows[IntY].Field<string>("Col10"),
+                    Period11 = sortedrows[IntY].Field<string>("Col11"),
+                    Period12 = sortedrows[IntY].Field<string>("Col12"),
+                    Period13 = sortedrows[IntY].Field<string>("Col13")
+                });
+                var a = sortedrows[IntY].Field<string>("Col0");
+            }
+
+            SrchRstProgressBoardAdm = LstProgressBoard;
 
             //System.Diagnostics.Debug.WriteLine(a);
         }

@@ -2,6 +2,7 @@
 using ClosedXML.Excel;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text;
 using System.Web;
@@ -319,11 +320,166 @@ namespace AsusGigaInsp.Models
             dsnLib.DB_Close();
             stbSql.Clear();
         }
+
+        public void UpdateSoStatusTBL(string StrSO, DateTime DtUpdateTime)
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            string StrUpdUID = HttpContext.Current.Session["ID"].ToString();
+
+            stbSql.Append("UPDATE ");
+            stbSql.Append("    T_SO_STATUS ");
+            stbSql.Append("SET ");
+            stbSql.Append("    SO_STATUS_ID = '2010', ");
+            stbSql.Append("    ST_CHANGE_DATE = '" + DtUpdateTime + "', ");
+            stbSql.Append("    UPDATE_DATE = '" + DtUpdateTime + "', ");
+            stbSql.Append("    UPDATE_ID = '" + StrUpdUID + "' ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    N01_NO = '" + StrSO + "' ");
+            stbSql.Append("AND SO_STATUS_ID = '1010' ");
+
+            dsnLib.ExecSQLUpdate(stbSql.ToString());
+
+            dsnLib.DB_Close();
+            stbSql.Clear();
+        }
+
+        public void InsertSoStatusHistoryTBL(string StrSO, DateTime DtInsertTime)
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            string StrUpdUID = HttpContext.Current.Session["ID"].ToString();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    IsNULL(MAX(T_SO_STATUS_HISTORY.SEQ), 0) + 1 AS SEQ ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SO_STATUS ");
+            stbSql.Append("    INNER JOIN T_SO_STATUS_HISTORY ");
+            stbSql.Append("        ON T_SO_STATUS.SO_NO = T_SO_STATUS_HISTORY.SO_NO ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    T_SO_STATUS.N01_NO = '" + StrSO + "' ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            sqlRdr.Read();
+
+            int IntMaxSEQ = int.Parse(sqlRdr["SEQ"].ToString());
+
+            stbSql.Clear();
+            sqlRdr.Close();
+            dsnLib.DB_Close();
+
+            stbSql.Append("INSERT INTO");
+            stbSql.Append("    T_SO_STATUS_HISTORY ");
+            stbSql.Append("( ");
+            stbSql.Append("    SO_NO, ");
+            stbSql.Append("    SEQ, ");
+            stbSql.Append("    BEFORE_STATUS, ");
+            stbSql.Append("    NOW_STATUS, ");
+            stbSql.Append("    INSERT_DATE, ");
+            stbSql.Append("    INSERT_ID, ");
+            stbSql.Append("    UPDATE_DATE, ");
+            stbSql.Append("    UPDATE_ID ");
+            stbSql.Append(") ");
+            stbSql.Append("SELECT ");
+            stbSql.Append("    SO_NO, ");
+            stbSql.Append("    " + IntMaxSEQ + ", ");
+            stbSql.Append("    '1010', ");
+            stbSql.Append("    '2010', ");
+            stbSql.Append("    '" + DtInsertTime + "', ");
+            stbSql.Append("    '" + StrUpdUID + "', ");
+            stbSql.Append("    '" + DtInsertTime + "', ");
+            stbSql.Append("    '" + StrUpdUID + "' ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SO_STATUS ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    SO_STATUS_ID = '2010' ");
+            stbSql.Append("AND N01_NO = '" + StrSO + "' ");
+            stbSql.Append("AND ST_CHANGE_DATE = '" + DtInsertTime + "' ");
+            stbSql.Append("AND UPDATE_ID = '" + StrUpdUID + "' ");
+            //Debug.WriteLine(stbSql.ToString());
+
+            dsnLib.ExecSQLUpdate(stbSql.ToString());
+
+            dsnLib.DB_Close();
+            stbSql.Clear();
+        }
+
+        public void UpdateSerialStatusTBL(string StrSO,DateTime DtUpdateTime)
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            string StrUpdUID = HttpContext.Current.Session["ID"].ToString();
+
+            stbSql.Append("UPDATE ");
+            stbSql.Append("    T_SERIAL_STATUS ");
+            stbSql.Append("SET ");
+            stbSql.Append("    SERIAL_STATUS_ID = '2010', ");
+            stbSql.Append("    STATUS_UPDATE_DATE = '" + DtUpdateTime + "', ");
+            stbSql.Append("    UPDATE_DATE = '" + DtUpdateTime + "', ");
+            stbSql.Append("    UPDATE_ID = '" + StrUpdUID + "' ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    SO = '" + StrSO + "' ");
+            stbSql.Append("AND SERIAL_STATUS_ID = '1010' ");
+
+            dsnLib.ExecSQLUpdate(stbSql.ToString());
+
+            dsnLib.DB_Close();
+            stbSql.Clear();
+        }
+
+        public void InsertSerialStatusHistoryTBL_2010(string StrSO, DateTime DtInsertTime)
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            string StrUpdUID = HttpContext.Current.Session["ID"].ToString();
+
+            stbSql.Append("INSERT INTO");
+            stbSql.Append("    T_SERIAL_STATUS_HISTORY ");
+            stbSql.Append("( ");
+            stbSql.Append("    SERIAL_ID, ");
+            stbSql.Append("    SERIAL_NUMBER, ");
+            stbSql.Append("    LINE_ID, ");
+            stbSql.Append("    SO_NO, ");
+            stbSql.Append("    STATUS, ");
+            stbSql.Append("    INSERT_DATE, ");
+            stbSql.Append("    INSERT_ID, ");
+            stbSql.Append("    UPDATE_DATE, ");
+            stbSql.Append("    UPDATE_ID ");
+            stbSql.Append(") ");
+            stbSql.Append("SELECT ");
+            stbSql.Append("    ID, ");
+            stbSql.Append("    SERIAL_NUMBER, ");
+            stbSql.Append("    '', ");
+            stbSql.Append("    SO_NO, ");
+            stbSql.Append("    '2010', ");
+            stbSql.Append("    '" + DtInsertTime + "', ");
+            stbSql.Append("    '" + StrUpdUID + "', ");
+            stbSql.Append("    '" + DtInsertTime + "', ");
+            stbSql.Append("    '" + StrUpdUID + "' ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SERIAL_STATUS ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    SERIAL_STATUS_ID = '2010' ");
+            stbSql.Append("AND SO = '" + StrSO + "' ");
+            stbSql.Append("AND STATUS_UPDATE_DATE = '" + DtInsertTime + "' ");
+            stbSql.Append("AND UPDATE_ID = '" + StrUpdUID + "' ");
+            //Debug.WriteLine(stbSql.ToString());
+
+            dsnLib.ExecSQLUpdate(stbSql.ToString());
+
+            dsnLib.DB_Close();
+            stbSql.Clear();
+        }
     }
 
     public class SerialUploadFile
-    {
-        [Required(ErrorMessage = "ファイルを選択してください。")]
-        public HttpPostedFileBase ExcelFile { get; set; }
-    }
+        {
+            [Required(ErrorMessage = "ファイルを選択してください。")]
+            public HttpPostedFileBase ExcelFile { get; set; }
+        }
 }

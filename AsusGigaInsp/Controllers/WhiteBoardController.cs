@@ -90,12 +90,27 @@ namespace AsusGigaInsp.Controllers
         // GET: ProgressBoard
         public ActionResult ProgressBoard()
         {
-            ProgressBoardModels models = new ProgressBoardModels();
+            ProgressBoardAdmModels models = new ProgressBoardAdmModels();
 
-            // モデルにオーダーリストをセット
-            models.SetSrchRstProgressBoard();
+            DateTime dt = DateTime.Today;
+
+            string result = dt.ToString("yyyy/MM/dd");
+
+            models.SrchWorkingDate = result;
 
             return View(models);
+        }
+
+        // POST: SOList/SOListSearch/Search
+        // オーダー検索画面/検索ボタン押下時
+        public ActionResult ProgressBoardSearchResult(ProgressBoardAdmModels models)
+        {
+
+            // モデルにオーダーリストをセット
+            models.SetSrchRstProgressBoardAdm();
+
+            return View("ProgressBoard", models);
+
         }
 
         // GET: ProgressBoard

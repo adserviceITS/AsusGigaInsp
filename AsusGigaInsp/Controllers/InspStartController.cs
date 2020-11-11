@@ -19,8 +19,16 @@ namespace AsusGigaInsp.Controllers
             if (Session["LineID"] != null)
                 isModels.LineID = Session["LineID"].ToString();
 
+            // ----- ADD START 2020/11/10 E.KOSHIKAWA ----- //
+            isModels.SetStbWhere();
+            // ----- ADD  END  2020/11/10 E.KOSHIKAWA ----- //
+
             isModels.SetInspStartSerialLists();
             isModels.SetLineCompCnt();
+
+            // ----- ADD START 2020/11/03 E.KOSHIKAWA ----- //
+            isModels.SetSOCompCnt();
+            // ----- ADD  END  2020/11/03 E.KOSHIKAWA ----- //
 
             return View("InspStart", isModels);
         }
@@ -141,8 +149,16 @@ namespace AsusGigaInsp.Controllers
 
             models.SetDropDownListLine();
             models.UpdateStatus();
+
+            // ----- ADD START 2020/11/10 E.KOSHIKAWA ----- //
+            models.SetStbWhere();
+            // ----- ADD  END  2020/11/10 E.KOSHIKAWA ----- //
+
             models.SetInspStartSerialLists();
             models.SetLineCompCnt();
+            // ----- ADD START 2020/11/03 E.KOSHIKAWA ----- //
+            models.SetSOCompCnt();
+            // ----- ADD  END  2020/11/03 E.KOSHIKAWA ----- //
 
             // 更新完了フラグをセット
             ViewBag.CompleteFlg = "true";
@@ -169,6 +185,42 @@ namespace AsusGigaInsp.Controllers
             Session["LineID"] = model.LineID;
 
             return Index();
+        }
+
+        // POST: InspStart/Search
+        public ActionResult SearchFromOutSide(string SearchLine, string SearchTime)
+        {
+            InspStartModels models = new InspStartModels();
+
+            if (!string.IsNullOrEmpty(SearchLine))
+            {
+                string StrSearchLine = SearchLine.Substring(0, 1);
+
+                models.LineID = StrSearchLine;
+            }
+            else
+            {
+                models.LineID = "ALL";
+            }
+
+            // セッションにラインをセット
+            Session["LineID"] = models.LineID;
+
+            if (!string.IsNullOrEmpty(SearchTime))
+            {
+                models.SrchTime = SearchTime;
+            }
+
+            models.SetDropDownListLine();
+            models.SetStbWhere();
+            models.SetInspStartSerialLists();
+            models.SetLineCompCnt();
+            models.SetSOCompCnt();
+
+            // セッションのラインをクリア
+            Session["LineID"] = null;
+
+            return View("InspStart", models);
         }
     }
 }

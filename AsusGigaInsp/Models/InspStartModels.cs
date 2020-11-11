@@ -18,6 +18,11 @@ namespace AsusGigaInsp.Models
         public string EntLineID { get; set; }
         public IEnumerable<InspStartSerialList> InspStartSerialLists { get; set; }
         public string LineCompCnt { get; set; } = "0";
+        // ----- ADD START 2020/11/03 E.KOSHIKAWA ----- //
+        public string SOCompCnt { get; set; }
+        public string SrchTime { get; set; }
+        private StringBuilder StbWhere = new StringBuilder();
+        // ----- ADD  END  2020/11/03 E.KOSHIKAWA ----- //
 
         public void SetDropDownListLine()
         {
@@ -48,10 +53,13 @@ namespace AsusGigaInsp.Models
             stbSql.Append("    TSH.STATUS = MSS.SERIAL_STATUS_ID ");
             stbSql.Append("    LEFT JOIN M_USER USR ON ");
             stbSql.Append("    USR.ID = TSH.UPDATE_ID ");
-            stbSql.Append("WHERE ");
-            stbSql.Append("    TSH.STATUS = '3010' AND ");
-            stbSql.Append("    CONVERT(VARCHAR(30), TSH.UPDATE_DATE, 112) = CONVERT(VARCHAR(30), GETDATE(), 112) AND ");
-            stbSql.Append("    TSH.LINE_ID = '" + LineID + "' ");
+            // ----- UPDATE START 2020/11/10 E.KOSHIKAWA ----- //
+            //stbSql.Append("WHERE ");
+            //stbSql.Append("    TSH.STATUS = '3010' AND ");
+            //stbSql.Append("    CONVERT(VARCHAR(30), TSH.UPDATE_DATE, 112) = CONVERT(VARCHAR(30), GETDATE(), 112) AND ");
+            //stbSql.Append("    TSH.LINE_ID = '" + LineID + "' ");
+            stbSql.Append(StbWhere.ToString());
+            // ----- UPDATE  END  2020/11/10 E.KOSHIKAWA ----- //
             stbSql.Append("ORDER BY ");
             stbSql.Append("    TSH.UPDATE_DATE DESC, ");
             stbSql.Append("    TSH.SERIAL_NUMBER ");
@@ -80,6 +88,30 @@ namespace AsusGigaInsp.Models
             InspStartSerialLists = rstRstInspStartSerialList;
         }
 
+        // ----- ADD START 2020/11/10 E.KOSHIKAWA ----- //
+        public void SetStbWhere()
+
+        {
+            StbWhere.Append("WHERE ");
+            StbWhere.Append("    TSH.STATUS = '3010' ");
+
+            if (LineID != "ALL")
+            {
+                StbWhere.Append("AND TSH.LINE_ID = '" + LineID + "' ");
+            }
+
+            if (!string.IsNullOrEmpty(SrchTime))
+            {
+                string StrStartDt = SrchTime.Substring(0, 10);
+                StbWhere.Append("AND TSH.UPDATE_DATE >= '" + StrStartDt + "' ");
+                StbWhere.Append("AND TSH.UPDATE_DATE < '" + SrchTime + "' ");
+            }
+            else
+            {
+                StbWhere.Append("AND CONVERT(VARCHAR(30), TSH.UPDATE_DATE, 112) = CONVERT(VARCHAR(30), GETDATE(), 112) ");
+            }
+        }
+        // ----- ADD  END  2020/11/10 E.KOSHIKAWA ----- //
 
         // マスターカートンシリアルのステータス更新処理
         public void UpdateStatus()
@@ -209,9 +241,30 @@ namespace AsusGigaInsp.Models
             stbSql.Append("FROM ");
             stbSql.Append("    T_SERIAL_STATUS_HISTORY ");
             stbSql.Append("WHERE ");
-            stbSql.Append("    STATUS = '3010' AND ");
-            stbSql.Append("    LINE_ID = '" + LineID + "' AND ");
-            stbSql.Append("    CONVERT(VARCHAR, UPDATE_DATE, 112) = CONVERT(VARCHAR, GETDATE(), 112) ");
+
+            // ----- UPDATE START 2020/11/10 E.KOSHIKAWA ----- //
+            //stbSql.Append("    STATUS = '3010' AND ");
+            //stbSql.Append("    LINE_ID = '" + LineID + "' AND ");
+            //stbSql.Append("    CONVERT(VARCHAR, UPDATE_DATE, 112) = CONVERT(VARCHAR, GETDATE(), 112) ");
+
+            stbSql.Append("    STATUS = '3010' ");
+
+            if (LineID != "ALL")
+            {
+                stbSql.Append("AND LINE_ID = '" + LineID + "' ");
+            }
+
+            if (!string.IsNullOrEmpty(SrchTime))
+            {
+                string StrStartDt = SrchTime.Substring(0, 10);
+                stbSql.Append("AND UPDATE_DATE >= '" + StrStartDt + "' ");
+                stbSql.Append("AND UPDATE_DATE < '" + SrchTime + "' ");
+            }
+            else
+            {
+                stbSql.Append("AND CONVERT(VARCHAR, UPDATE_DATE, 112) = CONVERT(VARCHAR, GETDATE(), 112) ");
+            }
+            // ----- UPDATE  END  2020/11/10 E.KOSHIKAWA ----- //
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
@@ -223,6 +276,50 @@ namespace AsusGigaInsp.Models
             dsnLib.DB_Close();
         }
 
+        public void SetSOCompCnt()
+        {
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder stbSql = new StringBuilder();
+
+            stbSql.Append("SELECT ");
+            stbSql.Append("    SO_NO, ");
+            stbSql.Append("    COUNT(*) AS CNT ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    T_SERIAL_STATUS_HISTORY ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    STATUS = '3010' ");
+
+            if (LineID != "ALL")
+            {
+                stbSql.Append("AND LINE_ID = '" + LineID + "' ");
+            }
+
+            if (!string.IsNullOrEmpty(SrchTime))
+            {
+                string StrStartDt = SrchTime.Substring(0, 10);
+                stbSql.Append("AND UPDATE_DATE >= '" + StrStartDt + "' ");
+                stbSql.Append("AND UPDATE_DATE < '" + SrchTime + "' ");
+            }
+            else
+            {
+                stbSql.Append("AND CONVERT(VARCHAR, UPDATE_DATE, 112) = CONVERT(VARCHAR, GETDATE(), 112) ");
+            }
+
+            stbSql.Append("GROUP BY ");
+            stbSql.Append("    SO_NO ");
+            stbSql.Append("ORDER BY ");
+            stbSql.Append("    SO_NO ");
+
+            SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            while (sqlRdr.Read())
+            {
+                SOCompCnt = SOCompCnt + sqlRdr["SO_NO"].ToString() + "：" + sqlRdr["CNT"].ToString() + "台" + Environment.NewLine;
+            }
+
+            sqlRdr.Close();
+            dsnLib.DB_Close();
+        }
 
     }
 
