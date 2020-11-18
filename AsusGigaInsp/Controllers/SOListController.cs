@@ -446,82 +446,21 @@ namespace AsusGigaInsp.Controllers
         {
             string prmSONO = this.Request.QueryString["SONO"];
             string OutputFileName = "";
+            // ----- INSERT START 2020/11/18 E.KOSHIKAWA -----
+            string EstArrivalDate = "";
+            string ModelName = "";
+            string SiTekEstArrivalDate = "";
+            string DeliveryLocation = "";
+            string N01NO = "";
+            int IntShippingQuantity = 0;
+            int Int1PLQuantity = 0;
+            int IntPageCount = 1;
+            int IntRowNumber = 1;
 
-            //----------------------------------------------------------------------------
-            // ここからExcel設定
-            //----------------------------------------------------------------------------
-            var WorkBook = new XLWorkbook();
-            // Bookの書式設定
-            WorkBook.Style.Font.FontName = "游ゴシック";
-            WorkBook.Style.Font.FontSize = 36;
-
-            var WorkSheet = WorkBook.Worksheets.Add("パレットシート");
-            // Sheet書式設定
-            WorkSheet.Row(1).Height = 115.5;
-            WorkSheet.Row(2).Height = 115.5;
-            WorkSheet.Row(3).Height = 115.5;
-            WorkSheet.Row(4).Height = 115.5;
-            WorkSheet.Row(5).Height = 119.25;
-
-            WorkSheet.Column("A").Width = 25.57;
-            WorkSheet.Column("B").Width = 44.43;
-            WorkSheet.Column("C").Width = 21.57;
-            WorkSheet.Column("D").Width = 49.14;
-
-            WorkSheet.Range("A1:D5").Style.Font.Bold = true;
-            WorkSheet.Range("A1:D5").Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
-            WorkSheet.Range("A1:D5").Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-            WorkSheet.Range("B5:C5").Merge();
-            WorkSheet.Range("A1:D5").Style
-                    .Border.SetTopBorder(XLBorderStyleValues.Thin)
-                    .Border.SetBottomBorder(XLBorderStyleValues.Thin)
-                    .Border.SetLeftBorder(XLBorderStyleValues.Thin)
-                    .Border.SetRightBorder(XLBorderStyleValues.Thin);
-            WorkSheet.Range("B5:D5").Style.Alignment.WrapText = true;
-
-            WorkSheet.Cell("B1").Style.NumberFormat.Format = "M月d日";
-            WorkSheet.Cell("B2").Style.NumberFormat.Format = "@";
-            WorkSheet.Cell("B4").Style.NumberFormat.Format = "M月d日";
-            WorkSheet.Cell("D1").Style.NumberFormat.Format = "M月d日";
-            WorkSheet.Cell("D2").Style.NumberFormat.Format = "@";
-            WorkSheet.Cell("D4").Style.NumberFormat.Format = "@";
-
-            WorkSheet.Cell("B2").Style.Font.FontSize = 72;
-            WorkSheet.Cell("B3").Style.Font.FontSize = 22;
-            WorkSheet.Cell("D5").Style.Font.FontSize = 24;
-
-            WorkSheet.Cell("B3").Style.Font.FontName = "Calibri";
-
-            WorkSheet.Cell("C3").Style.Alignment.WrapText = true;
-
-            // 見出し
-            WorkSheet.Cell("A1").Value = "入荷日";
-            WorkSheet.Cell("A2").Value = "SO#";
-            WorkSheet.Cell("A3").Value = "Model";
-            WorkSheet.Cell("A4").Value = "出荷日";
-            WorkSheet.Cell("A5").Value = "出荷先";
-            WorkSheet.Cell("C1").Value = "横持日";
-            WorkSheet.Cell("C2").Value = "N01#";
-            WorkSheet.Cell("C3").Value = "1PL" + Environment.NewLine + "数量";
-            WorkSheet.Cell("C4").Value = "PL";
-
-            // 固定値
-            WorkSheet.Cell("D1").Value = "";
-            // ----- UPDATE START 2020/10/28 E.KOSHIKAWA -----
-            //WorkSheet.Cell("D3").Value = "135";
-            //WorkSheet.Cell("D4").Value = "8/8";
-            WorkSheet.Cell("D4").Value = "/";
-            // ----- UPDATE  END  2020/10/28 E.KOSHIKAWA -----
-            WorkSheet.Cell("D5").Value = "□NG処理待ち" + Environment.NewLine +
-                                         "□レポート回答待ち" + Environment.NewLine +
-                                         "□ 発送処理完了";
-
-            //----------------------------------------------------------------------------
-            // ここからExcel設定
-            //----------------------------------------------------------------------------
             DSNLibrary dsnLib = new DSNLibrary();
             StringBuilder stbSql = new StringBuilder();
 
+            // SO情報の検索
             stbSql.Append("SELECT ");
             stbSql.Append("    * ");
             stbSql.Append("FROM ");
@@ -531,12 +470,6 @@ namespace AsusGigaInsp.Controllers
 
             SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
 
-            string EstArrivalDate = "";
-            string ModelName = "";
-            string SiTekEstArrivalDate = "";
-            string DeliveryLocation = "";
-            string N01NO = "";
-
             while (sqlRdr.Read())
             {
                 EstArrivalDate = sqlRdr["EST_ARRIVAL_DATE"].ToString();
@@ -544,26 +477,226 @@ namespace AsusGigaInsp.Controllers
                 SiTekEstArrivalDate = sqlRdr["SI_TEK_EST_ARRIVAL_DATE"].ToString();
                 DeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString();
                 N01NO = sqlRdr["N01_NO"].ToString();
+                IntShippingQuantity = int.Parse(sqlRdr["SHIPPING_QUANTITY"].ToString());
             }
 
-            WorkSheet.Cell("B1").Value = EstArrivalDate;
-            WorkSheet.Cell("B2").Value = prmSONO.Substring(prmSONO.Length - 4, 4);
-            WorkSheet.Cell("B3").Value = ModelName;
-            WorkSheet.Cell("B4").Value = SiTekEstArrivalDate;
-            WorkSheet.Cell("B5").Value = DeliveryLocation;
-            WorkSheet.Cell("D2").Value = N01NO.Substring(N01NO.Length - 6, 6);
+            stbSql.Clear();
+            sqlRdr.Close();
 
-            // ----- INSERT START 2020/10/28 E.KOSHIKAWA -----
-            WorkSheet.Cell("B1").Style.Alignment.ShrinkToFit = true;
-            WorkSheet.Cell("B2").Style.Alignment.ShrinkToFit = true;
-            WorkSheet.Cell("B3").Style.Alignment.ShrinkToFit = true;
-            WorkSheet.Cell("B4").Style.Alignment.ShrinkToFit = true;
-            WorkSheet.Cell("B5").Style.Alignment.ShrinkToFit = true;
-            WorkSheet.Cell("D2").Style.Alignment.ShrinkToFit = true;
-            // ----- INSERT  END  2020/10/28 E.KOSHIKAWA -----
+            // 1PL数量を取得
+            stbSql.Append("SELECT ");
+            stbSql.Append("    QUANTITY ");
+            stbSql.Append("FROM ");
+            stbSql.Append("    M_PALLET_QUANTITY ");
+            stbSql.Append("WHERE ");
+            stbSql.Append("    MODEL_NAME = '" + ModelName + "' ");
+
+            sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            while (sqlRdr.Read())
+            {
+                Int1PLQuantity = (int)sqlRdr["QUANTITY"];
+            }
+
+            if(Int1PLQuantity != 0)
+            {
+                IntPageCount = Convert.ToInt32(Math.Ceiling((double)IntShippingQuantity / Int1PLQuantity));
+            }
+            stbSql.Clear();
+            sqlRdr.Close();
+            dsnLib.DB_Close();
+            // ----- INSERT  END  2020/11/18 E.KOSHIKAWA -----
+
+            //----------------------------------------------------------------------------
+            // ここからExcel設定
+            //----------------------------------------------------------------------------
+            var WorkBook = new XLWorkbook();
+            // Bookの書式設定
+            WorkBook.Style.Font.FontName = "Meiryo UI";
+            WorkBook.Style.Font.FontSize = 36;
+
+            var WorkSheet = WorkBook.Worksheets.Add("パレットシート");
+
+            // ----- UPDATE START 2020/11/18 E.KOSHIKAWA -----
+            // Sheet書式設定
+            //WorkSheet.Row(1).Height = 115.5;
+            //WorkSheet.Row(2).Height = 115.5;
+            //WorkSheet.Row(3).Height = 115.5;
+            //WorkSheet.Row(4).Height = 115.5;
+            //WorkSheet.Row(5).Height = 119.25;
+
+            //WorkSheet.Column("A").Width = 25.57;
+            //WorkSheet.Column("B").Width = 44.43;
+            //WorkSheet.Column("C").Width = 21.57;
+            //WorkSheet.Column("D").Width = 49.14;
+
+            //WorkSheet.Range("A1:D5").Style.Font.Bold = true;
+            //WorkSheet.Range("A1:D5").Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+            //WorkSheet.Range("A1:D5").Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+            //WorkSheet.Range("B5:C5").Merge();
+            //WorkSheet.Range("A1:D5").Style
+            //        .Border.SetTopBorder(XLBorderStyleValues.Thin)
+            //        .Border.SetBottomBorder(XLBorderStyleValues.Thin)
+            //        .Border.SetLeftBorder(XLBorderStyleValues.Thin)
+            //        .Border.SetRightBorder(XLBorderStyleValues.Thin);
+            //WorkSheet.Range("B5:D5").Style.Alignment.WrapText = true;
+
+            //WorkSheet.Cell("B1").Style.NumberFormat.Format = "M月d日";
+            //WorkSheet.Cell("B2").Style.NumberFormat.Format = "@";
+            //WorkSheet.Cell("B4").Style.NumberFormat.Format = "M月d日";
+            //WorkSheet.Cell("D1").Style.NumberFormat.Format = "M月d日";
+            //WorkSheet.Cell("D2").Style.NumberFormat.Format = "@";
+            //WorkSheet.Cell("D4").Style.NumberFormat.Format = "@";
+
+            //WorkSheet.Cell("B2").Style.Font.FontSize = 72;
+            //WorkSheet.Cell("B3").Style.Font.FontSize = 22;
+            //WorkSheet.Cell("D5").Style.Font.FontSize = 24;
+
+            //WorkSheet.Cell("B3").Style.Font.FontName = "Calibri";
+
+            //WorkSheet.Cell("C3").Style.Alignment.WrapText = true;
+
+            //// 見出し
+            //WorkSheet.Cell("A1").Value = "入荷日";
+            //WorkSheet.Cell("A2").Value = "SO#";
+            //WorkSheet.Cell("A3").Value = "Model";
+            //WorkSheet.Cell("A4").Value = "出荷日";
+            //WorkSheet.Cell("A5").Value = "出荷先";
+            //WorkSheet.Cell("C1").Value = "横持日";
+            //WorkSheet.Cell("C2").Value = "N01#";
+            //WorkSheet.Cell("C3").Value = "1PL" + Environment.NewLine + "数量";
+            //WorkSheet.Cell("C4").Value = "PL";
+
+            ////----------------------------------------------------------------------------
+            //// ここからExcel設定
+            ////----------------------------------------------------------------------------
+            //DSNLibrary dsnLib = new DSNLibrary();
+            //StringBuilder stbSql = new StringBuilder();
+
+            //stbSql.Append("SELECT ");
+            //stbSql.Append("    * ");
+            //stbSql.Append("FROM ");
+            //stbSql.Append("    T_SO_STATUS ");
+            //stbSql.Append("WHERE ");
+            //stbSql.Append("    T_SO_STATUS.SO_NO = '" + prmSONO + "' ");
+
+            //SqlDataReader sqlRdr = dsnLib.ExecSQLRead(stbSql.ToString());
+
+            //string EstArrivalDate = "";
+            //string ModelName = "";
+            //string SiTekEstArrivalDate = "";
+            //string DeliveryLocation = "";
+            //string N01NO = "";
+
+            //while (sqlRdr.Read())
+            //{
+            //    EstArrivalDate = sqlRdr["EST_ARRIVAL_DATE"].ToString();
+            //    ModelName = sqlRdr["MODEL_NAME"].ToString();
+            //    SiTekEstArrivalDate = sqlRdr["SI_TEK_EST_ARRIVAL_DATE"].ToString();
+            //    DeliveryLocation = sqlRdr["DELIVERY_LOCATION"].ToString();
+            //    N01NO = sqlRdr["N01_NO"].ToString();
+            //}
+
+            //WorkSheet.Cell("B1").Value = EstArrivalDate;
+            //WorkSheet.Cell("B2").Value = prmSONO.Substring(prmSONO.Length - 4, 4);
+            //WorkSheet.Cell("B3").Value = ModelName;
+            //WorkSheet.Cell("B4").Value = SiTekEstArrivalDate;
+            //WorkSheet.Cell("B5").Value = DeliveryLocation;
+            //WorkSheet.Cell("D2").Value = N01NO.Substring(N01NO.Length - 6, 6);
+
+            //// ----- INSERT START 2020/10/28 E.KOSHIKAWA -----
+            //WorkSheet.Cell("B1").Style.Alignment.ShrinkToFit = true;
+            //WorkSheet.Cell("B2").Style.Alignment.ShrinkToFit = true;
+            //WorkSheet.Cell("B3").Style.Alignment.ShrinkToFit = true;
+            //WorkSheet.Cell("B4").Style.Alignment.ShrinkToFit = true;
+            //WorkSheet.Cell("B5").Style.Alignment.ShrinkToFit = true;
+            //WorkSheet.Cell("D2").Style.Alignment.ShrinkToFit = true;
+            //// ----- INSERT  END  2020/10/28 E.KOSHIKAWA -----
+
+            WorkSheet.PageSetup.PaperSize = XLPaperSize.LetterPaper;
+            WorkSheet.PageSetup.PageOrientation = XLPageOrientation.Landscape;
+            WorkSheet.PageSetup.Margins.Top = 0;
+            WorkSheet.PageSetup.Margins.Bottom = 0;
+            WorkSheet.PageSetup.Margins.Left = 0;
+            WorkSheet.PageSetup.Margins.Right = 0;
+            WorkSheet.PageSetup.Margins.Footer = 0;
+            WorkSheet.PageSetup.Margins.Header = 0;
+            WorkSheet.PageSetup.PagesWide = 1;
+
+            for (int PageCounter = 1; PageCounter <= IntPageCount; PageCounter++)
+            {
+                // Sheet書式設定
+                WorkSheet.Row(IntRowNumber).Height = 115.5;
+                WorkSheet.Row(IntRowNumber + 1).Height = 115.5;
+                WorkSheet.Row(IntRowNumber + 2).Height = 115.5;
+                WorkSheet.Row(IntRowNumber + 3).Height = 115.5;
+                WorkSheet.Row(IntRowNumber + 4).Height = 119.25;
+                WorkSheet.Row(IntRowNumber + 5).Height = 16.5;
+
+                WorkSheet.Column(1).Width = 25.57;
+                WorkSheet.Column(2).Width = 44.43;
+                WorkSheet.Column(3).Width = 21.57;
+                WorkSheet.Column(4).Width = 49.14;
+
+                WorkSheet.Range(IntRowNumber, 1, IntRowNumber + 4, 4).Style.Font.Bold = true;
+                WorkSheet.Range(IntRowNumber, 1, IntRowNumber + 4, 4).Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+                WorkSheet.Range(IntRowNumber, 1, IntRowNumber + 4, 4).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                WorkSheet.Range(IntRowNumber + 4, 2, IntRowNumber + 4, 3).Merge();
+                WorkSheet.Range(IntRowNumber + 5, 1, IntRowNumber + 5, 4).Merge();
+                WorkSheet.Range(IntRowNumber, 1, IntRowNumber + 4, 4).Style
+                        .Border.SetTopBorder(XLBorderStyleValues.Thin)
+                        .Border.SetBottomBorder(XLBorderStyleValues.Thin)
+                        .Border.SetLeftBorder(XLBorderStyleValues.Thin)
+                        .Border.SetRightBorder(XLBorderStyleValues.Thin);
+
+                WorkSheet.Cell(IntRowNumber, 2).Style.NumberFormat.Format = "M月d日";
+                WorkSheet.Cell(IntRowNumber + 1, 2).Style.NumberFormat.Format = "@";
+                WorkSheet.Cell(IntRowNumber + 3, 2).Style.NumberFormat.Format = "M月d日";
+                WorkSheet.Cell(IntRowNumber, 4).Style.NumberFormat.Format = "M月d日";
+                WorkSheet.Cell(IntRowNumber + 1, 4).Style.NumberFormat.Format = "@";
+                WorkSheet.Cell(IntRowNumber + 3, 4).Style.NumberFormat.Format = "@";
+
+                WorkSheet.Cell(IntRowNumber, 3).Style.Font.FontSize = 26;
+                WorkSheet.Cell(IntRowNumber + 1, 2).Style.Font.FontSize = 72;
+                WorkSheet.Cell(IntRowNumber + 2, 2).Style.Font.FontSize = 22;
+                WorkSheet.Cell(IntRowNumber + 4, 4).Style.Font.FontSize = 24;
+
+                // 見出し
+                WorkSheet.Cell(IntRowNumber, 1).Value = "入荷日";
+                WorkSheet.Cell(IntRowNumber + 1, 1).Value = "SO#";
+                WorkSheet.Cell(IntRowNumber + 2, 1).Value = "Model";
+                WorkSheet.Cell(IntRowNumber + 3, 1).Value = "出荷日";
+                WorkSheet.Cell(IntRowNumber + 4, 1).Value = "出荷先";
+                WorkSheet.Cell(IntRowNumber, 3).Value = "資産移動";
+                WorkSheet.Cell(IntRowNumber + 1, 3).Value = "N01#";
+                WorkSheet.Cell(IntRowNumber + 2, 3).Value = "1PL" + Environment.NewLine + "数量";
+                WorkSheet.Cell(IntRowNumber + 3, 3).Value = "PL";
+
+                // 固定値
+                WorkSheet.Cell(IntRowNumber, 4).Value = "";
+                WorkSheet.Cell(IntRowNumber + 4, 4).Value = "□新品検品作業済み";
+
+                //----------------------------------------------------------------------------
+                // 値のセット
+                //----------------------------------------------------------------------------
+                WorkSheet.Cell(IntRowNumber, 2).Value = EstArrivalDate;
+                WorkSheet.Cell(IntRowNumber + 1, 2).Value = prmSONO.Substring(prmSONO.Length - 4, 4);
+                WorkSheet.Cell(IntRowNumber + 2, 2).Value = ModelName;
+                WorkSheet.Cell(IntRowNumber + 3, 2).Value = SiTekEstArrivalDate;
+                WorkSheet.Cell(IntRowNumber + 4, 2).Value = DeliveryLocation;
+                WorkSheet.Cell(IntRowNumber + 1, 4).Value = N01NO.Substring(N01NO.Length - 6, 6);
+                WorkSheet.Cell(IntRowNumber + 2, 4).Value = Int1PLQuantity;
+                WorkSheet.Cell(IntRowNumber + 3, 4).Value = PageCounter + "/" + IntPageCount;
+
+                WorkSheet.Range(IntRowNumber, 2, IntRowNumber + 4, 2).Style.Alignment.ShrinkToFit = true;
+                WorkSheet.Range(IntRowNumber + 1, 4, IntRowNumber + 4, 4).Style.Alignment.ShrinkToFit = true;
+
+                IntRowNumber = IntRowNumber + 6;
+            }
+            // ----- UPDATE  END  2020/11/18 E.KOSHIKAWA -----
 
             // ファイル名
-            OutputFileName = DateTime.Now.ToString("yyyy年MM月dd日 hh時mm分ss秒")
+            OutputFileName = DateTime.Now.ToString("yyyy年MM月dd日 HH時mm分ss秒")
                             + "_パレットシート_"
                             + prmSONO
                             + ".xlsx";

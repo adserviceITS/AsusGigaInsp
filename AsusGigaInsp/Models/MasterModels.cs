@@ -321,6 +321,7 @@ namespace AsusGigaInsp.Models
             dsnLib.DB_Close();
         }
     }
+
     //---------------------------------------------------------------------------//
     //                             非稼働日取込処理                              //
     //---------------------------------------------------------------------------//
@@ -479,6 +480,103 @@ namespace AsusGigaInsp.Models
 
             strSql.Clear();
 
+        }
+    }
+
+    //---------------------------------------------------------------------------//
+    //                             １PL数量取込処理                              //
+    //---------------------------------------------------------------------------//
+    // 取込ファイル取得用クラス
+    public class PalletUploadFile
+    {
+        [Required(ErrorMessage = "ファイルを選択してください。")]
+        public HttpPostedFileBase PalletDataExcelFile { get; set; }
+    }
+
+    // 取込処理
+    public class PalletDataUpLoadModels
+    {
+        public string[,] PalletData = new string[1, 1];
+        public PalletUploadFile UFUploadFile;
+
+        //------------------------------------------------------
+        // Excel取込処理
+        //------------------------------------------------------
+        public void GetPalletQuantityExcelData()
+        {
+            //　Excel取得用変数
+            int IntRowCount = 0;
+            int IntColumnCount = 0;
+
+            using (var WorkBook = new XLWorkbook(UFUploadFile.PalletDataExcelFile.InputStream))
+            {
+                var WorkSheet = WorkBook.Worksheet("1PL数量");
+
+                // テーブル作成
+                var Table = WorkSheet.RangeUsed().AsTable();
+
+                //　テーブルの行数、列数を取得し、データ格納配列を定義する。
+                IntRowCount = Table.RowCount();
+                IntColumnCount = Table.ColumnCount();
+                PalletData = new string[IntRowCount, IntColumnCount];
+
+                // テーブルのデータをセル毎に取得
+                for (int RowCounter = 0; RowCounter < IntRowCount; RowCounter++)
+                {
+                    for (int ColCounter = 0; ColCounter < IntColumnCount; ColCounter++)
+                    {
+                        PalletData[RowCounter, ColCounter] = Table.Row(RowCounter + 1).Cell(ColCounter + 1).Value.ToString();
+                    }
+                }
+            }
+        }
+
+        public void InsertPalletQuantityData(DateTime DTImportTime, string StrUpdUID)
+        {
+
+            DSNLibrary dsnLib = new DSNLibrary();
+            StringBuilder strSql = new StringBuilder();
+
+            //------------------------------------------------------
+            // 既存のM_PALETT_QUANTITYのレコードを削除する
+            //------------------------------------------------------
+            strSql.Append("DELETE ");
+            strSql.Append("FROM ");
+            strSql.Append("    M_PALLET_QUANTITY ");
+
+            dsnLib.ExecSQLUpdate(strSql.ToString());
+            dsnLib.DB_Close();
+            strSql.Clear();
+
+            //------------------------------------------------------
+            // ExcelデータをM_PALETT_QUANTITYに保存する。
+            //------------------------------------------------------
+            int IntRowCount = PalletData.GetLength(0);
+
+            // Excelデータの2行目から順次データをDBに書き込む。
+            // (1行目はタイトル行のため、読み込まない
+            for (int RowCounter = 1; RowCounter < IntRowCount; RowCounter++)
+            {
+                strSql.Append("INSERT ");
+                strSql.Append("INTO M_PALLET_QUANTITY ");
+                strSql.Append("( ");
+                strSql.Append("    MODEL_NAME, ");
+                strSql.Append("    QUANTITY, ");
+                strSql.Append("    INSERT_DATE, ");
+                strSql.Append("    INSERT_ID ");
+                strSql.Append(") ");
+                strSql.Append("VALUES ");
+                strSql.Append("( ");
+                strSql.Append("    N'" + PalletData[RowCounter, 0] + "', ");
+                strSql.Append("    " + PalletData[RowCounter, 1] + ", ");
+                strSql.Append("    '" + DTImportTime + "', ");
+                strSql.Append("    N'" + StrUpdUID + "' ");
+                strSql.Append(") ");
+
+                dsnLib.ExecSQLUpdate(strSql.ToString());
+                dsnLib.DB_Close();
+                strSql.Clear();
+            }
         }
     }
 }

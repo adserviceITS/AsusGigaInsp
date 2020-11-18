@@ -187,5 +187,110 @@ namespace AsusGigaInsp.Controllers
             }
             return View();
         }
+
+        // GET: PalletDataUpLoad
+        public ActionResult PalletDataUpLoad()
+        {
+            PalletUploadFile UploadFile = new PalletUploadFile();
+            return View(UploadFile);
+        }
+
+        // POST: PalletDataUpLoad
+        [HttpPost]
+        public ActionResult PalletDataUpLoad(PalletUploadFile UploadFile)
+        {
+            PalletDataUpLoadModels models = new PalletDataUpLoadModels();
+
+            DateTime DTImportTime = DateTime.Now;
+            string StrUpdUID = Session["ID"].ToString();
+
+            // アップロードファイルをモデルにセット
+            models.UFUploadFile = UploadFile;
+
+            if (ModelState.IsValid)
+            {
+                if (UploadFile.PalletDataExcelFile.ContentLength > 0)
+                {
+                    if (UploadFile.PalletDataExcelFile.FileName.EndsWith(".xlsx") || UploadFile.PalletDataExcelFile.FileName.EndsWith(".xls"))
+                    {
+                        XLWorkbook Workbook;
+                        try
+                        {
+                            Workbook = new XLWorkbook(UploadFile.PalletDataExcelFile.InputStream);
+                        }
+                        catch (Exception ex)
+                        {
+                            ModelState.AddModelError(string.Empty, $"ファイルを確認してください。 {ex.Message}");
+                            return View();
+                        }
+                        IXLWorksheet WorkSheet = null;
+                        try
+                        {
+                            WorkSheet = Workbook.Worksheet("1PL数量");
+                        }
+                        catch
+                        {
+                            ModelState.AddModelError(string.Empty, "1PL数量sheetが存在しません。");
+                            return View();
+                        }
+
+                        // Excelデータをモデルにセット
+                        models.GetPalletQuantityExcelData();
+
+                        // バリデーションチェック
+                        int IntRowCount = models.PalletData.GetLength(0);
+
+                        for (int RowCounter = 2; RowCounter < IntRowCount; RowCounter++)
+                        {
+                            // Excelのデータチェック **********************************************
+                            string StrCheckModelName = models.PalletData[RowCounter, 0];
+                            string StrCheckQuantity = models.PalletData[RowCounter, 1];
+
+                            if (string.IsNullOrEmpty(StrCheckModelName))
+                            {
+                                ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目はモデルが入力されていません。");
+                            }
+
+                            if (string.IsNullOrEmpty(StrCheckQuantity))
+                            {
+                                ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目は入数が入力されていません。");
+                            }
+
+                            for (int CheckRow = RowCounter + 1; CheckRow < IntRowCount; CheckRow++)
+                            {
+                                if (!string.IsNullOrEmpty(StrCheckModelName))
+                                {
+                                    if (StrCheckModelName == models.PalletData[CheckRow, 0])
+                                    {
+                                        ModelState.AddModelError(string.Empty, (RowCounter + 1) + "行目のモデルは" + (CheckRow + 1) + "行目のモデルと重複しています。");
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!ModelState.IsValid)
+                        {
+                            ModelState.AddModelError(string.Empty, "修正後、再度取込んで下さい。");
+                            return View();
+                        }
+
+                        // M_PALLET_QUANTITYへのデータ取込み
+                        models.InsertPalletQuantityData(DTImportTime, Session["ID"].ToString());
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "読み込めるのは、.xlsx ファイルと .xls ファイルのみです。");
+                        return View();
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "有効なファイルではありません。");
+                    return View();
+                }
+            }
+            ViewBag.Message = "取り込みが完了しました。";
+            return View();
+        }
     }
 }
