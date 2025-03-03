@@ -1,0 +1,169 @@
+﻿@model AsusGigaInsp.Models.WhiteBoardModels
+@{
+    ViewBag.Title = "ホワイトボード";
+}
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Language" content="ja">
+    <meta name="google" content="notranslate">
+    <meta http-equiv="Refresh" content="30;../WhiteBoard/ProgressBoard_Auto">
+    <link href="~/Content/SOList.css" rel="stylesheet" />
+    <style>
+        .card-header {
+            height: 70px;
+        }
+
+        .card-body {
+            height: 70px;
+        }
+
+        .card-text {
+            font-size: x-large;
+            text-align: center;
+        }
+    </style>
+</head>
+@using (Html.BeginForm())
+{
+    <H2>
+        <u class="text-danger">ASUS新品検品　ホワイトボード</u>
+        <span class="small text-muted" id="view_today"></span>
+    </H2>
+    <div class="album mt-4">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-1">
+                    <div class="card box-shadow bg-danger text-white" style="height:142px;">
+                        <div class="card-body d-flex align-items-center">
+                            <p class="card-text">完了</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-11">
+                    <div class="row text-center">
+                        <div class="col-md-2">
+                            <div class="card box-shadow border-danger">
+                                <div class="card-header" style="background-color:pink">投入</div>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.ActionLink(String.Format("{0:#,0}", Model.IntRstInput), "SearchFromOutSide", "SerialList", new { SearchKey = "0001" }, null)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card box-shadow border-danger">
+                                <div class="card-header" style="background-color:pink">新品検品<br />作業完了</div>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.ActionLink(String.Format("{0:#,0}", Model.IntRstComplete), "SearchFromOutSide", "SerialList", new { SearchKey = "0002" }, null)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="album py-3">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-1">
+                    <div class="card mb-4 box-shadow bg-primary text-white" style="height:308px;">
+                        <div class="card-body d-flex align-items-center">
+                            <p class="card-text">仕掛</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-11">
+                    <div class="row text-center">
+
+                        <div class="col-md-2">
+                            <div class="card mb-4 box-shadow border-primary">
+                                <div class="card-header" style="background-color:skyblue">入荷前</div>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.ActionLink(String.Format("{0:#,0}", Model.IntRstAccumulationBeforeArrival), "SearchFromOutSide", "SerialList",new{ SearchKey = "1010" }, null)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-md-2">
+                            <div class="card mb-4 box-shadow border-primary">
+                                <div class="card-header" style="background-color:skyblue">未着手</div>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.ActionLink(String.Format("{0:#,0}", Model.IntRstAccumulationBeforeStart), "SearchFromOutSide", "SerialList", new { SearchKey = "2010" }, null)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card mb-4 box-shadow border-primary">
+                                <div class="card-header" style="background-color:skyblue">新品検品<br />作業中</div>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.ActionLink(String.Format("{0:#,0}", Model.IntRstAccumulationWorking), "SearchFromOutSide", "SerialList", new { SearchKey = "3010" }, null)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card mb-4 box-shadow border-primary">
+                                <div class="card-header" style="background-color:skyblue">新品検品<br />作業完了</div>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.ActionLink(String.Format("{0:#,0}", Model.IntRstAccumulationComplete), "SearchFromOutSide", "SerialList", new { SearchKey = "4010" }, null)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card mb-4 box-shadow border-primary">
+                                <div class="card-header" style="background-color:skyblue">出荷準備<br />完了</div>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.ActionLink(String.Format("{0:#,0}", Model.IntRstAccumulationReadyToShip), "SearchFromOutSide", "SerialList", new { SearchKey = "6010" }, null)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card mb-4 box-shadow border-primary">
+                                <div class="card-header" style="background-color:skyblue">拠点内総仕掛</div>
+                                <div class="card-body">
+                                    <p class="card-text">@Html.ActionLink(String.Format("{0:#,0}", Model.IntRstAccumulationTotal), "SearchFromOutSide", "SerialList", new { SearchKey = "0000" }, null)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+<script type="text/javascript">
+    document.getElementById("view_today").innerHTML = getToday();
+
+    function getToday() {
+        var now = new Date();
+        var year = now.getFullYear();
+        var mon = now.getMonth() + 1; //１を足すこと
+        var day = now.getDate();
+        var you = now.getDay(); //曜日(0～6=日～土)
+        var hour = now.getHours();
+        var min = now.getMinutes();
+        var sec = now.getSeconds();
+
+        //曜日の選択肢
+        var youbi = new Array("日", "月", "火", "水", "木", "金", "土");
+        //出力用
+        var s = year + "年" + mon + "月" + day + "日 (" + youbi[you] + ")" + "　" + hour + "時" + min + "分" + sec + "秒";
+        return s;
+    }
+</script>

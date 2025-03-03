@@ -9,6 +9,7 @@ using DataTable = System.Data.DataTable;
 using ClosedXML.Excel;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace AsusGigaInsp.Models
 {
@@ -336,6 +337,8 @@ namespace AsusGigaInsp.Models
             strSql.Append("    LINE_ID ");
             strSql.Append("FROM ");
             strSql.Append("    M_LINE ");
+            strSql.Append("ORDER BY ");
+            strSql.Append("    LINE_ID ");
 
             sqlRdr = dsnLib.ExecSQLRead(strSql.ToString());
 
@@ -604,6 +607,8 @@ namespace AsusGigaInsp.Models
             string StrLineName = null;
             string StrCheckLine = null;
             string StrCheckChar = null;
+            int IntGroupSize = 5;
+            int IntGroup = 0;
 
             for (int IntY = 0; IntY < DTPerformanceReader.Rows.Count; IntY++)
             {
@@ -612,10 +617,12 @@ namespace AsusGigaInsp.Models
                 if (StrCheckLine == '0'.ToString())
                 {
                     StrLineName = "合計";
+                    IntGroup = 1;
                 }
                 else
                 {
                     StrLineName = StrCheckLine + "-Line";
+                    IntGroup = (IntY - 3) / (3 * (IntGroupSize)) + 1;
                 }
 
                 StrCheckChar = sortedrows[IntY].Field<string>("Col0").Substring(1);
@@ -633,9 +640,9 @@ namespace AsusGigaInsp.Models
                     StrID = "差異";
                 }
 
-
                 LstProgressBoard.Add(new SrchRst
                 {
+                    Group = IntGroup,
                     LineName = StrLineName,
                     Division = StrID,
                     Period01 = sortedrows[IntY].Field<string>("Col1"),
@@ -1001,6 +1008,7 @@ namespace AsusGigaInsp.Models
 
     public class SrchRst
     {
+        public int Group { get; set; }
         public string LineName { get; set; }
         public string Division { get; set; }
         public string Period01 { get; set; }

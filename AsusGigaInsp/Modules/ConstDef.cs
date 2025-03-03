@@ -12,13 +12,13 @@ namespace AsusGigaInsp.Modules
         /* ローカル開発用 */
         //public const string DB_CONNECTION_STRING = @"Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;Database=SIVA";
 
-        /* 開発機用 */
-        public const string DB_DATA_SOURCE = "192.168.113.20";
+        /* 本番用 */
+        public const string DB_DATA_SOURCE = "localhost";
         public const string DB_DATA_BASE = "SIVA";
         public const string DB_USER_ID = "sa";
         public const string DB_PASSWORD = "takota";
 
-        /* 本番機用 */
+        /* 旧本番機用 */
         //public const string DB_DATA_SOURCE = "192.168.121.181";
         //public const string DB_DATA_BASE = "SIVA";
         //public const string DB_USER_ID = "sa";

@@ -28,6 +28,16 @@ namespace AsusGigaInsp.Controllers
             return View(models);
         }
 
+        // GET: WhiteBoard_Auto
+        public ActionResult WhiteBoard_Auto()
+        {
+            WhiteBoardModels models = new WhiteBoardModels();
+
+            models.SetSrchRstWhiteBoard();
+
+            return View(models);
+        }
+
         // GET: PlanDataUpLoad
         public ActionResult PlanDataUpLoad()
         {
@@ -127,6 +137,19 @@ namespace AsusGigaInsp.Controllers
         // GET: ProgressBoard
         public ActionResult ProgressBoard_B()
         {
+            ProgressBoardModels models = new ProgressBoardModels();
+
+            // モデルにオーダーリストをセット
+            models.SetSrchRstProgressBoard();
+
+            return View(models);
+        }
+
+        // GET: ProgressBoard
+        public ActionResult ProgressBoard_Auto(int? DispGroup)
+        {
+            ViewBag.DispGroup = DispGroup ?? 1;
+
             ProgressBoardModels models = new ProgressBoardModels();
 
             // モデルにオーダーリストをセット
